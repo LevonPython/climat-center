@@ -1,0 +1,17 @@
+{
+  "name": "climat-center",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client",
+    "admin",
+    "e2e"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "dev:admin": "npm run dev -w admin",
+    "test": "npm run test -w server && npm run test -w client && npm run test -w admin",
+    "test:e2e": "npm run test -w e2e"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "brand": "Climate Center",
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "booking": "Booking",
+    "quiz": "Quick quiz"
+  },
+  "hero": {
+    "kicker": "24/7 service",
+    "title": "AC installation, repair and maintenance",
+    "subtitle": "A specialist can arrive within 2 hours in many areas.",
+    "cta": "Request a call",
+    "secondaryCta": "View services"
+  },
+  "usp": {
+    "fastTitle": "Fast arrival",
+    "fastDesc": "We try to arrive as quickly as possible.",
+    "guaranteeTitle": "Work warranty",
+    "guaranteeDesc": "Warranty for work and parts.",
+    "toolsTitle": "Professional equipment",
+    "toolsDesc": "Proper diagnostics and maintenance tools."
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Pick a service and we’ll contact you."
+  },
+  "booking": {
+    "title": "Leave a request",
+    "subtitle": "Fill the form and we’ll call you back.",
+    "success": "Request sent. ID: {{id}}"
+  },
+  "quiz": {
+    "title": "Quick quiz",
+    "subtitle": "2 steps + phone number, and we’ll call you back.",
+    "step": "Step",
+    "reset": "Reset",
+    "problemQuestion": "What’s the issue?",
+    "typeQuestion": "AC type",
+    "contactQuestion": "Contact",
+    "summary": "Summary",
+    "problem": "Problem",
+    "type": "Type",
+    "submit": "Send",
+    "success": "Thanks! We received your request."
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "phone": "Phone",
+    "service": "Service",
+    "serviceAny": "Any",
+    "date": "Date",
+    "time": "Time",
+    "address": "Address",
+    "addressPlaceholder": "City, street, building",
+    "problem": "Comment",
+    "problemPlaceholder": "Describe the issue",
+    "submit": "Submit request",
+    "sending": "Sending..."
+  },
+  "actions": {
+    "next": "Next",
+    "back": "Back"
+  },
+  "footer": {
+    "tagline": "AC service and maintenance.",
+    "contacts": "Contacts",
+    "address": "Address",
+    "addressValue": "Moscow"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again."
+  }
+}
+

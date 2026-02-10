@@ -1,0 +1,13 @@
+{
+  "name": "@climat-center/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "typescript": "^5.5.4"
+  }
+}
+
