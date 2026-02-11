@@ -6,8 +6,7 @@ const { Client } = require('pg');
 function requireDatabaseUrl() {
   const url = process.env.DATABASE_URL;
   if (!url) {
-    // eslint-disable-next-line no-console
-    console.warn('Skipping DB tests: DATABASE_URL not set');
+    // Keep CI logs clean; the tests will be skipped by callers.
     return null;
   }
   return url;
