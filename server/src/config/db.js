@@ -29,9 +29,17 @@ async function withClient(fn) {
   }
 }
 
+async function closePool() {
+  if (!pool) return;
+  const p = pool;
+  pool = undefined;
+  await p.end();
+}
+
 module.exports = {
   getPool,
   query,
-  withClient
+  withClient,
+  closePool
 };
 

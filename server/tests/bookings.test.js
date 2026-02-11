@@ -1,6 +1,7 @@
 const request = require('supertest');
 
 const { createApp } = require('../src/app');
+const { closePool } = require('../src/config/db');
 const { withTestDb, runMigrations, truncateAll, ensureAdminUser, requireDatabaseUrl } = require('./helpers/db');
 
 const dbUrl = requireDatabaseUrl();
@@ -28,6 +29,10 @@ if (!dbUrl) {
 
       const login = await request(app).post('/api/auth/login').send({ username: 'admin', password: 'admin12345' });
       token = login.body.token;
+    });
+
+    afterAll(async () => {
+      await closePool();
     });
 
     test('POST /api/bookings creates booking', async () => {

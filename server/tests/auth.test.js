@@ -1,6 +1,7 @@
 const request = require('supertest');
 
 const { createApp } = require('../src/app');
+const { closePool } = require('../src/config/db');
 const { withTestDb, runMigrations, truncateAll, ensureAdminUser, requireDatabaseUrl } = require('./helpers/db');
 
 const dbUrl = requireDatabaseUrl();
@@ -19,6 +20,10 @@ if (!dbUrl) {
         await ensureAdminUser(client, 'admin', 'admin12345');
         await client.query('COMMIT');
       });
+    });
+
+    afterAll(async () => {
+      await closePool();
     });
 
     test('POST /api/auth/login returns token', async () => {
