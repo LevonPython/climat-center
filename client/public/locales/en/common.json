@@ -4,7 +4,49 @@
     "home": "Home",
     "services": "Services",
     "booking": "Booking",
-    "quiz": "Quick quiz"
+    "quiz": "Quick quiz",
+    "about": "About",
+    "contacts": "Contacts"
+  },
+  "social": {
+    "whatsapp": "WhatsApp",
+    "telegram": "Telegram",
+    "facebook": "Facebook",
+    "instagram": "Instagram"
+  },
+  "about": {
+    "title": "About us",
+    "subtitle": "Service you can rely on — clear pricing, tidy work, and warranty.",
+    "section1Title": "Experience",
+    "section1Body": "We install and service air conditioners and split systems for apartments, offices, and commercial spaces. We focus on consistent quality and predictable results.",
+    "section2Title": "Approach",
+    "section2Body": "We start with diagnostics, recommend the right solution, and explain what will be done and why. We work neatly and follow safety standards.",
+    "section3Title": "Quality & warranty",
+    "section3Body": "We use professional tools and consumables. Warranty terms depend on the type of work and are agreed in advance.",
+    "factsTitle": "Quick facts",
+    "fact1Title": "Fast arrival",
+    "fact1Desc": "In many areas a technician can arrive within 2 hours.",
+    "fact2Title": "Transparent service",
+    "fact2Desc": "We explain the scope of work and provide clear recommendations.",
+    "fact3Title": "Warranty",
+    "fact3Desc": "Warranty for work and parts according to agreement.",
+    "ctaTitle": "Need help right now?",
+    "ctaSubtitle": "Call us or open the contacts page for all options.",
+    "call": "Call",
+    "contacts": "Contacts"
+  },
+  "contacts": {
+    "title": "Contacts",
+    "subtitle": "Choose a convenient way to reach us — phone, email, or messenger.",
+    "phone": "Phone",
+    "email": "Email",
+    "hours": "Working hours",
+    "hoursValue": "Daily, 24/7",
+    "address": "Address",
+    "social": "Social / messengers",
+    "socialSubtitle": "Write to us in a messenger or on social networks.",
+    "map": "Map",
+    "mapSubtitle": "Map embed can be added here later."
   },
   "hero": {
     "kicker": "24/7 service",

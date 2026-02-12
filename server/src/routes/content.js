@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, param, validationResult } = require('express-validator');
 
-const { query } = require('../config/db');
+const { query, withClient } = require('../config/db');
 const { verifyToken, requireAnyRole } = require('../middleware/auth');
 
 const contentRouter = express.Router();
@@ -40,6 +40,38 @@ contentRouter.get('/blocks', verifyToken, requireAnyRole(['admin', 'editor']), a
     return next(err);
   }
 });
+
+// Versions (history) for a block
+contentRouter.get(
+  '/blocks/:id/versions',
+  verifyToken,
+  requireAnyRole(['admin', 'editor']),
+  param('id').isUUID(),
+  async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ ok: false, error: { message: 'Invalid id', details: errors.array() } });
+      }
+
+      const { id } = req.params;
+      const result = await query(
+        `
+        SELECT v.id, v.content_block_id, v.updated_by, u.username AS updated_by_username, v.content_json, v.created_at
+        FROM content_block_versions v
+        LEFT JOIN users u ON u.id = v.updated_by
+        WHERE v.content_block_id = $1
+        ORDER BY v.created_at DESC
+        LIMIT 50
+      `,
+        [id]
+      );
+      return res.json({ ok: true, versions: result.rows });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
 
 contentRouter.get(
   '/:lang',
@@ -88,29 +120,59 @@ contentRouter.put(
 
       const { id, page_name, section_name, content_json } = req.body;
 
-      let result;
-      if (id) {
-        result = await query('UPDATE content_blocks SET content_json = $1 WHERE id = $2 RETURNING *', [content_json, id]);
-      } else {
-        if (!page_name || !section_name) {
-          return res
-            .status(400)
-            .json({ ok: false, error: { message: 'Provide id or (page_name + section_name)' } });
-        }
-        result = await query(
-          `
-          INSERT INTO content_blocks (page_name, section_name, content_json)
-          VALUES ($1,$2,$3)
-          ON CONFLICT (page_name, section_name)
-          DO UPDATE SET content_json = EXCLUDED.content_json
-          RETURNING *
-        `,
-          [page_name, section_name, content_json]
-        );
+      const userId = req.user?.id || null;
+
+      // Validate the "upsert by (page_name, section_name)" case BEFORE opening a transaction.
+      if (!id && (!page_name || !section_name)) {
+        return res.status(400).json({ ok: false, error: { message: 'Provide id or (page_name + section_name)' } });
       }
 
-      if (result.rowCount === 0) return res.status(404).json({ ok: false, error: { message: 'Not found' } });
-      return res.json({ ok: true, content_block: result.rows[0] });
+      const updated = await withClient(async (client) => {
+        await client.query('BEGIN');
+        try {
+          let result;
+          if (id) {
+            result = await client.query('UPDATE content_blocks SET content_json = $1 WHERE id = $2 RETURNING *', [
+              content_json,
+              id
+            ]);
+          } else {
+            result = await client.query(
+              `
+              INSERT INTO content_blocks (page_name, section_name, content_json)
+              VALUES ($1,$2,$3)
+              ON CONFLICT (page_name, section_name)
+              DO UPDATE SET content_json = EXCLUDED.content_json
+              RETURNING *
+            `,
+              [page_name, section_name, content_json]
+            );
+          }
+
+          if (result.rowCount === 0) {
+            await client.query('ROLLBACK');
+            return { ok: false, status: 404, body: { ok: false, error: { message: 'Not found' } } };
+          }
+
+          const block = result.rows[0];
+          await client.query(
+            `
+            INSERT INTO content_block_versions (content_block_id, updated_by, content_json)
+            VALUES ($1, $2, $3)
+          `,
+            [block.id, userId, content_json]
+          );
+
+          await client.query('COMMIT');
+          return { ok: true, block };
+        } catch (e) {
+          await client.query('ROLLBACK');
+          throw e;
+        }
+      });
+
+      if (!updated.ok) return res.status(updated.status).json(updated.body);
+      return res.json({ ok: true, content_block: updated.block });
     } catch (err) {
       return next(err);
     }

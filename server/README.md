@@ -19,3 +19,9 @@
 
 API health: `GET /api/health`
 
+### Tests
+
+Server tests use Jest + Supertest and will **auto-skip** if `DATABASE_URL` is not set:
+
+- Run: `npm test -w server`
+

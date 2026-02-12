@@ -6,6 +6,10 @@ This repo contains a basic production setup for:
 - `client` (Next.js) on port `3000`
 - `admin` (Vite build) served as static files by Nginx at `/admin/`
 
+Notes:
+
+- Make sure you run `npm run migrate -w server` after pulling new code that adds migrations (for example content history tables).
+
 ### 1) Build artifacts
 
 - API: no build step (plain Node). Ensure `server/node_modules` installed.

@@ -68,6 +68,10 @@ This file summarizes **all implemented changes**, grouped by area, and includes 
   - Adds indexes and `updated_at` triggers.
   - Uses `pgcrypto` + `gen_random_uuid()` for UUIDs.
 
+- `server/migrations/002_content_block_versions.sql`
+  - Creates `content_block_versions` table for **append-only history**.
+  - One row is written for **each** admin/editor content update.
+
 - `server/scripts/migrate.js`
   - Applies SQL files in `server/migrations/` once (tracked via `_migrations` table).
   - **Loads env from `server/.env`** so `DATABASE_URL` works when you run `npm run migrate -w server`.
@@ -108,6 +112,7 @@ This file summarizes **all implemented changes**, grouped by area, and includes 
   - `GET /api/content/:lang`: public content (returns language-resolved blocks).
   - `GET /api/content/blocks`: admin/editor raw blocks for editing.
   - `PUT /api/content`: admin/editor upsert/update blocks.
+  - `GET /api/content/blocks/:id/versions`: admin/editor content history (last 50).
 
 - `server/src/routes/upload.js`
   - `POST /api/upload`: admin/editor image upload via `multer`.
@@ -123,6 +128,7 @@ This file summarizes **all implemented changes**, grouped by area, and includes 
 - `server/tests/*`
   - Supertest-based API tests.
   - `server/tests/helpers/db.js` can bootstrap migrations and test data when `DATABASE_URL` is set.
+  - New: `server/tests/content.test.js` verifies that `PUT /api/content` appends into `content_block_versions` and that `/api/content/blocks/:id/versions` returns history.
 
 ## Public site: `client/` (Next.js + Tailwind + i18n)
 
@@ -147,6 +153,12 @@ This file summarizes **all implemented changes**, grouped by area, and includes 
   - Reads hero content via `GET /api/content/:lang` in `getServerSideProps`.
   - **Fix applied**: Next.js cannot serialize `undefined` props, so hero fields are returned as `null` when missing.
 
+- `client/pages/about.tsx`
+  - About page (SSR translations via `next-i18next`).
+
+- `client/pages/contacts.tsx`
+  - Contacts page (SSR translations via `next-i18next`) with primary contacts + address + social buttons.
+
 - `client/pages/services/index.tsx`
   - Services list.
   - Reads via `GET /api/services`.
@@ -162,10 +174,11 @@ This file summarizes **all implemented changes**, grouped by area, and includes 
 ### Layout/components
 
 - `client/components/Layout.tsx`: shared layout wrapper.
-- `client/components/Header.tsx`: nav + mobile menu + phone + language switcher.
-- `client/components/Footer.tsx`: contacts/address footer.
+- `client/components/Header.tsx`: nav + mobile menu + phone + language switcher + social icon buttons + placeholder logo.
+- `client/components/Footer.tsx`: contacts/address footer + placeholder logo.
 - `client/components/LanguageSwitcher.tsx`: locale switching via Next router.
 - `client/components/ServiceCard.tsx`: service card linking into booking flow.
+- `client/components/SocialLinks.tsx`: reusable social buttons (icons + labeled variant), placeholder URLs centralized in one constant.
 
 ### Client tests
 
