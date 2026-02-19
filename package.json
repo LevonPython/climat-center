@@ -1,12 +1,10 @@
 {
   "name": "climat-center",
   "private": true,
-  "workspaces": [
-    "server",
-    "client",
-    "admin",
-    "e2e"
-  ],
+  "workspaces": ["server", "client", "admin", "e2e"],
+  "overrides": {
+    "minimatch": "^10.2.1"
+  },
   "scripts": {
     "dev:server": "npm run dev -w server",
     "dev:client": "npm run dev -w client",
