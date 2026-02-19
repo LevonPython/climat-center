@@ -33,3 +33,9 @@ Thumbs.db
 ## Logs
 logs/
 *.log
+
+## TypeScript
+*.tsbuildinfo
+
+## Cursor (generated index report)
+.cursor/indexed_files.txt
