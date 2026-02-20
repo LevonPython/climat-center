@@ -1,17 +1,56 @@
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { apiFetch } from '../lib/api';
 
 type Step = 1 | 2 | 3;
 
-const PROBLEMS = ['Не морозит', 'Течет вода', 'Не включается', 'Шумит', 'Обмерзает', 'Неприятный запах'] as const;
-const AC_TYPES = ['Настенный', 'Кассетный', 'Канальный', 'Напольно-потолочный', 'Оконный', 'Колонный'] as const;
+const FALLBACKS = {
+  en: {
+    problems: ['Not cooling', 'Water leaking', "Won't turn on", 'Making noise', 'Freezing up', 'Bad smell'],
+    acTypes: ['Wall-mounted', 'Cassette', 'Ducted', 'Floor-ceiling', 'Window', 'Floor standing']
+  },
+  ru: {
+    problems: ['Не морозит', 'Течет вода', 'Не включается', 'Шумит', 'Обмерзает', 'Неприятный запах'],
+    acTypes: ['Настенный', 'Кассетный', 'Канальный', 'Напольно-потолочный', 'Оконный', 'Колонный']
+  },
+  am: {
+    problems: ['Չի սառչում', 'Ջուր է հոսում', 'Չի միանում', 'Աղմուկ է անում', 'Սառչում է', 'Անհաճոյական հոտ'],
+    acTypes: ['Պատի', 'Կասետային', 'Խողովակային', 'Հատակ-առաստաղ', 'Պատուհանի', 'Սյունակային']
+  }
+} as const;
+
+function translatedOrFallback(t: (k: string) => string, key: string, fallbacks: string[]): string[] {
+  return fallbacks.map((fallback, i) => {
+    const fullKey = `quiz.${key}${i}`;
+    const value = t(fullKey);
+    const isKey = value === fullKey || value.startsWith('quiz.') || value.includes(`quiz.${key}`);
+    return isKey ? fallback : value;
+  });
+}
+
+function displayLabel(value: string, options: string[], keyPrefix: string, fallbacks: string[]): string {
+  if (!value) return value;
+  if (options.includes(value)) return value;
+  const keyMatch = value.match(new RegExp(`^quiz\\.${keyPrefix}(\\d)$`));
+  if (keyMatch) {
+    const i = parseInt(keyMatch[1], 10);
+    return fallbacks[i] ?? value;
+  }
+  return value;
+}
 
 export default function QuizPage() {
   const { t } = useTranslation('common');
+  const { locale } = useRouter();
+  const localeKey = (locale && locale in FALLBACKS ? locale : 'ru') as keyof typeof FALLBACKS;
+  const fallbacks = FALLBACKS[localeKey];
+
+  const problems = translatedOrFallback(t, 'problem', [...fallbacks.problems]);
+  const acTypes = translatedOrFallback(t, 'acType', [...fallbacks.acTypes]);
   const [step, setStep] = useState<Step>(1);
   const [problem, setProblem] = useState<string>('');
   const [acType, setAcType] = useState<string>('');
@@ -43,11 +82,6 @@ export default function QuizPage() {
         return;
       }
       setSuccess(true);
-      setStep(1);
-      setProblem('');
-      setAcType('');
-      setName('');
-      setPhone('');
     } catch {
       setError(t('errors.generic'));
     } finally {
@@ -85,7 +119,7 @@ export default function QuizPage() {
             <div className="mt-5">
               <div className="text-sm font-bold text-slate-900">{t('quiz.problemQuestion')}</div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {PROBLEMS.map((p) => (
+                {problems.map((p) => (
                   <button
                     key={p}
                     type="button"
@@ -116,7 +150,7 @@ export default function QuizPage() {
             <div className="mt-5">
               <div className="text-sm font-bold text-slate-900">{t('quiz.typeQuestion')}</div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {AC_TYPES.map((p) => (
+                {acTypes.map((p) => (
                   <button
                     key={p}
                     type="button"
@@ -178,34 +212,55 @@ export default function QuizPage() {
                   <div className="font-bold text-slate-900">{t('quiz.summary')}</div>
                   <div className="mt-2">
                     <div>
-                      <span className="font-semibold">{t('quiz.problem')}:</span> {problem}
+                      <span className="font-semibold">{t('quiz.problem')}:</span>{' '}
+                      {displayLabel(problem, problems, 'problem', [...fallbacks.problems])}
                     </div>
                     <div>
-                      <span className="font-semibold">{t('quiz.type')}:</span> {acType}
+                      <span className="font-semibold">{t('quiz.type')}:</span>{' '}
+                      {displayLabel(acType, acTypes, 'acType', [...fallbacks.acTypes])}
                     </div>
                   </div>
                 </div>
 
                 {error ? <div className="text-sm text-red-600">{error}</div> : null}
-                {success ? <div className="text-sm text-emerald-700">{t('quiz.success')}</div> : null}
-
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={() => setStep(2)}
-                    className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-900 hover:bg-slate-50"
-                  >
-                    {t('actions.back')}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={!canSubmit || submitting}
-                    onClick={submit}
-                    className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
-                  >
-                    {submitting ? t('form.sending') : t('quiz.submit')}
-                  </button>
-                </div>
+                {success ? (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                    <p className="font-semibold">{t('quiz.success')}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSuccess(false);
+                        setStep(1);
+                        setProblem('');
+                        setAcType('');
+                        setName('');
+                        setPhone('');
+                        setError(null);
+                      }}
+                      className="mt-3 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
+                    >
+                      {t('quiz.reset')}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-900 hover:bg-slate-50"
+                    >
+                      {t('actions.back')}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!canSubmit || submitting}
+                      onClick={submit}
+                      className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+                    >
+                      {submitting ? t('form.sending') : t('quiz.submit')}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ) : null}

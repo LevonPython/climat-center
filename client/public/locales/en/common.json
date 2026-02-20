@@ -84,7 +84,21 @@
     "problem": "Problem",
     "type": "Type",
     "submit": "Send",
-    "success": "Thanks! We received your request."
+    "success": "Thanks! We received your request.",
+    "problems": ["Not cooling", "Water leaking", "Won't turn on", "Making noise", "Freezing up", "Bad smell"],
+    "problem0": "Not cooling",
+    "problem1": "Water leaking",
+    "problem2": "Won't turn on",
+    "problem3": "Making noise",
+    "problem4": "Freezing up",
+    "problem5": "Bad smell",
+    "acTypes": ["Wall-mounted", "Cassette", "Ducted", "Floor-ceiling", "Window", "Floor standing"],
+    "acType0": "Wall-mounted",
+    "acType1": "Cassette",
+    "acType2": "Ducted",
+    "acType3": "Floor-ceiling",
+    "acType4": "Window",
+    "acType5": "Floor standing"
   },
   "form": {
     "name": "Name",

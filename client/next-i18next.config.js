@@ -4,6 +4,7 @@ module.exports = {
     defaultLocale: 'ru',
     locales: ['ru', 'en', 'am']
   },
-  localePath: './public/locales'
+  localePath: './public/locales',
+  returnObjects: true
 };
 
