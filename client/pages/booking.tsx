@@ -26,7 +26,7 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successId, setSuccessId] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const [form, setForm] = useState<BookingPayload>({
     user_name: '',
@@ -63,7 +63,7 @@ export default function BookingPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setSuccessId(null);
+    setSuccess(false);
     if (!canSubmit) return;
 
     setSubmitting(true);
@@ -81,7 +81,7 @@ export default function BookingPage() {
         setError(resp.error?.message || t('errors.generic'));
         return;
       }
-      setSuccessId(resp.booking.id);
+      setSuccess(true);
       setForm({
         user_name: '',
         phone: '',
@@ -187,8 +187,8 @@ export default function BookingPage() {
             </label>
 
             {error ? <div className="text-sm text-red-600">{error}</div> : null}
-            {successId ? (
-              <div className="text-sm text-emerald-700">{t('booking.success', { id: successId })}</div>
+            {success ? (
+              <div className="text-sm text-emerald-700">{t('booking.success')}</div>
             ) : null}
 
             <button

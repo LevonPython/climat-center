@@ -96,7 +96,15 @@ You should see `climat_center` in the list.
    npm run migrate -w server
    ```
 
-4. Run apps in separate terminals:
+4. Seed initial data (creates default admin user and minimal content/services):
+   ```bash
+   npm run seed -w server
+   ```
+   Default admin credentials:
+   - username: `admin`
+   - password: `admin12345`
+
+5. Run apps in separate terminals:
    - API: `npm run dev -w server`
    - Public site: `npm run dev -w client`
    - Admin panel: `npm run dev -w admin`

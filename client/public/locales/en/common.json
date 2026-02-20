@@ -70,7 +70,7 @@
   "booking": {
     "title": "Leave a request",
     "subtitle": "Fill the form and we’ll call you back.",
-    "success": "Request sent. ID: {{id}}"
+    "success": "Request sent."
   },
   "quiz": {
     "title": "Quick quiz",
