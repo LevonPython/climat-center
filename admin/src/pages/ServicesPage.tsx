@@ -124,12 +124,15 @@ export function ServicesPage() {
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <label className="grid gap-1">
             <span className="text-sm font-semibold">Тип</span>
-            <input
+            <select
               value={draft.type}
               onChange={(e) => setDraft((d) => ({ ...d, type: e.target.value }))}
               className="rounded-xl border border-slate-200 px-3 py-2"
-              placeholder="repair / install / service ..."
-            />
+            >
+              <option value="install">install — Установка</option>
+              <option value="repair">repair — Ремонт</option>
+              <option value="service">service — Сервис</option>
+            </select>
           </label>
           <label className="grid gap-1">
             <span className="text-sm font-semibold">Цена (от)</span>

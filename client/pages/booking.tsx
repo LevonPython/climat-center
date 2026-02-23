@@ -17,9 +17,20 @@ type BookingPayload = {
   problem_description?: string | null;
 };
 
+function pickServiceTitle(svc: Service, lang: string) {
+  const title =
+    (lang === 'ru' ? svc.title_ru : lang === 'am' ? svc.title_am : svc.title_en) ||
+    svc.title_en ||
+    svc.title_ru ||
+    svc.title_am ||
+    svc.type;
+  return title || '—';
+}
+
 export default function BookingPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
+  const lang = router.locale || 'ru';
   const selectedServiceId = typeof router.query.serviceId === 'string' ? router.query.serviceId : '';
 
   const [services, setServices] = useState<Service[]>([]);
@@ -139,7 +150,7 @@ export default function BookingPage() {
                 <option value="">{t('form.serviceAny')}</option>
                 {services.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.title_ru || s.title_en || s.title_am || s.type}
+                    {pickServiceTitle(s, lang)}
                   </option>
                 ))}
               </select>

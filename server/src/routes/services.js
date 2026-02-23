@@ -8,7 +8,7 @@ const servicesRouter = express.Router();
 
 servicesRouter.get(
   '/',
-  queryValidator('type').optional().isString().trim().notEmpty(),
+  queryValidator('type').optional().isString().trim().notEmpty().toLowerCase().isIn(['install', 'repair', 'service']),
   queryValidator('includeInactive').optional().isBoolean().toBoolean(),
   async (req, res, next) => {
     try {
@@ -49,7 +49,7 @@ servicesRouter.post(
   '/',
   verifyToken,
   requireAnyRole(['admin', 'editor']),
-  body('type').isString().trim().notEmpty(),
+  body('type').isString().trim().notEmpty().toLowerCase().isIn(['install', 'repair', 'service']),
   body('title_en').optional({ nullable: true }).isString(),
   body('title_ru').optional({ nullable: true }).isString(),
   body('title_am').optional({ nullable: true }).isString(),
@@ -102,7 +102,7 @@ servicesRouter.put(
   verifyToken,
   requireAnyRole(['admin', 'editor']),
   param('id').isUUID(),
-  body('type').optional().isString().trim().notEmpty(),
+  body('type').optional().isString().trim().notEmpty().toLowerCase().isIn(['install', 'repair', 'service']),
   body('title_en').optional({ nullable: true }).isString(),
   body('title_ru').optional({ nullable: true }).isString(),
   body('title_am').optional({ nullable: true }).isString(),

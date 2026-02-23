@@ -65,7 +65,17 @@
   },
   "services": {
     "title": "Services",
-    "subtitle": "Pick a service and we’ll contact you."
+    "subtitle": "Pick a service and we’ll contact you.",
+    "card": {
+      "signUp": "Book",
+      "priceOnRequest": "Price on request",
+      "fromPrice": "from {{price}} ₽"
+    }
+  },
+  "serviceTypes": {
+    "install": "Install",
+    "repair": "Repair",
+    "service": "Service"
   },
   "booking": {
     "title": "Leave a request",

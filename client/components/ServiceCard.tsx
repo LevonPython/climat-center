@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
 
 export type Service = {
   id: string;
@@ -30,10 +31,14 @@ function pickLang(svc: Service, lang: string) {
 }
 
 export function ServiceCard(props: { service: Service; lang: string }) {
+  const { t } = useTranslation('common');
   const { title, description } = pickLang(props.service, props.lang);
+  const typeKey = (props.service.type || '').trim().toLowerCase();
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
-      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{props.service.type}</div>
+      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        {t(`serviceTypes.${typeKey}`, { defaultValue: props.service.type })}
+      </div>
       <div className="mt-2 text-lg font-bold text-slate-900">{title}</div>
       {description ? <div className="mt-2 text-sm text-slate-700">{description}</div> : null}
       <div className="mt-4 flex items-center justify-between gap-3">
@@ -41,12 +46,14 @@ export function ServiceCard(props: { service: Service; lang: string }) {
           href={{ pathname: '/booking', query: { serviceId: props.service.id } }}
           className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
         >
-          Записаться
+          {t('services.card.signUp')}
         </Link>
         {typeof props.service.price === 'number' ? (
-          <div className="text-sm font-semibold text-slate-900">от {props.service.price} ₽</div>
+          <div className="text-sm font-semibold text-slate-900">
+            {t('services.card.fromPrice', { price: props.service.price })}
+          </div>
         ) : (
-          <div className="text-xs text-slate-500">цена по запросу</div>
+          <div className="text-xs text-slate-500">{t('services.card.priceOnRequest')}</div>
         )}
       </div>
     </div>
