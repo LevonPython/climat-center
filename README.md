@@ -113,6 +113,52 @@ You should see `climat_center` in the list.
 
 The admin app manages **bookings**, **services**, **content**, and **users**. It does not currently include a screen for **quiz submissions**; quiz data is stored via the API and can be listed with `GET /api/quiz-submissions` (requires admin/editor auth). Public site translations (e.g. quiz options in EN/RU/AM) live in `client/public/locales/` and do not affect the admin UI.
 
+## Content model + static pages (SSG/ISR)
+
+The public site (`client/`) is **statically generated** where possible:
+
+- `/`, `/services`, `/about`, `/contacts` use `getStaticProps` (SSG).
+- `/booking` and `/quiz` stay dynamic (SSR) because they are transactional flows.
+
+Content for the main pages comes from the API / database:
+
+- `GET /api/content/:lang` (Express) reads from the `content_blocks` table and returns a nested object:
+  - `pages[page_name][section_name]`
+- Example blocks used by the public site:
+  - `pages.home.hero`
+  - `pages.about.page`
+  - `pages.contacts.page`
+  - `pages.global.contacts`
+  - `pages.global.social`
+
+### ISR (time-based refresh)
+
+The static pages that fetch DB-backed content use ISR with `revalidate: 60`, meaning after 60 seconds the next request can trigger regeneration.
+
+### On-demand revalidation (instant refresh on admin save)
+
+To avoid waiting for the ISR timer, the API triggers a secure Next.js endpoint after admin writes:
+
+- Next.js endpoint (Vercel / public site): `POST /api/revalidate?secret=...`
+  - Body: `{ "event": "content" }` or `{ "event": "services" }`
+  - Revalidates an allowlisted set of routes (including locale routes like `/en/...` and `/am/...`).
+- Express triggers it after successful DB writes, e.g. after `PUT /api/content`.
+
+This gives you static performance + near-instant content updates without redeploying the public site.
+
+### Required environment variables (production)
+
+**Public site (`client/`, Next.js)**:
+
+- `NEXT_PUBLIC_API_URL`: base URL of the Express API (e.g. `https://api.example.com`)
+- `REVALIDATE_SECRET`: shared secret used by `/api/revalidate`
+
+**API (`server/`, Express)**:
+
+- `DATABASE_URL`: Postgres connection string
+- `PUBLIC_SITE_URL`: base URL of the public site (e.g. `https://www.example.com`)
+- `REVALIDATE_SECRET`: same value as in the public site
+
 ## Testing
 
 - **Server** (requires `DATABASE_URL` in `server/.env`):

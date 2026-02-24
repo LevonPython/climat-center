@@ -3,6 +3,7 @@ const { body, param, validationResult } = require('express-validator');
 
 const { query, withClient } = require('../config/db');
 const { verifyToken, requireAnyRole } = require('../middleware/auth');
+const { triggerRevalidate } = require('../config/revalidateClient');
 
 const contentRouter = express.Router();
 
@@ -172,6 +173,8 @@ contentRouter.put(
       });
 
       if (!updated.ok) return res.status(updated.status).json(updated.body);
+      // Fire-and-forget: content pages are statically regenerated on the Next.js side.
+      triggerRevalidate('content');
       return res.json({ ok: true, content_block: updated.block });
     } catch (err) {
       return next(err);

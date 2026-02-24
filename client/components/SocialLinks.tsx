@@ -1,9 +1,9 @@
 import { useTranslation } from 'next-i18next';
 import React from 'react';
 
-type SocialPlatform = 'whatsapp' | 'telegram' | 'facebook' | 'instagram';
+export type SocialPlatform = 'whatsapp' | 'telegram' | 'facebook' | 'instagram';
 
-type SocialLink = {
+export type SocialLink = {
   id: SocialPlatform;
   href: string;
 };
@@ -81,16 +81,17 @@ function Icon(props: { platform: SocialPlatform; className?: string }) {
   );
 }
 
-export function SocialLinks(props: { variant?: 'icon' | 'labeled'; className?: string }) {
+export function SocialLinks(props: { variant?: 'icon' | 'labeled'; className?: string; links?: SocialLink[] }) {
   const { t } = useTranslation('common');
   const variant = props.variant || 'icon';
   const linkPadding = variant === 'labeled' ? 'px-3 py-2' : 'p-2';
   const iconSize = variant === 'labeled' ? 'h-5 w-5' : 'h-4 w-4';
+  const links = props.links && props.links.length > 0 ? props.links : SOCIAL_LINKS;
 
   return (
     <div className={props.className}>
       <div className={variant === 'labeled' ? 'flex flex-wrap gap-2' : 'flex items-center gap-1'}>
-        {SOCIAL_LINKS.map((s) => (
+        {links.map((s) => (
           <a
             key={s.id}
             href={s.href}
