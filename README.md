@@ -113,6 +113,16 @@ You should see `climat_center` in the list.
 
 The admin app manages **bookings**, **services**, **content**, and **users**. It does not currently include a screen for **quiz submissions**; quiz data is stored via the API and can be listed with `GET /api/quiz-submissions` (requires admin/editor auth). Public site translations (e.g. quiz options in EN/RU/AM) live in `client/public/locales/` and do not affect the admin UI.
 
+### Content editing (safe, schema-driven)
+
+The **Content** screen is designed to be safe for non-technical editors:
+
+- **Form-first UI**: content is edited via labeled inputs and grouped sections; keys are not editable.
+- **Language tabs**: multilingual fields are edited with RU/EN/AM tabs (stored in DB as `*_ru`, `*_en`, `*_am`).
+- **Validation**: the editor blocks saving when content violates the block schema (unknown keys, wrong value types).
+- **History + restore**: each save creates a version entry; you can load or restore previous versions from the UI.
+- **Advanced JSON mode**: an explicit, gated toggle that shows the raw `content_json` for power users. It still uses the same schema validation (unknown keys are rejected).
+
 ## Content model + static pages (SSG/ISR)
 
 The public site (`client/`) is **statically generated** where possible:

@@ -4,6 +4,7 @@ const { body, param, validationResult } = require('express-validator');
 const { query, withClient } = require('../config/db');
 const { verifyToken, requireAnyRole } = require('../middleware/auth');
 const { triggerRevalidate } = require('../config/revalidateClient');
+const { validateContentJson } = require('../contentSchemas/validate');
 
 const contentRouter = express.Router();
 
@@ -126,6 +127,31 @@ contentRouter.put(
       // Validate the "upsert by (page_name, section_name)" case BEFORE opening a transaction.
       if (!id && (!page_name || !section_name)) {
         return res.status(400).json({ ok: false, error: { message: 'Provide id or (page_name + section_name)' } });
+      }
+
+      // Determine the schema key (page_name/section_name) for validation.
+      let schemaPage = page_name;
+      let schemaSection = section_name;
+      if (id) {
+        const existing = await query('SELECT page_name, section_name FROM content_blocks WHERE id = $1', [id]);
+        if (existing.rowCount === 0) return res.status(404).json({ ok: false, error: { message: 'Not found' } });
+        schemaPage = existing.rows[0].page_name;
+        schemaSection = existing.rows[0].section_name;
+      }
+
+      const schemaCheck = validateContentJson(schemaPage, schemaSection, content_json);
+      if (!schemaCheck.ok) {
+        return res.status(400).json({
+          ok: false,
+          error: {
+            message: schemaCheck.message || 'Schema validation failed',
+            details: {
+              kind: schemaCheck.kind,
+              schema: `${schemaPage}/${schemaSection}`,
+              errors: schemaCheck.errors || []
+            }
+          }
+        });
       }
 
       const updated = await withClient(async (client) => {

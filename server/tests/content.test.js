@@ -72,6 +72,34 @@ if (!dbUrl) {
       expect(latest.content_json.title_ru).toBe('О компании (обновлено)');
       expect(latest.updated_by_username).toBe('admin');
     });
+
+    test('PUT /api/content rejects unknown keys and wrong types', async () => {
+      const unknownKeyRes = await request(app)
+        .put('/api/content')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          page_name: 'about',
+          section_name: 'page',
+          content_json: { title_ru: 'О компании', totally_unknown_key: 'nope' }
+        });
+
+      expect(unknownKeyRes.status).toBe(400);
+      expect(unknownKeyRes.body.ok).toBe(false);
+      expect(unknownKeyRes.body.error?.message).toMatch(/Schema validation failed/i);
+
+      const wrongTypeRes = await request(app)
+        .put('/api/content')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          page_name: 'about',
+          section_name: 'page',
+          content_json: { title_ru: 123 }
+        });
+
+      expect(wrongTypeRes.status).toBe(400);
+      expect(wrongTypeRes.body.ok).toBe(false);
+      expect(wrongTypeRes.body.error?.message).toMatch(/Schema validation failed/i);
+    });
   });
 }
 

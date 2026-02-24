@@ -102,5 +102,5 @@ function getBlockDef(page_name, section_name) {
   return INDEX.get(schemaKey(page_name, section_name)) || null;
 }
 
-module.exports = { getBlockDef, schemaKey };
+module.exports = { ALL_BLOCKS, getBlockDef, schemaKey };
 
