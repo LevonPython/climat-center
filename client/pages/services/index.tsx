@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
@@ -33,7 +33,7 @@ export default function ServicesPage(props: ServicesProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<ServicesProps> = async ({ locale }) => {
+export const getStaticProps: GetStaticProps<ServicesProps> = async ({ locale }) => {
   const lang = locale || 'ru';
   let services: Service[] = [];
 
@@ -48,7 +48,8 @@ export const getServerSideProps: GetServerSideProps<ServicesProps> = async ({ lo
     props: {
       ...(await serverSideTranslations(lang, ['common'])),
       services
-    }
+    },
+    revalidate: 60
   };
 };
 

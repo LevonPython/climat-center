@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import { Layout } from '../components/Layout';
@@ -55,7 +55,7 @@ export default function Home(props: HomeProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async ({ locale }) => {
+export const getStaticProps: GetStaticProps<HomeProps> = async ({ locale }) => {
   const lang = locale || 'ru';
 
   let heroTitle: string | undefined;
@@ -83,7 +83,8 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async ({ locale
       heroTitle: heroTitle ?? null,
       heroSubtitle: heroSubtitle ?? null,
       heroCta: heroCta ?? null
-    }
+    },
+    revalidate: 60
   };
 };
 
