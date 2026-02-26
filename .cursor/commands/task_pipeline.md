@@ -89,3 +89,14 @@ After all 3 phases complete, present a final summary to the user:
 - If any sub-agent fails or reports critical issues, **stop the pipeline** and report to the user.
 - If Phase 1 produces unclear results, do NOT proceed to Phase 2 — ask the user for guidance.
 - If tests keep failing in Phase 3 after multiple fix attempts, report the situation to the user rather than looping indefinitely.
+
+### DB/Seed Fallback (content-related failures)
+
+If a job fails due to missing/empty seeded content (common signals: admin Content page shows empty fields, `GET /api/content/blocks` returns 0 blocks, or seeded blocks exist but `content_json` is `{}` / missing keys), attempt **one** automatic recovery before stopping:
+
+```bash
+npm run migrate -w server
+npm run reset:content -w server
+```
+
+Then re-run the failed job once. If it still fails, stop and report to the user.
