@@ -1,0 +1,35 @@
+---
+description: Monorepo architecture and workspace conventions for climat-center
+alwaysApply: true
+---
+
+# Project Overview
+
+npm-workspaces monorepo: `server`, `client`, `admin`, `e2e`.
+
+| Workspace | Stack | Port |
+|-----------|-------|------|
+| `server` | Express 4 (CommonJS, plain JS) + PostgreSQL 16 via `pg` | 5000 |
+| `client` | Next.js 16, Pages Router, React 18, TypeScript | 3000 |
+| `admin` | Vite 6 + React 18 + react-router-dom 6, TypeScript | 5173 |
+| `e2e` | Playwright | — |
+
+## Commands
+
+- Install: `npm install` (root)
+- Dev: `npm run dev -w server`, `npm run dev -w client`, `npm run dev -w admin`
+- Test: `npm run test -w server`, `npm run test -w client`, `npm run test -w admin`
+- Migrate: `npm run migrate -w server`
+- Seed: `npm run seed -w server`
+
+## Multilingual
+
+Three locales: `ru` (default), `en`, `am`. Multilingual DB fields use `*_ru`, `*_en`, `*_am` suffixes. Client translations live in `client/public/locales/{ru,en,am}/common.json` via `next-i18next`.
+
+## API Response Contract
+
+All endpoints return `{ ok: true, ...data }` on success or `{ ok: false, error: { message, details? } }` on failure. Both `client/lib/api.ts` and `admin/src/api.ts` share this `ApiResponse<T>` type.
+
+## Content Model
+
+DB-backed content blocks (`content_blocks` table) are keyed by `(page_name, section_name)`. Content schemas are defined in **both** `server/src/contentSchemas/` (JS) and `admin/src/contentSchemas/` (TS) and must stay in sync.

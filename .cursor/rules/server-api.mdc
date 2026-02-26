@@ -1,0 +1,43 @@
+---
+description: Express API conventions (server workspace)
+globs: server/**/*.js
+alwaysApply: false
+---
+
+# Server / Express API
+
+## Language & Module System
+
+Plain JavaScript with CommonJS (`require`/`module.exports`). Do NOT use TypeScript or ESM in the server workspace.
+
+## Route Pattern
+
+Every route file exports a named router (`{ fooRouter }`). Mount under `/api/` in `app.js`.
+
+```js
+const fooRouter = express.Router();
+// ... handlers ...
+module.exports = { fooRouter };
+```
+
+## Request Validation
+
+Use `express-validator` (body/param/query) inline before handlers. Always call `validationResult(req)` at the top of the handler and return 400 early on failure.
+
+## Error Handling
+
+Pass errors to `next(err)`. The central `errorHandler` middleware formats them as `{ ok: false, error: { message, status } }`. Never send raw errors to the client.
+
+## Auth Middleware
+
+- `verifyToken` — extracts JWT from `Authorization: Bearer <token>`, sets `req.user { id, username, role }`.
+- `requireRole(role)` / `requireAnyRole([...roles])` — guards by role (`admin`, `editor`).
+- Public endpoints (e.g. `POST /api/bookings`, `GET /api/services`, `GET /api/content/:lang`) skip auth.
+
+## Database Access
+
+Import `{ query, withClient }` from `../config/db`. Use parameterized queries (`$1`, `$2`, ...) exclusively. Use `withClient` + `BEGIN`/`COMMIT`/`ROLLBACK` for transactions.
+
+## ISR Revalidation
+
+After content or services writes, call `triggerRevalidate('content')` or `triggerRevalidate('services')` (fire-and-forget) to refresh the Next.js static pages.

@@ -1,0 +1,31 @@
+---
+description: PostgreSQL and migration conventions
+globs: server/migrations/**/*.sql, server/scripts/*.js
+alwaysApply: false
+---
+
+# Database
+
+## Engine
+
+PostgreSQL 16. Connection via `pg.Pool` with `DATABASE_URL` env var.
+
+## Naming
+
+- Tables: `snake_case` plural (`bookings`, `services`, `content_blocks`, `users`)
+- Columns: `snake_case` (`user_name`, `created_at`, `is_active`)
+- Primary keys: `id UUID DEFAULT gen_random_uuid()`
+- Timestamps: `created_at TIMESTAMPTZ DEFAULT now()`, `updated_at TIMESTAMPTZ DEFAULT now()`
+- Multilingual columns: `title_ru`, `title_en`, `title_am` pattern
+
+## Migrations
+
+Plain SQL files in `server/migrations/`, sorted by filename (prefix with `NNN_`). Tracked via `_migrations` table. Run with `npm run migrate -w server`. Each migration runs inside a single transaction.
+
+## Queries
+
+No ORM. Raw parameterized SQL via `query(text, params)`. Build dynamic WHERE clauses with positional `$N` params. Never concatenate user input into SQL strings.
+
+## Soft Deletes
+
+Services use soft-delete (`is_active = FALSE`). Bookings use status-based lifecycle (`new` -> `in_progress` -> `completed`/`cancelled`).

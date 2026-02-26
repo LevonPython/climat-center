@@ -1,0 +1,1 @@
+Your job is to merge a already opened PR, deleting the branch locally. Always use the GitHub CLI. Submit PR merge.

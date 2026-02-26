@@ -1,0 +1,35 @@
+---
+description: Admin panel conventions (Vite + React + TanStack Query)
+globs: admin/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Admin Panel
+
+## Stack
+
+Vite 6 + React 18 + TypeScript. Routing via `react-router-dom` v6 (`<Routes>/<Route>`). Data fetching via `@tanstack/react-query` v5.
+
+## Auth
+
+JWT stored in `localStorage` (`cc_admin_token`). Helpers in `admin/src/auth.ts`: `getToken()`, `setToken()`, `clearToken()`. The `<Private>` wrapper redirects to `/login` if no token. `apiFetch` in `admin/src/api.ts` auto-attaches `Authorization: Bearer` header.
+
+## API Client
+
+`apiFetch<T>(path, init?)` from `../api`. Prepends `VITE_API_URL`. For `FormData` bodies (file uploads), omit `Content-Type` so the browser sets multipart boundary.
+
+## Page Structure
+
+Pages live in `admin/src/pages/`. Each page is a self-contained component using `useQuery`/`useMutation` from TanStack Query. After mutations, invalidate the related query key.
+
+```tsx
+const qc = useQueryClient();
+saveM = useMutation({
+  mutationFn: ...,
+  onSuccess: () => qc.invalidateQueries({ queryKey: ['...'] })
+});
+```
+
+## Content Editing
+
+Content schemas are defined in `admin/src/contentSchemas/registry.ts`. The `ContentPage` uses schema-driven form rendering with language tabs (ru/en/am), version history, and an optional advanced JSON mode.

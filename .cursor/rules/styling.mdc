@@ -1,0 +1,30 @@
+---
+description: Tailwind CSS styling conventions
+globs: "**/*.tsx, **/*.css"
+alwaysApply: false
+---
+
+# Styling
+
+## Tailwind CSS 3
+
+Both `client` and `admin` use Tailwind CSS 3 with PostCSS + autoprefixer. No CSS-in-JS, no CSS modules, no component library (MUI, Shadcn, etc.). Styles are pure Tailwind utility classes.
+
+## Design Tokens
+
+- Border radius: `rounded-2xl` (cards/sections), `rounded-xl` (buttons/inputs)
+- Color palette: `slate-*` scale (`bg-slate-900`, `text-slate-700`, `border-slate-200`)
+- Max width: `max-w-6xl mx-auto` for content containers
+- Spacing: `p-4`/`p-5` for cards, `px-4 py-8` for page content
+
+## Component Patterns
+
+- Cards: `rounded-2xl border border-slate-200 bg-white p-4/p-6`
+- Primary buttons: `rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white`
+- Secondary buttons: `rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold`
+- Disabled state: `disabled:opacity-60`
+- Active nav: `bg-slate-900 text-white` vs `text-slate-700 hover:bg-slate-50`
+
+## Responsive
+
+Mobile-first. Use `md:` and `lg:` breakpoints. Grid layouts: `grid gap-4 md:grid-cols-3`, sidebar: `lg:grid-cols-[260px_1fr]`.

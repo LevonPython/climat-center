@@ -1,0 +1,36 @@
+---
+description: Next.js public site conventions (client workspace)
+globs: client/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Client / Next.js Public Site
+
+## Routing
+
+Pages Router (`client/pages/`). Do NOT use App Router. Static pages use `getStaticProps` with `revalidate: 60` (ISR). Transactional pages (`/booking`, `/quiz`) use SSR.
+
+## i18n
+
+`next-i18next` with `serverSideTranslations`. Default locale: `ru`, available: `['ru', 'en', 'am']`. Always include `serverSideTranslations(locale, ['common'])` in `getStaticProps`/`getServerSideProps`.
+
+```tsx
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { useTranslation } from 'next-i18next';
+```
+
+## Layout
+
+Wrap page content with `<Layout title={...}>`. Layout includes `<Header />` and `<Footer />`.
+
+## API Calls
+
+Use `apiFetch<T>(path, init?)` from `../lib/api`. It prepends `NEXT_PUBLIC_API_URL` and returns `ApiResponse<T>`. In `getStaticProps`, wrap in try/catch so the build succeeds when the API is offline.
+
+## Components
+
+Functional components in `client/components/`. TypeScript, explicit prop types. No state management library — keep state local or fetch in `getStaticProps`.
+
+## DB Content Fallback
+
+Pages fetch content from `GET /api/content/:lang` at build time. If a field is missing, fall back to the i18n translation key (`t('...')`).

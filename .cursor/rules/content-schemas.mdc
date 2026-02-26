@@ -1,0 +1,38 @@
+---
+description: Content block schema sync between server and admin
+globs: server/src/contentSchemas/**/*.js, admin/src/contentSchemas/**/*.ts
+alwaysApply: false
+---
+
+# Content Block Schemas
+
+## Dual Registry
+
+Schemas are defined in **two places** that must stay in sync:
+
+- `server/src/contentSchemas/registry.js` — used for server-side AJV validation
+- `admin/src/contentSchemas/registry.ts` — used for form rendering + client-side validation
+
+When adding or modifying a content block, update BOTH files.
+
+## Block Definition
+
+Each block is keyed by `(page_name, section_name)`. Fields declare:
+- `key` — storage key
+- `multilingual: true` — expands to `key_ru`, `key_en`, `key_am`
+- `required` — marks field as required in the JSON schema
+
+The server registry builds a JSON Schema with `additionalProperties: false` (unknown keys are rejected).
+
+## Admin UI Extensions
+
+The admin registry adds UI metadata not present in the server:
+- `label`, `kind` (`string`|`text`|`url`|`email`|`phone`), `help`
+- `groups` — visual groupings for the form editor
+- `title`, `description` — block-level display info
+
+## Validation Flow
+
+1. Admin form validates draft locally via `validateDraft()`
+2. On save, server validates `content_json` via AJV against its registry
+3. Both reject unknown keys, ensuring schema safety
