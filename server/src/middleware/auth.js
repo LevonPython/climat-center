@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const { query } = require('../config/db');
 
-function verifyToken(req, res, next) {
+async function verifyToken(req, res, next) {
   const header = req.headers.authorization || '';
   const [, token] = header.split(' ');
 
@@ -13,11 +14,19 @@ function verifyToken(req, res, next) {
     if (!secret) throw new Error('JWT_SECRET is required');
 
     const payload = jwt.verify(token, secret);
-    req.user = {
-      id: payload.sub,
-      username: payload.username,
-      role: payload.role
-    };
+
+    const userId = payload?.sub;
+    if (!userId || typeof userId !== 'string') {
+      return res.status(401).json({ ok: false, error: { message: 'Invalid token' } });
+    }
+
+    const result = await query('SELECT id, username, role FROM users WHERE id = $1', [userId]);
+    if (result.rowCount === 0) {
+      // Token might be structurally valid but refers to a deleted/reseeded user.
+      return res.status(401).json({ ok: false, error: { message: 'Invalid token' } });
+    }
+
+    req.user = result.rows[0];
     return next();
   } catch (e) {
     return res.status(401).json({ ok: false, error: { message: 'Invalid token' } });
