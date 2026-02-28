@@ -2,6 +2,7 @@ const express = require('express');
 const { body, param, query: queryValidator, validationResult } = require('express-validator');
 
 const { query } = require('../config/db');
+const { triggerRevalidate } = require('../config/revalidateClient');
 const { verifyToken, requireAnyRole } = require('../middleware/auth');
 
 const servicesRouter = express.Router();
@@ -90,6 +91,8 @@ servicesRouter.post(
         [type, title_en, title_ru, title_am, description_en, description_ru, description_am, price, image_url, is_active]
       );
 
+      // Fire-and-forget: services page is statically regenerated on the Next.js side.
+      triggerRevalidate('services');
       return res.status(201).json({ ok: true, service: result.rows[0] });
     } catch (err) {
       return next(err);
@@ -147,6 +150,8 @@ servicesRouter.put(
       );
 
       if (result.rowCount === 0) return res.status(404).json({ ok: false, error: { message: 'Not found' } });
+      // Fire-and-forget: services page is statically regenerated on the Next.js side.
+      triggerRevalidate('services');
       return res.json({ ok: true, service: result.rows[0] });
     } catch (err) {
       return next(err);
@@ -170,6 +175,8 @@ servicesRouter.delete(
       const { id } = req.params;
       const result = await query('UPDATE services SET is_active = FALSE WHERE id = $1 RETURNING *', [id]);
       if (result.rowCount === 0) return res.status(404).json({ ok: false, error: { message: 'Not found' } });
+      // Fire-and-forget: services page is statically regenerated on the Next.js side.
+      triggerRevalidate('services');
       return res.json({ ok: true, service: result.rows[0] });
     } catch (err) {
       return next(err);

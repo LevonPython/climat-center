@@ -62,6 +62,20 @@ export function ServicesPage() {
     }
   });
 
+  const activateM = useMutation({
+    mutationFn: async (id: string) => {
+      const resp = await apiFetch<{ service: Service }>(`/api/services/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ is_active: true })
+      });
+      if (!resp.ok) throw new Error(resp.error?.message || 'Failed to activate');
+      return resp.service;
+    },
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['services'] });
+    }
+  });
+
   const rows = useMemo(() => servicesQ.data || [], [servicesQ.data]);
 
   async function uploadImage(file: File) {
@@ -246,14 +260,25 @@ export function ServicesPage() {
                   >
                     Редактировать
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => deleteM.mutate(s.id)}
-                    className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
-                    disabled={deleteM.isPending}
-                  >
-                    Скрыть
-                  </button>
+                  {s.is_active ? (
+                    <button
+                      type="button"
+                      onClick={() => deleteM.mutate(s.id)}
+                      className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
+                      disabled={deleteM.isPending}
+                    >
+                      Скрыть
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => activateM.mutate(s.id)}
+                      className="rounded-xl border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 disabled:opacity-60"
+                      disabled={activateM.isPending}
+                    >
+                      Показать
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
