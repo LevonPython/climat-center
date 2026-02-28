@@ -55,6 +55,7 @@ describe('ServicesPage actions', () => {
 
     expect(screen.getByRole('button', { name: 'Скрыть' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Показать' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Удалить' })).toHaveLength(2);
   });
 
   test('clicking “Показать” calls PUT /api/services/:id with { is_active: true }', async () => {
@@ -87,6 +88,45 @@ describe('ServicesPage actions', () => {
     const putCall = apiFetchMock.mock.calls.find((c) => c[0] === '/api/services/b' && c[1]?.method === 'PUT');
     expect(putCall).toBeTruthy();
     expect(putCall?.[1]?.body).toBe(JSON.stringify({ is_active: true }));
+  });
+
+  test('does not allow saving when all titles are empty', async () => {
+    apiFetchMock.mockResolvedValueOnce({ ok: true, services: [] });
+    renderWithQueryClient(<ServicesPage />);
+
+    const saveBtn = await screen.findByRole('button', { name: 'Сохранить' });
+    fireEvent.click(saveBtn);
+
+    expect(apiFetchMock).toHaveBeenCalledTimes(1); // only initial GET list
+    expect(screen.getByText('Укажите название хотя бы на одном языке.')).toBeInTheDocument();
+  });
+
+  test('clicking “Удалить” calls DELETE /api/services/:id/permanent after confirm', async () => {
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+    apiFetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        services: [makeService({ id: 'a', title_ru: 'Активная', is_active: true })]
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        service: makeService({ id: 'a', title_ru: 'Активная', is_active: true })
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        services: []
+      });
+
+    renderWithQueryClient(<ServicesPage />);
+
+    const delBtn = await screen.findByRole('button', { name: 'Удалить' });
+    fireEvent.click(delBtn);
+
+    await waitFor(() => {
+      expect(apiFetchMock).toHaveBeenCalledWith('/api/services/a/permanent', expect.objectContaining({ method: 'DELETE' }));
+    });
+
+    confirmSpy.mockRestore();
   });
 });
 

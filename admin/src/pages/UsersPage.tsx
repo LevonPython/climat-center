@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { apiFetch } from '../api';
 
 type UserRow = {
@@ -10,6 +11,7 @@ type UserRow = {
 };
 
 export function UsersPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -52,7 +54,7 @@ export function UsersPage() {
     }
   });
 
-  if (usersQ.isLoading) return <div className="text-sm text-slate-600">Загрузка...</div>;
+  if (usersQ.isLoading) return <div className="text-sm text-slate-600">{t('common.loading')}</div>;
   if (usersQ.isError) return <div className="text-sm text-red-600">{String(usersQ.error)}</div>;
 
   const users = usersQ.data || [];
@@ -60,10 +62,10 @@ export function UsersPage() {
   return (
     <div className="grid gap-4">
       <div className="rounded-2xl border border-slate-200 bg-white p-5">
-        <div className="font-extrabold">Добавить пользователя</div>
+        <div className="font-extrabold">{t('users.addUser')}</div>
         <div className="mt-4 grid gap-4 md:grid-cols-4">
           <label className="grid gap-1 md:col-span-1">
-            <span className="text-sm font-semibold">Логин</span>
+            <span className="text-sm font-semibold">{t('users.username')}</span>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -71,7 +73,7 @@ export function UsersPage() {
             />
           </label>
           <label className="grid gap-1 md:col-span-1">
-            <span className="text-sm font-semibold">Пароль</span>
+            <span className="text-sm font-semibold">{t('users.password')}</span>
             <input
               type="password"
               value={password}
@@ -80,7 +82,7 @@ export function UsersPage() {
             />
           </label>
           <label className="grid gap-1 md:col-span-1">
-            <span className="text-sm font-semibold">Роль</span>
+            <span className="text-sm font-semibold">{t('users.role')}</span>
             <select
               className="rounded-xl border border-slate-200 bg-white px-3 py-2"
               value={role}
@@ -97,22 +99,22 @@ export function UsersPage() {
               disabled={createM.isPending || username.trim().length === 0 || password.length < 8}
               className="w-full rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-60"
             >
-              {createM.isPending ? 'Создаём...' : 'Создать'}
+              {createM.isPending ? t('users.creating') : t('users.create')}
             </button>
           </div>
         </div>
         {createM.isError ? <div className="mt-3 text-sm text-red-600">{String(createM.error)}</div> : null}
-        <div className="mt-2 text-xs text-slate-600">Пароль минимум 8 символов.</div>
+        <div className="mt-2 text-xs text-slate-600">{t('users.passwordHint')}</div>
       </div>
 
       <div className="overflow-auto rounded-2xl border border-slate-200 bg-white">
         <table className="min-w-[700px] w-full text-sm">
           <thead className="bg-slate-50 text-slate-700">
             <tr>
-              <th className="text-left font-semibold px-4 py-3">Логин</th>
-              <th className="text-left font-semibold px-4 py-3">Роль</th>
-              <th className="text-left font-semibold px-4 py-3">Создан</th>
-              <th className="text-left font-semibold px-4 py-3">Действия</th>
+              <th className="text-left font-semibold px-4 py-3">{t('users.username')}</th>
+              <th className="text-left font-semibold px-4 py-3">{t('users.role')}</th>
+              <th className="text-left font-semibold px-4 py-3">{t('users.created')}</th>
+              <th className="text-left font-semibold px-4 py-3">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -128,7 +130,7 @@ export function UsersPage() {
                     disabled={deleteM.isPending}
                     className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
                   >
-                    Удалить
+                    {t('users.delete')}
                   </button>
                 </td>
               </tr>
@@ -136,7 +138,7 @@ export function UsersPage() {
             {users.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-4 py-10 text-center text-slate-600">
-                  Нет пользователей
+                  {t('users.empty')}
                 </td>
               </tr>
             ) : null}

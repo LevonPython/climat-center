@@ -1,9 +1,12 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { apiFetch } from '../api';
 import { setToken } from '../auth';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export function LoginPage() {
+  const { t } = useTranslation();
   const nav = useNavigate();
   const location = useLocation() as any;
   const from = location.state?.from || '/';
@@ -23,27 +26,30 @@ export function LoginPage() {
         body: JSON.stringify({ username, password })
       });
       if (!resp.ok) {
-        setError(resp.error?.message || 'Ошибка входа');
+        setError(resp.error?.message || t('login.error'));
         return;
       }
       setToken(resp.token);
       nav(from, { replace: true });
     } catch {
-      setError('Ошибка входа');
+      setError(t('login.error'));
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="min-h-screen grid place-items-center p-5">
+    <div className="min-h-screen grid place-items-center p-5 relative">
+      <div className="absolute top-5 right-5">
+        <LanguageSwitcher />
+      </div>
       <form onSubmit={onSubmit} className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6">
-        <div className="text-xl font-extrabold">Вход</div>
-        <div className="mt-1 text-sm text-slate-600">Admin панель</div>
+        <div className="text-xl font-extrabold">{t('login.title')}</div>
+        <div className="mt-1 text-sm text-slate-600">{t('login.subtitle')}</div>
 
         <div className="mt-5 grid gap-4">
           <label className="grid gap-1">
-            <span className="text-sm font-semibold">Логин</span>
+            <span className="text-sm font-semibold">{t('login.username')}</span>
             <input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -52,7 +58,7 @@ export function LoginPage() {
             />
           </label>
           <label className="grid gap-1">
-            <span className="text-sm font-semibold">Пароль</span>
+            <span className="text-sm font-semibold">{t('login.password')}</span>
             <input
               type="password"
               value={password}
@@ -69,7 +75,7 @@ export function LoginPage() {
             disabled={submitting}
             className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-60"
           >
-            {submitting ? 'Входим...' : 'Войти'}
+            {submitting ? t('login.submitting') : t('login.submit')}
           </button>
         </div>
       </form>
