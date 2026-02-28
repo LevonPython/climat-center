@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { apiFetch } from '../api';
 import { getBlockDef, type Lang } from '../contentSchemas/registry';
 import { canonicalizeObject, isObjectRecord, makeEmptyDraft, setFieldValue, validateDraft } from '../contentSchemas/utils';
@@ -22,6 +23,7 @@ type ContentBlockVersion = {
 };
 
 export function ContentPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [selectedId, setSelectedId] = useState<string>('');
   const [lang, setLang] = useState<Lang>('ru');
@@ -86,7 +88,7 @@ export function ContentPage() {
 
   function pickBlock(id: string) {
     if (isDirty) {
-      const ok = window.confirm('Есть несохранённые изменения. Переключиться и потерять их?');
+      const ok = window.confirm(t('content.confirmSwitchBlock'));
       if (!ok) return;
     }
     setSelectedId(id);
@@ -106,11 +108,11 @@ export function ContentPage() {
     setUiError(null);
     if (!selected || !def) return;
     if (mode === 'json' && jsonParseError) {
-      setUiError('Некорректный JSON');
+      setUiError(t('content.invalidJson'));
       return;
     }
     if (issues.length) {
-      setUiError('Исправьте ошибки перед сохранением');
+      setUiError(t('content.fixErrors'));
       return;
     }
     saveM.mutate(
@@ -129,7 +131,7 @@ export function ContentPage() {
   function resetToSaved() {
     if (!selected) return;
     if (isDirty) {
-      const ok = window.confirm('Сбросить изменения и вернуть последнюю сохранённую версию?');
+      const ok = window.confirm(t('content.confirmReset'));
       if (!ok) return;
     }
     if (!def) {
@@ -145,7 +147,7 @@ export function ContentPage() {
   function loadVersion(v: ContentBlockVersion) {
     if (!def) return;
     if (isDirty) {
-      const ok = window.confirm('Есть несохранённые изменения. Загрузить версию и потерять их?');
+      const ok = window.confirm(t('content.confirmLoadVersion'));
       if (!ok) return;
     }
     const content = isObjectRecord(v.content_json) ? canonicalizeObject(v.content_json) : {};
@@ -161,10 +163,10 @@ export function ContentPage() {
     const content = isObjectRecord(v.content_json) ? canonicalizeObject(v.content_json) : {};
     const versionIssues = validateDraft(def, content);
     if (versionIssues.length) {
-      setUiError('Нельзя восстановить: версия не проходит проверку схемы');
+      setUiError(t('content.restoreSchemaError'));
       return;
     }
-    const ok = window.confirm('Восстановить эту версию? Это перезапишет текущий контент.');
+    const ok = window.confirm(t('content.confirmRestore'));
     if (!ok) return;
 
     saveM.mutate(
@@ -191,7 +193,7 @@ export function ContentPage() {
     }
     if (!advancedConfirmed) {
       const ok = window.confirm(
-        'Advanced JSON режим предназначен для опытных пользователей. Неверные ключи/типы будут заблокированы схемой. Продолжить?'
+        t('content.confirmAdvancedJson')
       );
       if (!ok) return;
       setAdvancedConfirmed(true);
@@ -208,14 +210,14 @@ export function ContentPage() {
     try {
       const parsed = JSON.parse(jsonText);
       if (!isObjectRecord(parsed)) {
-        setJsonParseError('JSON должен быть объектом');
+        setJsonParseError(t('content.jsonMustBeObject'));
         return;
       }
       setJsonParseError(null);
       const normalized = canonicalizeObject(parsed);
       setDraft({ ...makeEmptyDraft(def), ...normalized });
     } catch {
-      setJsonParseError('Некорректный JSON');
+      setJsonParseError(t('content.invalidJson'));
     }
   }, [mode, jsonText, selected?.id, def?.schemaKey]);
 
@@ -229,13 +231,13 @@ export function ContentPage() {
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, [isDirty]);
 
-  if (blocksQ.isLoading) return <div className="text-sm text-slate-600">Загрузка...</div>;
+  if (blocksQ.isLoading) return <div className="text-sm text-slate-600">{t('common.loading')}</div>;
   if (blocksQ.isError) return <div className="text-sm text-red-600">{String(blocksQ.error)}</div>;
 
   return (
     <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
-        <div className="text-sm font-extrabold">Блоки</div>
+        <div className="text-sm font-extrabold">{t('content.blocks')}</div>
         <div className="mt-3 grid gap-1">
           {blocks.map((b) => (
             <button
@@ -251,15 +253,15 @@ export function ContentPage() {
               <div>{b.section_name}</div>
             </button>
           ))}
-          {blocks.length === 0 ? <div className="text-sm text-slate-600">Нет блоков</div> : null}
+          {blocks.length === 0 ? <div className="text-sm text-slate-600">{t('content.noBlocks')}</div> : null}
         </div>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
         <div className="flex items-center justify-between gap-3">
-          <div className="text-sm font-extrabold">Редактор</div>
+          <div className="text-sm font-extrabold">{t('content.editor')}</div>
           <div className="flex items-center gap-2">
-            {isDirty ? <div className="text-xs font-bold text-amber-700">Несохранено</div> : null}
+            {isDirty ? <div className="text-xs font-bold text-amber-700">{t('content.unsaved')}</div> : null}
             {selected ? (
               <button
                 type="button"
@@ -267,7 +269,7 @@ export function ContentPage() {
                 className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold text-slate-900 hover:bg-slate-50"
                 disabled={versionsQ.isLoading}
               >
-                {versionsQ.isLoading ? 'История…' : 'История'}
+                {versionsQ.isLoading ? t('content.historyLoading') : t('content.history')}
               </button>
             ) : null}
             {selected && def ? (
@@ -276,7 +278,7 @@ export function ContentPage() {
                 onClick={toggleAdvancedJson}
                 className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold text-slate-900 hover:bg-slate-50"
               >
-                {mode === 'json' ? 'Форма' : 'Advanced JSON'}
+                {mode === 'json' ? t('content.form') : t('content.advancedJson')}
               </button>
             ) : null}
             <button
@@ -285,7 +287,7 @@ export function ContentPage() {
               disabled={!selected || saveM.isPending || !isDirty}
               className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold text-slate-900 hover:bg-slate-50 disabled:opacity-60"
             >
-              Сбросить
+              {t('content.reset')}
             </button>
             <button
               type="button"
@@ -293,7 +295,7 @@ export function ContentPage() {
               disabled={!canSave}
               className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-60"
             >
-              {saveM.isPending ? 'Сохраняем...' : 'Сохранить'}
+              {saveM.isPending ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </div>
@@ -302,7 +304,7 @@ export function ContentPage() {
             {selected.page_name} / {selected.section_name}
           </div>
         ) : (
-          <div className="mt-2 text-sm text-slate-600">Выберите блок слева</div>
+          <div className="mt-2 text-sm text-slate-600">{t('content.selectBlock')}</div>
         )}
 
         {selected ? (
@@ -311,20 +313,20 @@ export function ContentPage() {
               {showHistory ? (
                 <div className="mb-4 rounded-2xl border border-slate-200 p-4">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="text-sm font-extrabold text-slate-900">История изменений</div>
+                    <div className="text-sm font-extrabold text-slate-900">{t('content.historyTitle')}</div>
                     <button
                       type="button"
                       onClick={() => setShowHistory(false)}
                       className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold hover:bg-slate-50"
                     >
-                      Закрыть
+                      {t('content.close')}
                     </button>
                   </div>
                   {versionsQ.isError ? (
                     <div className="mt-3 text-sm text-red-600">{String(versionsQ.error)}</div>
                   ) : null}
                   {!versionsQ.data?.length && !versionsQ.isLoading ? (
-                    <div className="mt-3 text-sm text-slate-600">Нет версий</div>
+                    <div className="mt-3 text-sm text-slate-600">{t('content.noVersions')}</div>
                   ) : null}
                   {versionsQ.data?.length ? (
                     <div className="mt-3 grid gap-2 max-h-[260px] overflow-auto pr-1">
@@ -344,8 +346,8 @@ export function ContentPage() {
                               <div>
                                 <div className="text-xs font-bold text-slate-900">{ts}</div>
                                 <div className="text-xs text-slate-600">
-                                  {v.updated_by_username || 'Unknown user'}
-                                  {versionIssues.length ? <span className="ml-2 font-bold text-red-700">Не проходит схему</span> : null}
+                                  {v.updated_by_username || t('content.unknownUser')}
+                                  {versionIssues.length ? <span className="ml-2 font-bold text-red-700">{t('content.schemaMismatch')}</span> : null}
                                 </div>
                               </div>
                               <div className="flex items-center gap-2">
@@ -354,7 +356,7 @@ export function ContentPage() {
                                   onClick={() => loadVersion(v)}
                                   className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold hover:bg-slate-50"
                                 >
-                                  Загрузить
+                                  {t('content.load')}
                                 </button>
                                 <button
                                   type="button"
@@ -362,7 +364,7 @@ export function ContentPage() {
                                   disabled={versionIssues.length > 0 || saveM.isPending}
                                   className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white hover:bg-slate-800 disabled:opacity-60"
                                 >
-                                  Восстановить
+                                  {t('content.restore')}
                                 </button>
                               </div>
                             </div>
@@ -377,8 +379,7 @@ export function ContentPage() {
               {mode === 'json' ? (
                 <div className="grid gap-3">
                   <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                    Advanced JSON режим показывает «сырой» JSON, который будет сохранён в базе. Ключи и типы проверяются схемой; неизвестные ключи будут
-                    отклонены.
+                    {t('content.advancedJsonWarning')}
                   </div>
                   <textarea
                     className="min-h-[420px] w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 font-mono text-xs outline-none focus:ring-2 focus:ring-slate-300"
@@ -453,7 +454,7 @@ export function ContentPage() {
 
               {issues.length ? (
                 <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
-                  <div className="text-sm font-extrabold text-red-800">Ошибки</div>
+                  <div className="text-sm font-extrabold text-red-800">{t('content.errors')}</div>
                   <ul className="mt-2 grid gap-1 text-xs text-red-800">
                     {issues.slice(0, 10).map((i) => (
                       <li key={`${i.path}:${i.message}`}>
@@ -467,9 +468,9 @@ export function ContentPage() {
             </div>
           ) : (
             <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
-              <div className="text-sm font-extrabold text-amber-900">Для этого блока нет схемы</div>
+              <div className="text-sm font-extrabold text-amber-900">{t('content.noSchema')}</div>
               <div className="mt-2 text-sm text-amber-900/90">
-                Редактирование отключено, чтобы избежать поломок. Добавьте схему для{' '}
+                {t('content.noSchemaHint')}{' '}
                 <span className="font-mono">
                   {selected.page_name}/{selected.section_name}
                 </span>

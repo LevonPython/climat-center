@@ -51,9 +51,15 @@ servicesRouter.post(
   verifyToken,
   requireAnyRole(['admin', 'editor']),
   body('type').isString().trim().notEmpty().toLowerCase().isIn(['install', 'repair', 'service']),
-  body('title_en').optional({ nullable: true }).isString(),
-  body('title_ru').optional({ nullable: true }).isString(),
-  body('title_am').optional({ nullable: true }).isString(),
+  body('title_en').optional({ nullable: true }).isString().trim(),
+  body('title_ru').optional({ nullable: true }).isString().trim(),
+  body('title_am').optional({ nullable: true }).isString().trim(),
+  body().custom((_, { req }) => {
+    const titles = [req.body.title_ru, req.body.title_en, req.body.title_am];
+    const hasAnyTitle = titles.some((v) => typeof v === 'string' && v.trim().length > 0);
+    if (!hasAnyTitle) throw new Error('At least one title is required');
+    return true;
+  }),
   body('description_en').optional({ nullable: true }).isString(),
   body('description_ru').optional({ nullable: true }).isString(),
   body('description_am').optional({ nullable: true }).isString(),
@@ -69,9 +75,9 @@ servicesRouter.post(
 
       const {
         type,
-        title_en,
-        title_ru,
-        title_am,
+        title_en: titleEnRaw,
+        title_ru: titleRuRaw,
+        title_am: titleAmRaw,
         description_en,
         description_ru,
         description_am,
@@ -79,6 +85,10 @@ servicesRouter.post(
         image_url,
         is_active
       } = req.body;
+
+      const title_en = typeof titleEnRaw === 'string' ? titleEnRaw.trim() || null : titleEnRaw;
+      const title_ru = typeof titleRuRaw === 'string' ? titleRuRaw.trim() || null : titleRuRaw;
+      const title_am = typeof titleAmRaw === 'string' ? titleAmRaw.trim() || null : titleAmRaw;
 
       const result = await query(
         `
@@ -176,6 +186,30 @@ servicesRouter.delete(
       const result = await query('UPDATE services SET is_active = FALSE WHERE id = $1 RETURNING *', [id]);
       if (result.rowCount === 0) return res.status(404).json({ ok: false, error: { message: 'Not found' } });
       // Fire-and-forget: services page is statically regenerated on the Next.js side.
+      triggerRevalidate('services');
+      return res.json({ ok: true, service: result.rows[0] });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+// Permanent delete (hard delete).
+servicesRouter.delete(
+  '/:id/permanent',
+  verifyToken,
+  requireAnyRole(['admin']),
+  param('id').isUUID(),
+  async (req, res, next) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ ok: false, error: { message: 'Invalid id', details: errors.array() } });
+      }
+
+      const { id } = req.params;
+      const result = await query('DELETE FROM services WHERE id = $1 RETURNING *', [id]);
+      if (result.rowCount === 0) return res.status(404).json({ ok: false, error: { message: 'Not found' } });
       triggerRevalidate('services');
       return res.json({ ok: true, service: result.rows[0] });
     } catch (err) {

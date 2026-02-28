@@ -1,6 +1,7 @@
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { clearToken, getToken } from './auth';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { LoginPage } from './pages/LoginPage';
 import { BookingsPage } from './pages/BookingsPage';
 import { ServicesPage } from './pages/ServicesPage';
@@ -14,23 +15,24 @@ function Private({ children }: { children: JSX.Element }) {
   return children;
 }
 
-function Shell(props: { children: JSX.Element; title: string }) {
+function Shell(props: { children: JSX.Element; titleKey: string }) {
+  const { t } = useTranslation();
   const nav = useNavigate();
   const location = useLocation();
-  const items = useMemo(
-    () => [
-      { to: '/', label: 'Заявки' },
-      { to: '/services', label: 'Услуги' },
-      { to: '/content', label: 'Контент' },
-      { to: '/users', label: 'Пользователи' }
-    ],
-    []
-  );
+  const items = [
+    { to: '/', label: t('nav.bookings') },
+    { to: '/services', label: t('nav.services') },
+    { to: '/content', label: t('nav.content') },
+    { to: '/users', label: t('nav.users') }
+  ];
 
   return (
     <div className="min-h-screen grid lg:grid-cols-[260px_1fr]">
       <aside className="border-b lg:border-b-0 lg:border-r border-slate-200 bg-white">
-        <div className="px-5 py-4 font-extrabold text-slate-900">Admin</div>
+        <div className="px-5 py-4 flex items-center justify-between gap-2">
+          <span className="font-extrabold text-slate-900">{t('shell.title')}</span>
+          <LanguageSwitcher />
+        </div>
         <nav className="px-3 pb-4 grid gap-1">
           {items.map((i) => (
             <Link
@@ -54,7 +56,7 @@ function Shell(props: { children: JSX.Element; title: string }) {
               nav('/login');
             }}
           >
-            Выйти
+            {t('shell.logout')}
           </button>
         </div>
       </aside>
@@ -62,7 +64,7 @@ function Shell(props: { children: JSX.Element; title: string }) {
       <main className="p-5">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-end justify-between">
-            <h1 className="text-2xl font-extrabold">{props.title}</h1>
+            <h1 className="text-2xl font-extrabold">{t(props.titleKey)}</h1>
           </div>
           <div className="mt-5">{props.children}</div>
         </div>
@@ -79,7 +81,7 @@ export default function App() {
         path="/"
         element={
           <Private>
-            <Shell title="Заявки">
+            <Shell titleKey="bookings.title">
               <BookingsPage />
             </Shell>
           </Private>
@@ -89,7 +91,7 @@ export default function App() {
         path="/services"
         element={
           <Private>
-            <Shell title="Услуги">
+            <Shell titleKey="services.title">
               <ServicesPage />
             </Shell>
           </Private>
@@ -99,7 +101,7 @@ export default function App() {
         path="/content"
         element={
           <Private>
-            <Shell title="Контент">
+            <Shell titleKey="content.title">
               <ContentPage />
             </Shell>
           </Private>
@@ -109,7 +111,7 @@ export default function App() {
         path="/users"
         element={
           <Private>
-            <Shell title="Пользователи">
+            <Shell titleKey="users.title">
               <UsersPage />
             </Shell>
           </Private>
