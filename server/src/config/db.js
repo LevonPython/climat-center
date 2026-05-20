@@ -8,7 +8,14 @@ function getPool() {
   if (!connectionString) {
     throw new Error('DATABASE_URL is required');
   }
-  pool = new Pool({ connectionString });
+  const useSsl =
+    process.env.NODE_ENV === 'production' ||
+    /\.neon\.tech\b/i.test(connectionString) ||
+    /sslmode=require/i.test(connectionString);
+  pool = new Pool({
+    connectionString,
+    ...(useSsl ? { ssl: true } : {})
+  });
   pool.on('error', (err) => {
     // eslint-disable-next-line no-console
     console.error('Unexpected PG pool error', err);

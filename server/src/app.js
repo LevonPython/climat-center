@@ -14,7 +14,16 @@ const { quizSubmissionsRouter } = require('./routes/quizSubmissions');
 function createApp() {
   const app = express();
 
-  app.use(cors());
+  const corsOrigins =
+    process.env.CORS_ORIGINS?.split(',')
+      .map((s) => s.trim())
+      .filter(Boolean) || [];
+  app.use(
+    cors({
+      origin: process.env.NODE_ENV === 'production' ? corsOrigins : true,
+      credentials: true
+    })
+  );
   app.use(express.json({ limit: '1mb' }));
   if (process.env.NODE_ENV !== 'test') {
     app.use(morgan('dev'));

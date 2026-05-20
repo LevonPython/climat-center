@@ -1,3 +1,9 @@
+## Deployment (Vercel + Neon)
+
+See **[deploy/vercel.md](vercel.md)** for three-project Vercel setup (API, Next.js client, Vite admin) with Neon Postgres.
+
+---
+
 ## Deployment (VPS + Nginx + PM2)
 
 This repo contains a basic production setup for:
