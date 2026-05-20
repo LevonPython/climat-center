@@ -9,6 +9,7 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
+.envrc
 
 ## Build outputs
 dist/
