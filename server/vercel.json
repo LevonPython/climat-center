@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "functions": {
-    "api/index.js": { "memory": 512 }
-  },
+  "builds": [
+    { "src": "api/index.js", "use": "@vercel/node" }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }
