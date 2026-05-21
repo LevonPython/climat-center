@@ -69,7 +69,7 @@ export function Header() {
             aria-expanded={open}
             aria-controls="mobile-nav"
           >
-            {open ? '✕' : 'Меню'}
+            {open ? '✕' : t('nav.menu')}
           </button>
           <a href="tel:+74951828384" className="hidden sm:inline text-sm font-semibold text-slate-900">
             +7 (495) 182-83-84
