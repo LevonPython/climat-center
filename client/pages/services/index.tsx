@@ -2,6 +2,8 @@ import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nextI18nextConfig = require('../../next-i18next.config');
 import { Layout } from '../../components/Layout';
 import { ServiceCard, Service } from '../../components/ServiceCard';
 import { apiFetch } from '../../lib/api';
@@ -46,7 +48,7 @@ export const getStaticProps: GetStaticProps<ServicesProps> = async ({ locale }) 
 
   return {
     props: {
-      ...(await serverSideTranslations(lang, ['common'])),
+      ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig)),
       services
     },
     revalidate: 60

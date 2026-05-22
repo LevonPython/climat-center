@@ -1,6 +1,8 @@
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nextI18nextConfig = require('../next-i18next.config');
 import { Layout } from '../components/Layout';
 import { SocialLinks, SocialPlatform, SocialLink } from '../components/SocialLinks';
 import { apiFetch } from '../lib/api';
@@ -133,7 +135,7 @@ export const getStaticProps: GetStaticProps<ContactsProps> = async ({ locale }) 
 
   return {
     props: {
-      ...(await serverSideTranslations(lang, ['common'])),
+      ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig)),
       page,
       globalContacts,
       globalSocial

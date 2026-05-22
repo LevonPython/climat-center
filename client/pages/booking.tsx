@@ -1,6 +1,8 @@
 import { GetServerSideProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nextI18nextConfig = require('../next-i18next.config');
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '../components/Layout';
@@ -220,7 +222,7 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const lang = locale || 'ru';
   return {
     props: {
-      ...(await serverSideTranslations(lang, ['common']))
+      ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig))
     }
   };
 };

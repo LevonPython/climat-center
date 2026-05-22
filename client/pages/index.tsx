@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nextI18nextConfig = require('../next-i18next.config');
 import { Layout } from '../components/Layout';
 import { apiFetch } from '../lib/api';
 
@@ -78,7 +80,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async ({ locale }) => {
 
   return {
     props: {
-      ...(await serverSideTranslations(lang, ['common'])),
+      ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig)),
       // Next.js cannot serialize `undefined` in page props
       heroTitle: heroTitle ?? null,
       heroSubtitle: heroSubtitle ?? null,
