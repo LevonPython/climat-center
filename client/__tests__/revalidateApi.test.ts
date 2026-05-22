@@ -72,7 +72,17 @@ describe('/api/revalidate', () => {
 
     const called = res.revalidate.mock.calls.map((c: any[]) => c[0]);
     expect(called).toEqual(
-      expect.arrayContaining(['/', '/en', '/am', '/about', '/en/about', '/am/about', '/contacts', '/en/contacts', '/am/contacts'])
+      expect.arrayContaining([
+        '/',
+        '/en',
+        '/ru',
+        '/about',
+        '/en/about',
+        '/ru/about',
+        '/contacts',
+        '/en/contacts',
+        '/ru/contacts'
+      ])
     );
   });
 });

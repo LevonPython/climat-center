@@ -8,7 +8,4 @@ function App({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;
 }
 
-export default appWithTranslation(App, {
-  ...nextI18nextConfig,
-  localePath: '/locales'
-});
+export default appWithTranslation(App, nextI18nextConfig);

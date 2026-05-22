@@ -115,6 +115,8 @@
     "name": "Name",
     "namePlaceholder": "Your name",
     "phone": "Phone",
+    "phonePlaceholder": "+374...",
+    "phoneInvalid": "Enter a valid phone number starting with +374.",
     "service": "Service",
     "serviceAny": "Any",
     "date": "Date",
@@ -134,7 +136,7 @@
     "tagline": "AC service and maintenance.",
     "contacts": "Contacts",
     "address": "Address",
-    "addressValue": "Moscow"
+    "addressValue": "c. Yerevan, Proshyan street 1, apt. 1"
   },
   "errors": {
     "generic": "Something went wrong. Please try again."

@@ -6,6 +6,7 @@ const nextI18nextConfig = require('../next-i18next.config');
 import Link from 'next/link';
 import { Layout } from '../components/Layout';
 import { apiFetch } from '../lib/api';
+import { CONTACT_PHONE_TEL } from '../lib/contactPhone';
 
 type AboutContent = {
   title?: string | null;
@@ -83,7 +84,7 @@ export default function AboutPage(props: AboutProps) {
               <p className="mt-2 text-sm text-slate-700">{page?.ctaSubtitle || t('about.ctaSubtitle')}</p>
               <div className="mt-4 flex flex-col gap-2">
                 <a
-                  href="tel:+74951828384"
+                  href={`tel:${CONTACT_PHONE_TEL}`}
                   className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800"
                 >
                   {page?.call || t('about.call')}
@@ -104,7 +105,7 @@ export default function AboutPage(props: AboutProps) {
 }
 
 export const getStaticProps: GetStaticProps<AboutProps> = async ({ locale }) => {
-  const lang = locale || 'ru';
+  const lang = locale || 'am';
   let page: AboutContent | null = null;
 
   try {

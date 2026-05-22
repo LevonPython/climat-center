@@ -1,12 +1,11 @@
-const path = require('path');
-
 /** @type {import('next-i18next').UserConfig} */
 module.exports = {
   i18n: {
-    defaultLocale: 'ru',
+    defaultLocale: 'am',
     locales: ['ru', 'en', 'am']
   },
-  // Bundle locale JSON so ISR/SSR on Vercel can read translations without filesystem access to public/.
+  // Pre-bundle locale JSON so both SSR and client use in-memory resources —
+  // no filesystem or network access needed, works with Turbopack.
   resources: {
     ru: { common: require('./public/locales/ru/common.json') },
     en: { common: require('./public/locales/en/common.json') },
@@ -14,9 +13,5 @@ module.exports = {
   },
   ns: ['common'],
   defaultNS: 'common',
-  localePath:
-    typeof window === 'undefined'
-      ? path.resolve(process.cwd(), 'public/locales')
-      : '/locales',
   returnObjects: true
 };

@@ -8,7 +8,7 @@ const LOCALES = [
 
 export function LanguageSwitcher() {
   const router = useRouter();
-  const current = (router.locale || 'ru') as (typeof LOCALES)[number]['id'];
+  const current = (router.locale || 'am') as (typeof LOCALES)[number]['id'];
 
   return (
     <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1">

@@ -1,5 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import React from 'react';
+import { CONTACT_PHONE_WHATSAPP } from '../lib/contactPhone';
 
 export type SocialPlatform = 'whatsapp' | 'telegram' | 'facebook' | 'instagram';
 
@@ -10,7 +11,7 @@ export type SocialLink = {
 
 // Placeholder links. Replace with real URLs when available.
 export const SOCIAL_LINKS: SocialLink[] = [
-  { id: 'whatsapp', href: 'https://wa.me/74951828384' },
+  { id: 'whatsapp', href: `https://wa.me/${CONTACT_PHONE_WHATSAPP}` },
   { id: 'telegram', href: 'https://t.me/your_handle' },
   { id: 'facebook', href: 'https://facebook.com/your_page' },
   { id: 'instagram', href: 'https://instagram.com/your_profile' }

@@ -24,7 +24,7 @@ npm-workspaces monorepo: `server`, `client`, `admin`, `e2e`.
 
 ## Multilingual
 
-Three locales: `ru` (default), `en`, `am`. Multilingual DB fields use `*_ru`, `*_en`, `*_am` suffixes. Client translations live in `client/public/locales/{ru,en,am}/common.json` via `next-i18next`.
+Three locales: `am` (default), `en`, `ru`. Multilingual DB fields use `*_ru`, `*_en`, `*_am` suffixes. Client translations live in `client/public/locales/{ru,en,am}/common.json` via `next-i18next`.
 
 ## API Response Contract
 

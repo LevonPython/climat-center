@@ -1,4 +1,5 @@
 import { useTranslation } from 'next-i18next';
+import { CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL, CONTACT_EMAIL } from '../lib/contactPhone';
 
 export function Footer() {
   const { t } = useTranslation('common');
@@ -40,8 +41,14 @@ export function Footer() {
         </div>
         <div className="text-sm text-slate-700">
           <div className="font-semibold text-slate-900">{t('footer.contacts')}</div>
-          <div className="mt-2">8 (495) 182-83-84</div>
-          <div>mail@climatecentr.ru</div>
+          <div className="mt-2 grid gap-1">
+            <a href={`tel:${CONTACT_PHONE_TEL}`} className="inline-block hover:underline">
+              {CONTACT_PHONE_DISPLAY}
+            </a>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="inline-block hover:underline break-all">
+              {CONTACT_EMAIL}
+            </a>
+          </div>
         </div>
         <div className="text-sm text-slate-700">
           <div className="font-semibold text-slate-900">{t('footer.address')}</div>

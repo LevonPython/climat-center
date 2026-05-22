@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import { Layout } from '../components/Layout';
 import { apiFetch } from '../lib/api';
+import { isValidArmenianPhone, sanitizePhoneInput } from '../lib/phone';
 
 type Step = 1 | 2 | 3;
 
@@ -48,7 +49,7 @@ function displayLabel(value: string, options: string[], keyPrefix: string, fallb
 export default function QuizPage() {
   const { t } = useTranslation('common');
   const { locale } = useRouter();
-  const localeKey = (locale && locale in FALLBACKS ? locale : 'ru') as keyof typeof FALLBACKS;
+  const localeKey = (locale && locale in FALLBACKS ? locale : 'am') as keyof typeof FALLBACKS;
   const fallbacks = FALLBACKS[localeKey];
 
   const problems = translatedOrFallback(t, 'problem', [...fallbacks.problems]);
@@ -61,14 +62,18 @@ export default function QuizPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
   const canNext1 = useMemo(() => problem.length > 0, [problem]);
   const canNext2 = useMemo(() => acType.length > 0, [acType]);
-  const canSubmit = useMemo(() => phone.trim().length >= 6, [phone]);
+  const phoneValid = useMemo(() => isValidArmenianPhone(phone), [phone]);
+  const showPhoneError = phoneTouched && phone.trim().length > 0 && !phoneValid;
+  const canSubmit = useMemo(() => phoneValid, [phoneValid]);
 
   async function submit() {
     setError(null);
     setSuccess(false);
+    setPhoneTouched(true);
     if (!canSubmit) return;
     setSubmitting(true);
     try {
@@ -109,6 +114,8 @@ export default function QuizPage() {
                 setStep(1);
                 setProblem('');
                 setAcType('');
+                setPhone('');
+                setPhoneTouched(false);
                 setError(null);
                 setSuccess(false);
               }}
@@ -202,12 +209,22 @@ export default function QuizPage() {
                 <label className="grid gap-1">
                   <span className="text-sm font-semibold text-slate-900">{t('form.phone')}</span>
                   <input
+                    type="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-300"
-                    placeholder="+7..."
+                    onChange={(e) => setPhone(sanitizePhoneInput(e.target.value))}
+                    onBlur={() => setPhoneTouched(true)}
+                    className={[
+                      'rounded-xl border px-3 py-2 outline-none focus:ring-2',
+                      showPhoneError
+                        ? 'border-red-300 focus:ring-red-200'
+                        : 'border-slate-200 focus:ring-slate-300'
+                    ].join(' ')}
+                    placeholder={t('form.phonePlaceholder')}
                     required
                   />
+                  {showPhoneError ? (
+                    <span className="text-sm text-red-600">{t('form.phoneInvalid')}</span>
+                  ) : null}
                 </label>
 
                 <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-700">
@@ -237,6 +254,7 @@ export default function QuizPage() {
                         setAcType('');
                         setName('');
                         setPhone('');
+                        setPhoneTouched(false);
                         setError(null);
                       }}
                       className="mt-3 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
@@ -273,7 +291,7 @@ export default function QuizPage() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const lang = locale || 'ru';
+  const lang = locale || 'am';
   return {
     props: {
       ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig))

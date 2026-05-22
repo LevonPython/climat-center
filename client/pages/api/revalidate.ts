@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 type RevalidateEvent = 'content' | 'services';
 type Body = { event?: RevalidateEvent };
 
-const LOCALE_PREFIXES = ['', '/en', '/am'] as const;
+const LOCALE_PREFIXES = ['', '/en', '/ru'] as const;
 
 function localizePath(basePath: string, localePrefix: (typeof LOCALE_PREFIXES)[number]) {
   if (!localePrefix) return basePath;

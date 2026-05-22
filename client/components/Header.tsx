@@ -3,6 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { useState } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { SocialLinks } from './SocialLinks';
+import { CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '../lib/contactPhone';
 
 export function Header() {
   const { t } = useTranslation('common');
@@ -71,8 +72,8 @@ export function Header() {
           >
             {open ? '✕' : t('nav.menu')}
           </button>
-          <a href="tel:+74951828384" className="hidden sm:inline text-sm font-semibold text-slate-900">
-            +7 (495) 182-83-84
+          <a href={`tel:${CONTACT_PHONE_TEL}`} className="hidden sm:inline text-sm font-semibold text-slate-900">
+            {CONTACT_PHONE_DISPLAY}
           </a>
           <div className="hidden md:flex">
             <SocialLinks />
@@ -98,8 +99,8 @@ export function Header() {
             <Link href="/contacts" className="hover:text-slate-900" onClick={() => setOpen(false)}>
               {t('nav.contacts')}
             </Link>
-            <a href="tel:+74951828384" className="pt-2 font-semibold text-slate-900">
-              +7 (495) 182-83-84
+            <a href={`tel:${CONTACT_PHONE_TEL}`} className="pt-2 font-semibold text-slate-900">
+              {CONTACT_PHONE_DISPLAY}
             </a>
             <div className="pt-1">
               <SocialLinks />

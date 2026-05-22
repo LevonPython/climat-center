@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '../components/Layout';
 import { apiFetch } from '../lib/api';
+import { isValidArmenianPhone, sanitizePhoneInput } from '../lib/phone';
 import type { Service } from '../components/ServiceCard';
 
 type BookingPayload = {
@@ -32,7 +33,7 @@ function pickServiceTitle(svc: Service, lang: string) {
 export default function BookingPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const lang = router.locale || 'ru';
+  const lang = router.locale || 'am';
   const selectedServiceId = typeof router.query.serviceId === 'string' ? router.query.serviceId : '';
 
   const [services, setServices] = useState<Service[]>([]);
@@ -40,6 +41,7 @@ export default function BookingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
   const [form, setForm] = useState<BookingPayload>({
     user_name: '',
@@ -71,12 +73,18 @@ export default function BookingPage() {
     };
   }, []);
 
-  const canSubmit = useMemo(() => form.user_name.trim().length > 1 && form.phone.trim().length >= 6, [form]);
+  const phoneValid = useMemo(() => isValidArmenianPhone(form.phone), [form.phone]);
+  const showPhoneError = phoneTouched && form.phone.trim().length > 0 && !phoneValid;
+  const canSubmit = useMemo(
+    () => form.user_name.trim().length > 1 && phoneValid,
+    [form.user_name, phoneValid]
+  );
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSuccess(false);
+    setPhoneTouched(true);
     if (!canSubmit) return;
 
     setSubmitting(true);
@@ -95,6 +103,7 @@ export default function BookingPage() {
         return;
       }
       setSuccess(true);
+      setPhoneTouched(false);
       setForm({
         user_name: '',
         phone: '',
@@ -133,12 +142,22 @@ export default function BookingPage() {
             <label className="grid gap-1">
               <span className="text-sm font-semibold text-slate-900">{t('form.phone')}</span>
               <input
+                type="tel"
                 value={form.phone}
-                onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                className="rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-300"
-                placeholder="+7..."
+                onChange={(e) => setForm((f) => ({ ...f, phone: sanitizePhoneInput(e.target.value) }))}
+                onBlur={() => setPhoneTouched(true)}
+                className={[
+                  'rounded-xl border px-3 py-2 outline-none focus:ring-2',
+                  showPhoneError
+                    ? 'border-red-300 focus:ring-red-200'
+                    : 'border-slate-200 focus:ring-slate-300'
+                ].join(' ')}
+                placeholder={t('form.phonePlaceholder')}
                 required
               />
+              {showPhoneError ? (
+                <span className="text-sm text-red-600">{t('form.phoneInvalid')}</span>
+              ) : null}
             </label>
 
             <label className="grid gap-1">
@@ -201,7 +220,9 @@ export default function BookingPage() {
 
             {error ? <div className="text-sm text-red-600">{error}</div> : null}
             {success ? (
-              <div className="text-sm text-emerald-700">{t('booking.success')}</div>
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                <p className="font-semibold">{t('booking.success')}</p>
+              </div>
             ) : null}
 
             <button
@@ -219,7 +240,7 @@ export default function BookingPage() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const lang = locale || 'ru';
+  const lang = locale || 'am';
   return {
     props: {
       ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig))

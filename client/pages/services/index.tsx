@@ -15,7 +15,7 @@ type ServicesProps = {
 export default function ServicesPage(props: ServicesProps) {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const lang = router.locale || 'ru';
+  const lang = router.locale || 'am';
 
   return (
     <Layout title={t('nav.services')}>
@@ -36,7 +36,7 @@ export default function ServicesPage(props: ServicesProps) {
 }
 
 export const getStaticProps: GetStaticProps<ServicesProps> = async ({ locale }) => {
-  const lang = locale || 'ru';
+  const lang = locale || 'am';
   let services: Service[] = [];
 
   try {

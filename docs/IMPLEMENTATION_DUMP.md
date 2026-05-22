@@ -141,7 +141,7 @@ This file summarizes **all implemented changes**, grouped by area, and includes 
   - `apiFetch` wrapper; reads `NEXT_PUBLIC_API_URL` (defaults to `http://localhost:5000`).
 
 - `client/next-i18next.config.js` and `client/next.config.js`
-  - Locales: `ru`, `en`, `am` (default `ru`).
+  - Locales: `ru`, `en`, `am` (default `am`).
 
 - `client/public/locales/*/common.json`
   - Translation strings.

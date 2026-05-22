@@ -28,7 +28,7 @@ async function main() {
       [adminUsername, passwordHash]
     );
 
-    // Minimal services seed (3 languages). Adjust later to match https://climatecentr.ru/
+    // Minimal services seed (3 languages). Adjust titles as needed.
     const servicesCountRes = await client.query('SELECT COUNT(*)::int AS count FROM services');
     if ((servicesCountRes.rows[0]?.count ?? 0) === 0) {
       await client.query(
@@ -48,9 +48,9 @@ async function main() {
       INSERT INTO content_blocks (page_name, section_name, content_json)
       VALUES
         ('home', 'hero', '{"title_ru":"ЦЕНТР КЛИМАТА","subtitle_ru":"Обслуживание кондиционеров и сплит-систем","cta_ru":"Оставьте заявку онлайн"}'::jsonb),
-        ('home', 'contacts', '{"phone":"+7 (495) 182-83-84","email":"mail@climatecentr.ru"}'::jsonb),
-        ('global', 'contacts', '{"phone":"+7 (495) 182-83-84","email":"mail@climatecentr.ru","hours_ru":"Круглосуточно, без выходных","hours_en":"Daily, 24/7","hours_am":"Ամեն օր, 24/7","address_ru":"г. Москва, ул. Академика Анохина, 6 корп.1","address_en":"Moscow, Akademika Anokhina, 6 bld.1","address_am":"Մոսկվա, Ակադեմիկոս Անոխինա, 6 շ.1"}'::jsonb),
-        ('global', 'social', '{"whatsapp_url":"https://wa.me/74951828384","telegram_url":"https://t.me/your_handle","facebook_url":"https://facebook.com/your_page","instagram_url":"https://instagram.com/your_profile"}'::jsonb),
+        ('home', 'contacts', '{"phone":"+(374) 94 00-00-00","email":"climatcenter@gmail.com"}'::jsonb),
+        ('global', 'contacts', '{"phone":"+(374) 94 00-00-00","email":"climatcenter@gmail.com","hours_ru":"Круглосуточно, без выходных","hours_en":"Daily, 24/7","hours_am":"Ամեն օր, 24/7","address_ru":"г. Ереван, ул. Прошяна, 1, кв. 1","address_en":"c. Yerevan, Proshyan street 1, apt. 1","address_am":"ք. Երևան, Պռոշյան փողոց 1, բն. 1"}'::jsonb),
+        ('global', 'social', '{"whatsapp_url":"https://wa.me/37494000000","telegram_url":"https://t.me/your_handle","facebook_url":"https://facebook.com/your_page","instagram_url":"https://instagram.com/your_profile"}'::jsonb),
         ('about', 'page', '{
           "title_ru":"О компании",
           "title_en":"About us",

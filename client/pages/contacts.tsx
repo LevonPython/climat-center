@@ -6,6 +6,7 @@ const nextI18nextConfig = require('../next-i18next.config');
 import { Layout } from '../components/Layout';
 import { SocialLinks, SocialPlatform, SocialLink } from '../components/SocialLinks';
 import { apiFetch } from '../lib/api';
+import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_TEL } from '../lib/contactPhone';
 
 type ContactsPageContent = {
   title?: string | null;
@@ -67,19 +68,19 @@ export default function ContactsPage(props: ContactsProps) {
           <div className="rounded-2xl border border-slate-200 bg-white p-6">
             <div className="text-sm font-extrabold text-slate-900">{t('contacts.phone')}</div>
             <a
-              href="tel:+74951828384"
+              href={`tel:${CONTACT_PHONE_TEL}`}
               className="mt-3 inline-flex text-sm font-semibold text-slate-900 hover:underline"
             >
-              {globalContacts?.phone || '+7 (495) 182-83-84'}
+              {globalContacts?.phone || CONTACT_PHONE_DISPLAY}
             </a>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-6">
             <div className="text-sm font-extrabold text-slate-900">{t('contacts.email')}</div>
             <a
-              href="mailto:mail@climatecentr.ru"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="mt-3 inline-flex text-sm font-semibold text-slate-900 hover:underline"
             >
-              {globalContacts?.email || 'mail@climatecentr.ru'}
+              {globalContacts?.email || CONTACT_EMAIL}
             </a>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-6">
@@ -117,7 +118,7 @@ export default function ContactsPage(props: ContactsProps) {
 }
 
 export const getStaticProps: GetStaticProps<ContactsProps> = async ({ locale }) => {
-  const lang = locale || 'ru';
+  const lang = locale || 'am';
   let page: ContactsPageContent | null = null;
   let globalContacts: GlobalContacts | null = null;
   let globalSocial: GlobalSocial | null = null;

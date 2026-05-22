@@ -14,7 +14,7 @@ export function getStoredLocale(): Locale {
   } catch {
     /* ignore */
   }
-  return 'ru';
+  return 'am';
 }
 
 export function setStoredLocale(locale: Locale): void {
@@ -30,7 +30,7 @@ i18n
   .use(initReactI18next)
   .init({
     lng: getStoredLocale(),
-    fallbackLng: 'ru',
+    fallbackLng: 'am',
     supportedLngs: LOCALES,
     ns: ['common'],
     defaultNS: 'common',
