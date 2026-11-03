@@ -34,5 +34,5 @@ Vercel deploys do **not** migrate (`deploy/vercel.md`). Merging code that reads 
 
 ## Seeds and tests
 - Seeds are idempotent with `ON CONFLICT ... DO NOTHING`, so they never update existing rows. To reset content use the `db-content-reset` skill.
-- `server/scripts/seed.js` falls back to the password `admin12345`. Always set `SEED_ADMIN_PASSWORD` when seeding a remote database.
+- `server/scripts/seed.js` only uses its default admin password on a local database. On a remote one it skips the admin unless `SEED_ADMIN_PASSWORD` is set. To replace a password use `npm run reset:admin -w server`.
 - A new table goes into `truncateAll` in `server/tests/helpers/db.js`.

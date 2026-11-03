@@ -10,7 +10,8 @@
     "test": "jest --runInBand",
     "migrate": "node scripts/migrate.js",
     "seed": "node scripts/seed.js",
-    "reset:content": "node scripts/resetContentSeed.js"
+    "reset:content": "node scripts/resetContentSeed.js",
+    "reset:admin": "node scripts/resetAdminPassword.js"
   },
   "dependencies": {
     "@vercel/blob": "^0.27.0",

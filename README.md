@@ -100,9 +100,11 @@ You should see `climat_center` in the list.
    ```bash
    npm run seed -w server
    ```
-   Default admin credentials:
+   Default admin credentials, for local databases only:
    - username: `admin`
    - password: `admin12345`
+
+   On a remote database the seed skips the admin unless `SEED_ADMIN_PASSWORD` is set. To create an admin or replace a password, run `npm run reset:admin -w server`.
 
 5. Run apps in separate terminals:
    - API: `npm run dev -w server`

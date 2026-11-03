@@ -5,12 +5,17 @@ const { Client } = require('pg');
 // Load env from server/.env for scripts
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
+function isLocalDatabase(databaseUrl) {
+  return ['localhost', '127.0.0.1', '::1', '[::1]'].includes(new URL(databaseUrl).hostname);
+}
+
 async function main() {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) throw new Error('DATABASE_URL is required');
 
   const adminUsername = process.env.SEED_ADMIN_USERNAME || 'admin';
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'admin12345';
+  // The default password is public, so it must never reach a remote database.
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || (isLocalDatabase(databaseUrl) ? 'admin12345' : null);
 
   const client = new Client({ connectionString: databaseUrl });
   await client.connect();
@@ -18,15 +23,19 @@ async function main() {
   try {
     await client.query('BEGIN');
 
-    const passwordHash = await bcrypt.hash(adminPassword, 10);
-    await client.query(
-      `
+    if (adminPassword) {
+      const passwordHash = await bcrypt.hash(adminPassword, 10);
+      await client.query(
+        `
       INSERT INTO users (username, password_hash, role)
       VALUES ($1, $2, 'admin')
       ON CONFLICT (username) DO NOTHING
     `,
-      [adminUsername, passwordHash]
-    );
+        [adminUsername, passwordHash]
+      );
+    } else {
+      console.warn('Skipping admin user: set SEED_ADMIN_PASSWORD or run npm run reset:admin -w server.');
+    }
 
     // Minimal services seed (3 languages). Adjust titles as needed.
     const servicesCountRes = await client.query('SELECT COUNT(*)::int AS count FROM services');

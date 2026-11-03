@@ -8,7 +8,7 @@
 - npm-workspaces monorepo: `server`, `client`, `admin`, `e2e`.
 - Ports: server 5000; client 3000; admin 5173.
 - Stacks: server Express 4 (CommonJS, JS) + PostgreSQL 16 via `pg`; client Next.js 16 Pages Router + React 18 + TypeScript; admin Vite 6 + React 18 + react-router-dom 6 + TypeScript; e2e Playwright.
-- Commands: `npm install` (root); dev/test per workspace; migrate/seed/reset content in `server`.
+- Commands: `npm install` (root); dev/test per workspace; migrate/seed/reset content/reset admin in `server`.
 - Locales: `am` (default), `en`, `ru`; multilingual DB fields use `*_ru/_en/_am`; client translations in `client/public/locales/{ru,en,am}/common.json` via `next-i18next`.
 - API responses: `{ ok: true, ...data }` or `{ ok: false, error: { message, details? } }`; shared `ApiResponse<T>` in `client/lib/api.ts` and `admin/src/api.ts`.
 - Content blocks: `content_blocks` keyed by `(page_name, section_name)`; schemas must stay in sync between `server/src/contentSchemas/` (JS) and `admin/src/contentSchemas/` (TS).
