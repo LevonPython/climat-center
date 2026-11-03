@@ -39,6 +39,7 @@ if (!dbUrl) {
     test('creates a missing admin with a generated password', async () => {
       const result = runScript({ ADMIN_PASSWORD: '' });
       expect(result.status).toBe(0);
+      expect(result.stdout).toContain('LOCAL database');
 
       const password = result.stdout.match(/^Password: (.+)$/m)?.[1];
       expect(password.length).toBeGreaterThanOrEqual(24);

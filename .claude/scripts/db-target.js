@@ -9,7 +9,7 @@ const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
 // Same precedence as server/scripts/*: a shell DATABASE_URL beats server/.env.
 // Parsed rather than loaded so no other server/.env value leaks into this process.
 function resolveDatabaseUrl() {
-  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
+  if (process.env.DATABASE_URL !== undefined) return process.env.DATABASE_URL;
   const envPath = path.join(ROOT, 'server', '.env');
   if (!fs.existsSync(envPath)) return null;
   return dotenv.parse(fs.readFileSync(envPath)).DATABASE_URL || null;
@@ -28,7 +28,7 @@ function describeTarget(url) {
 function main() {
   const url = resolveDatabaseUrl();
   if (!url) {
-    console.error('DATABASE_URL is not set in the shell or server/.env');
+    console.error('DATABASE_URL is empty in the shell, or missing from server/.env');
     process.exit(2);
   }
 

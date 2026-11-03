@@ -9,7 +9,7 @@ DATABASE_URL="<neon-connection-string>" npm run migrate -w server
 SEED_ADMIN_PASSWORD="<strong-password>" DATABASE_URL="<neon-connection-string>" npm run seed -w server
 ```
 
-On a remote database the seed skips the admin user unless `SEED_ADMIN_PASSWORD` is set. To create an admin or replace a password later, run this. It generates a password and prints it once:
+On a remote database the seed skips the admin user unless `SEED_ADMIN_PASSWORD` is set. To create an admin or replace a password later, run this. It generates a password, prints it once, and says which database it changed. Without `DATABASE_URL` in the shell, these scripts use `server/.env`, so check that the output says `REMOTE`:
 
 ```bash
 DATABASE_URL="<neon-connection-string>" npm run reset:admin -w server

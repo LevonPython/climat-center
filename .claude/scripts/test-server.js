@@ -33,7 +33,7 @@ async function ensureTestDatabase(baseUrl) {
 
 async function main() {
   const baseUrl = resolveDatabaseUrl();
-  if (!baseUrl) fail('DATABASE_URL is not set in the shell or server/.env');
+  if (!baseUrl) fail('DATABASE_URL is empty in the shell, or missing from server/.env');
   if (!describeTarget(baseUrl).isLocal) fail('Refusing: server tests TRUNCATE tables and only run on a local database.');
 
   const testUrl = buildTestUrl(baseUrl);

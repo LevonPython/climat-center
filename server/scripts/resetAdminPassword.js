@@ -8,10 +8,17 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const MIN_PASSWORD_LENGTH = 12;
 
+function describeTarget(databaseUrl) {
+  const { hostname } = new URL(databaseUrl);
+  if (['localhost', '127.0.0.1', '::1', '[::1]'].includes(hostname)) return 'LOCAL';
+  return `REMOTE (${hostname.split('.').slice(-2).join('.')})`;
+}
+
 async function main() {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) throw new Error('DATABASE_URL is required');
 
+  const target = describeTarget(databaseUrl);
   const username = process.env.ADMIN_USERNAME || 'admin';
   const providedPassword = process.env.ADMIN_PASSWORD;
   if (providedPassword && providedPassword.length < MIN_PASSWORD_LENGTH) {
@@ -35,7 +42,7 @@ async function main() {
     await client.end();
   }
 
-  console.log(`Admin "${username}" password set.`);
+  console.log(`Admin "${username}" password set on ${target} database.`);
   if (!providedPassword) console.log(`Password: ${password}`);
 }
 
