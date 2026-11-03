@@ -10,13 +10,13 @@ Plain JavaScript with CommonJS. No TypeScript or ESM in this workspace.
 
 ## Layering
 - Existing routes keep inline SQL. Small edits match the file you are in; don't refactor unless asked.
-- New resources, and logic shared by more than one route, use layers. Neither directory exists yet; the first feature that needs them creates them.
+- New resources, and logic shared by more than one route, use layers.
   - Route (`server/src/routes/`): validation, auth, status codes, response shape.
   - Service (`server/src/services/fooService.js`): business rules, no `req` or `res`.
-  - Repository (`server/src/repositories/fooRepository.js`): SQL only, with an optional client argument so it can join a transaction.
+  - Repository (`server/src/repositories/fooRepository.js`): SQL only, with an optional client argument so it can join a transaction. `createCrudRepository` in `crudRepository.js` covers the basics.
 
 ## Route shape
-Export a named router (`{ fooRouter }`) and mount it under `/api/` in `server/src/app.js`.
+Export a named router (`{ fooRouter }`) and mount it under `/api/` in `server/src/app.js`. Admin routes go in `server/src/routes/admin/`, which already applies `verifyToken` and the role check. Use `validateRequest` and `asyncRoute` from `server/src/middleware/validate.js` in new routes; the example below shows the older inline style, which has the same behaviour.
 
 ```js
 fooRouter.post(
@@ -47,6 +47,9 @@ fooRouter.post(
 - The intentional public routes are health, `POST /api/auth/login`, `GET /api/services`, `GET /api/content/:lang`, `POST /api/bookings` and `POST /api/quiz-submissions`. Adding to this list is a decision to flag.
 - No rate limiting exists yet, so raise it when adding a public write endpoint.
 - Select explicit columns from `users`. `password_hash` is only read by login and never returned.
+
+## Links
+Anything rendered as `href` must go through `safeLink` in `server/src/middleware/validate.js`, so script URLs can't get in. Rich text goes through `server/src/services/contentSanitizer.js` before saving.
 
 ## Errors
 - `errorHandler` replaces the message of every 5xx with `Internal Server Error`; details stay in the log. To show a message to the client, set a 4xx on the error: `Object.assign(new Error('Text'), { status: 400 })`.

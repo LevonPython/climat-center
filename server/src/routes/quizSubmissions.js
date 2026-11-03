@@ -17,6 +17,9 @@ quizSubmissionsRouter.post(
         return res.status(400).json({ ok: false, error: { message: 'Invalid payload', details: errors.array() } });
       }
 
+      // Hidden field real visitors never fill in. Bots get the normal answer.
+      if (req.body.website) return res.status(201).json({ ok: true, quiz_submission: null });
+
       const { answers_json, contact_info } = req.body;
       const result = await query(
         `

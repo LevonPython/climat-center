@@ -49,6 +49,33 @@ if (!dbUrl) {
       expect(res.status).toBe(401);
     });
 
+    test('POST /api/bookings stores work types and the page it came from', async () => {
+      const res = await request(app)
+        .post('/api/bookings')
+        .send({ user_name: 'Ani', phone: '+37494000000', work_types: ['repair', 'other'], source_page: '/usluga/remont' });
+      expect(res.status).toBe(201);
+      expect(res.body.booking.work_types).toEqual(['repair', 'other']);
+      expect(res.body.booking.source_page).toBe('/usluga/remont');
+    });
+
+    test('POST /api/bookings rejects an unknown work type', async () => {
+      const res = await request(app)
+        .post('/api/bookings')
+        .send({ user_name: 'Ani', phone: '+37494000000', work_types: ['hacking'] });
+      expect(res.status).toBe(400);
+    });
+
+    test('POST /api/bookings quietly ignores a filled honeypot', async () => {
+      const before = await request(app).get('/api/bookings?status=all&limit=200').set('Authorization', `Bearer ${token}`);
+      const res = await request(app)
+        .post('/api/bookings')
+        .send({ user_name: 'Bot', phone: '+37494000000', website: 'https://spam.example' });
+      expect(res.status).toBe(201);
+      expect(res.body.booking).toBeNull();
+      const after = await request(app).get('/api/bookings?status=all&limit=200').set('Authorization', `Bearer ${token}`);
+      expect(after.body.bookings.length).toBe(before.body.bookings.length);
+    });
+
     test('GET /api/bookings returns bookings for admin', async () => {
       const res = await request(app).get('/api/bookings?status=all').set('Authorization', `Bearer ${token}`);
       expect(res.status).toBe(200);

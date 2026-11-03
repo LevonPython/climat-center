@@ -152,6 +152,49 @@ export const ALL_BLOCK_DEFS: BlockDef[] = [
   }),
 
   defineBlock({
+    page_name: 'global',
+    section_name: 'branding',
+    title: 'Global / Branding',
+    description: 'Company name, tagline, logo and the main hero image.',
+    groups: [
+      { id: 'text', label: 'Text', fieldKeys: ['site_name', 'tagline'] },
+      { id: 'images', label: 'Images', fieldKeys: ['logo_url', 'hero_image_url'] }
+    ],
+    fields: [
+      { key: 'site_name', label: 'Company name', kind: 'string', multilingual: true },
+      { key: 'tagline', label: 'Tagline', kind: 'string', multilingual: true },
+      { key: 'logo_url', label: 'Logo', kind: 'url' },
+      { key: 'hero_image_url', label: 'Hero image', kind: 'url' }
+    ]
+  }),
+
+  defineBlock({
+    page_name: 'global',
+    section_name: 'header',
+    title: 'Global / Header',
+    description: 'Short promises and the button shown in the site header.',
+    groups: [{ id: 'main', label: 'Header', fieldKeys: ['hours_text', 'arrival_text', 'free_visit_text', 'cta_label'] }],
+    fields: [
+      { key: 'hours_text', label: 'Working hours', kind: 'string', multilingual: true },
+      { key: 'arrival_text', label: 'Arrival promise', kind: 'string', multilingual: true },
+      { key: 'free_visit_text', label: 'Free visit note', kind: 'string', multilingual: true },
+      { key: 'cta_label', label: 'Button text', kind: 'string', multilingual: true }
+    ]
+  }),
+
+  defineBlock({
+    page_name: 'global',
+    section_name: 'footer',
+    title: 'Global / Footer',
+    description: 'Text shown at the bottom of every page.',
+    groups: [{ id: 'main', label: 'Footer', fieldKeys: ['copyright', 'disclaimer'] }],
+    fields: [
+      { key: 'copyright', label: 'Copyright', kind: 'string', multilingual: true },
+      { key: 'disclaimer', label: 'Disclaimer', kind: 'text', multilingual: true }
+    ]
+  }),
+
+  defineBlock({
     page_name: 'about',
     section_name: 'page',
     title: 'About / Page',

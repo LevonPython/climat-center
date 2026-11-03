@@ -1,9 +1,8 @@
-async function triggerRevalidate(event) {
+async function postRevalidate(payload, label) {
   const publicSiteUrl = process.env.PUBLIC_SITE_URL;
   const secret = process.env.REVALIDATE_SECRET;
 
   if (!publicSiteUrl || !secret) return;
-  if (event !== 'content' && event !== 'services') return;
 
   let url;
   try {
@@ -21,21 +20,30 @@ async function triggerRevalidate(event) {
     const res = await fetch(url.toString(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event }),
+      body: JSON.stringify(payload),
       signal: controller.signal
     });
 
     // Don't fail the admin request if revalidation fails.
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      console.warn(`[revalidate] failed (${res.status}) event=${event} body=${text.slice(0, 200)}`);
+      console.warn(`[revalidate] failed (${res.status}) ${label} body=${text.slice(0, 200)}`);
     }
   } catch (err) {
-    console.warn(`[revalidate] error event=${event}`, err && err.name ? err.name : err);
+    console.warn(`[revalidate] error ${label}`, err && err.name ? err.name : err);
   } finally {
     clearTimeout(timeout);
   }
 }
 
-module.exports = { triggerRevalidate };
+async function triggerRevalidate(event) {
+  if (event !== 'content' && event !== 'services') return;
+  await postRevalidate({ event }, `event=${event}`);
+}
+
+async function triggerRevalidatePaths(paths) {
+  await postRevalidate({ paths }, `paths=${paths.join(',')}`);
+}
+
+module.exports = { triggerRevalidate, triggerRevalidatePaths };
 

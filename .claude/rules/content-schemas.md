@@ -16,6 +16,9 @@ Update both, every time, then run `node .claude/scripts/check-schema-parity.js`.
 - `server/src/contentSchemas/registry.js`: AJV validation on save.
 - `admin/src/contentSchemas/registry.ts`: form rendering and client-side validation. Adds `label`, `kind`, `help`, `groups`, `title`, `description`.
 
+## Block types
+Page sections use the types in `server/src/contentSchemas/blockTypes.js`, not these registries. They support repeatable lists, images and rich text, and only exist on the server. Admin screens read them from `GET /api/admin/schemas`.
+
 ## Fields
 - Blocks are keyed by `(page_name, section_name)`.
 - `multilingual: true` expands `key` to `key_ru`, `key_en`, `key_hy`.

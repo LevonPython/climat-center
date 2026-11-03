@@ -6,6 +6,8 @@ const { verifyToken, requireAnyRole } = require('../middleware/auth');
 
 const bookingsRouter = express.Router();
 
+const WORK_TYPES = ['repair', 'install', 'purchase', 'cleaning', 'other'];
+
 bookingsRouter.post(
   '/',
   body('user_name').isString().trim().notEmpty(),
@@ -15,6 +17,9 @@ bookingsRouter.post(
   body('time').optional({ nullable: true }).matches(/^\d{2}:\d{2}(:\d{2})?$/),
   body('address').optional({ nullable: true }).isString(),
   body('problem_description').optional({ nullable: true }).isString(),
+  body('work_types').optional().isArray({ max: WORK_TYPES.length }),
+  body('work_types.*').isIn(WORK_TYPES),
+  body('source_page').optional({ nullable: true }).isString().isLength({ max: 500 }),
   async (req, res, next) => {
     try {
       const errors = validationResult(req);
@@ -22,14 +27,27 @@ bookingsRouter.post(
         return res.status(400).json({ ok: false, error: { message: 'Invalid payload', details: errors.array() } });
       }
 
-      const { user_name, phone, service_id, date, time, address, problem_description } = req.body;
+      // Hidden field real visitors never fill in. Bots get the normal answer.
+      if (req.body.website) return res.status(201).json({ ok: true, booking: null });
+
+      const { user_name, phone, service_id, date, time, address, problem_description, work_types, source_page } = req.body;
       const result = await query(
         `
-        INSERT INTO bookings (user_name, phone, service_id, date, time, address, problem_description, status)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,'new')
+        INSERT INTO bookings (user_name, phone, service_id, date, time, address, problem_description, status, work_types, source_page)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,'new',$8,$9)
         RETURNING *
       `,
-        [user_name, phone, service_id || null, date || null, time || null, address || null, problem_description || null]
+        [
+          user_name,
+          phone,
+          service_id || null,
+          date || null,
+          time || null,
+          address || null,
+          problem_description || null,
+          work_types || [],
+          source_page || null
+        ]
       );
 
       return res.status(201).json({ ok: true, booking: result.rows[0] });

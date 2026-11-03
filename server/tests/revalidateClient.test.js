@@ -1,4 +1,4 @@
-const { triggerRevalidate } = require('../src/config/revalidateClient');
+const { triggerRevalidate, triggerRevalidatePaths } = require('../src/config/revalidateClient');
 
 describe('triggerRevalidate', () => {
   const oldEnv = { ...process.env };
@@ -10,6 +10,16 @@ describe('triggerRevalidate', () => {
 
   afterAll(() => {
     process.env = oldEnv;
+  });
+
+  test('sends requested paths to the public site', async () => {
+    process.env.PUBLIC_SITE_URL = 'https://example.com';
+    process.env.REVALIDATE_SECRET = 'secret123';
+
+    await triggerRevalidatePaths(['/usluga/remont']);
+
+    const [, init] = global.fetch.mock.calls[0];
+    expect(JSON.parse(init.body)).toEqual({ paths: ['/usluga/remont'] });
   });
 
   test('no-ops when env is missing', async () => {

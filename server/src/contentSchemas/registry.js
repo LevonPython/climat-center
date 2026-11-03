@@ -9,6 +9,16 @@ function expandFieldKeys(field) {
   return ALL_LANGS.map((l) => `${field.key}_${l}`);
 }
 
+function fieldSchema(field) {
+  if (field.kind === 'list') {
+    return { type: 'array', items: buildJsonSchema(undefined, field.fields) };
+  }
+  if (field.kind === 'select') {
+    return { enum: [...field.options, null] };
+  }
+  return { type: ['string', 'null'] };
+}
+
 function buildAllowedKeys(fields) {
   const out = [];
   for (const f of fields) out.push(...expandFieldKeys(f));
@@ -22,13 +32,13 @@ function buildJsonSchema(id, fields) {
   for (const f of fields) {
     const keys = expandFieldKeys(f);
     for (const k of keys) {
-      properties[k] = { type: ['string', 'null'] };
+      properties[k] = fieldSchema(f);
       if (f.required) required.push(k);
     }
   }
 
   return {
-    $id: id,
+    ...(id ? { $id: id } : {}),
     type: 'object',
     additionalProperties: false,
     properties,
@@ -67,6 +77,22 @@ const ALL_BLOCKS = [
     { key: 'facebook_url' },
     { key: 'instagram_url' }
   ]),
+  defineBlock('global', 'branding', [
+    { key: 'site_name', multilingual: true },
+    { key: 'tagline', multilingual: true },
+    { key: 'logo_url' },
+    { key: 'hero_image_url' }
+  ]),
+  defineBlock('global', 'header', [
+    { key: 'hours_text', multilingual: true },
+    { key: 'arrival_text', multilingual: true },
+    { key: 'free_visit_text', multilingual: true },
+    { key: 'cta_label', multilingual: true }
+  ]),
+  defineBlock('global', 'footer', [
+    { key: 'copyright', multilingual: true },
+    { key: 'disclaimer', multilingual: true }
+  ]),
   defineBlock('about', 'page', [
     { key: 'title', multilingual: true },
     { key: 'subtitle', multilingual: true },
@@ -102,5 +128,5 @@ function getBlockDef(page_name, section_name) {
   return INDEX.get(schemaKey(page_name, section_name)) || null;
 }
 
-module.exports = { ALL_BLOCKS, getBlockDef, schemaKey };
+module.exports = { ALL_BLOCKS, ALL_LANGS, buildAllowedKeys, buildJsonSchema, expandFieldKeys, getBlockDef, schemaKey };
 
