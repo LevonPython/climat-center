@@ -14,7 +14,7 @@ Systematically plan and scaffold a new feature across the relevant workspaces in
    - Install any new dependencies via `npm install <pkg> -w <workspace>`
 
 3. **Plan architecture**
-   - Design database schema changes (migrations in `server/`) — use `snake_case` columns, add `_ru`, `_en`, `_am` suffixes for multilingual fields
+   - Design database schema changes (migrations in `server/`) — use `snake_case` columns, add `_ru`, `_en`, `_hy` suffixes for multilingual fields
    - Plan API endpoints following the `{ ok, data }` / `{ ok, error }` response contract
    - Plan UI components for `client` (Next.js Pages Router) and/or `admin` (Vite + React Router)
    - If content-block based, define schemas in both `server/src/contentSchemas/` and `admin/src/contentSchemas/`
@@ -23,7 +23,7 @@ Systematically plan and scaffold a new feature across the relevant workspaces in
    - Create migration file if DB changes are needed
    - Add server route, service, and repository layers
    - Add client/admin pages, components, and API calls
-   - Add translation keys to all locales (`ru`, `en`, `am`)
+   - Add translation keys to all locales (`ru`, `en`, `hy`)
 
 ## Feature Setup Checklist
 - [ ] Requirements and scope documented

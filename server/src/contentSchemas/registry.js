@@ -1,4 +1,4 @@
-const ALL_LANGS = ['ru', 'en', 'am'];
+const ALL_LANGS = ['ru', 'en', 'hy'];
 
 function schemaKey(page_name, section_name) {
   return `${page_name}/${section_name}`;

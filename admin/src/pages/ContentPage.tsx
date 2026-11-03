@@ -392,7 +392,7 @@ export function ContentPage() {
 
               {def.fields.some((f) => f.multilingual) ? (
                 <div className="flex items-center gap-2">
-                  {(['ru', 'en', 'am'] as Lang[]).map((l) => (
+                  {(['ru', 'en', 'hy'] as Lang[]).map((l) => (
                     <button
                       key={l}
                       type="button"

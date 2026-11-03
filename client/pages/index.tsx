@@ -58,7 +58,7 @@ export default function Home(props: HomeProps) {
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async ({ locale }) => {
-  const lang = locale || 'am';
+  const lang = locale || 'hy';
 
   let heroTitle: string | undefined;
   let heroSubtitle: string | undefined;

@@ -19,7 +19,7 @@ When adding or modifying a content block, update BOTH files.
 
 Each block is keyed by `(page_name, section_name)`. Fields declare:
 - `key` — storage key
-- `multilingual: true` — expands to `key_ru`, `key_en`, `key_am`
+- `multilingual: true` — expands to `key_ru`, `key_en`, `key_hy`
 - `required` — marks field as required in the JSON schema
 
 The server registry builds a JSON Schema with `additionalProperties: false` (unknown keys are rejected).

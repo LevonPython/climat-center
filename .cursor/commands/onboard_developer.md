@@ -20,7 +20,7 @@ Guide a new developer through setting up and understanding this monorepo so they
 
 3. **Project familiarization**
    - Explain the monorepo structure: `server` (Express/JS), `client` (Next.js/TS), `admin` (Vite+React/TS), `e2e` (Playwright)
-   - Explain the multilingual setup: three locales (`ru`, `en`, `am`), DB suffixes `_ru/_en/_am`, client translations in `client/public/locales/`
+   - Explain the multilingual setup: three locales (`ru`, `en`, `hy`), DB suffixes `_ru/_en/_hy`, client translations in `client/public/locales/`
    - Explain the API response contract: `{ ok: true, ...data }` or `{ ok: false, error: { message, details? } }`
    - Explain content blocks: `content_blocks` table keyed by `(page_name, section_name)`, schemas in both `server/src/contentSchemas/` and `admin/src/contentSchemas/`
 

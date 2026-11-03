@@ -29,6 +29,12 @@ function errorHandler(err, req, res, next) {
     }
   } else if (typeof status !== 'number' || status < 400 || status > 599) {
     status = 500;
+  } else if (err.type === 'entity.parse.failed') {
+    message = 'Invalid JSON';
+  }
+
+  // Details of a server failure stay in the log above.
+  if (status >= 500) {
     message = 'Internal Server Error';
   }
 

@@ -46,7 +46,7 @@ export function makeEmptyDraft(def: BlockDef): Record<string, unknown> {
     if (f.multilingual) {
       out[`${f.key}_ru`] = null;
       out[`${f.key}_en`] = null;
-      out[`${f.key}_am`] = null;
+      out[`${f.key}_hy`] = null;
     } else {
       out[f.key] = null;
     }
@@ -66,7 +66,7 @@ export function validateDraft(def: BlockDef, draft: Record<string, unknown>): Va
 
   // Types + basic format checks
   for (const f of def.fields) {
-    const keys = f.multilingual ? (['ru', 'en', 'am'] as const).map((l) => `${f.key}_${l}`) : ([f.key] as const);
+    const keys = f.multilingual ? (['ru', 'en', 'hy'] as const).map((l) => `${f.key}_${l}`) : ([f.key] as const);
     for (const k of keys as readonly string[]) {
       const v = (draft as any)[k];
       if (typeof v === 'undefined') continue;

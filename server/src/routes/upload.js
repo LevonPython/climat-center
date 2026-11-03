@@ -31,7 +31,7 @@ function buildSafeFilename(originalname) {
 
 function fileFilter(req, file, cb) {
   if (!file.mimetype || !file.mimetype.startsWith('image/')) {
-    return cb(new Error('Only image uploads are allowed'));
+    return cb(Object.assign(new Error('Only image uploads are allowed'), { status: 400 }));
   }
   return cb(null, true);
 }
@@ -42,7 +42,16 @@ const upload = multer({
   limits: { fileSize: maxMb * 1024 * 1024 }
 });
 
-uploadRouter.post('/', verifyToken, requireAnyRole(['admin', 'editor']), upload.single('file'), async (req, res, next) => {
+function acceptSingleFile(req, res, next) {
+  upload.single('file')(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      err.status = err.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+    }
+    next(err);
+  });
+}
+
+uploadRouter.post('/', verifyToken, requireAnyRole(['admin', 'editor']), acceptSingleFile, async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ ok: false, error: { message: 'Missing file' } });
     const filename = buildSafeFilename(req.file.originalname);

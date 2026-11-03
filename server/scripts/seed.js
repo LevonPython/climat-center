@@ -5,12 +5,17 @@ const { Client } = require('pg');
 // Load env from server/.env for scripts
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
+function isLocalDatabase(databaseUrl) {
+  return ['localhost', '127.0.0.1', '::1', '[::1]'].includes(new URL(databaseUrl).hostname);
+}
+
 async function main() {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) throw new Error('DATABASE_URL is required');
 
   const adminUsername = process.env.SEED_ADMIN_USERNAME || 'admin';
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'admin12345';
+  // The default password is public, so it must never reach a remote database.
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD || (isLocalDatabase(databaseUrl) ? 'admin12345' : null);
 
   const client = new Client({ connectionString: databaseUrl });
   await client.connect();
@@ -18,22 +23,26 @@ async function main() {
   try {
     await client.query('BEGIN');
 
-    const passwordHash = await bcrypt.hash(adminPassword, 10);
-    await client.query(
-      `
+    if (adminPassword) {
+      const passwordHash = await bcrypt.hash(adminPassword, 10);
+      await client.query(
+        `
       INSERT INTO users (username, password_hash, role)
       VALUES ($1, $2, 'admin')
       ON CONFLICT (username) DO NOTHING
     `,
-      [adminUsername, passwordHash]
-    );
+        [adminUsername, passwordHash]
+      );
+    } else {
+      console.warn('Skipping admin user: set SEED_ADMIN_PASSWORD or run npm run reset:admin -w server.');
+    }
 
     // Minimal services seed (3 languages). Adjust titles as needed.
     const servicesCountRes = await client.query('SELECT COUNT(*)::int AS count FROM services');
     if ((servicesCountRes.rows[0]?.count ?? 0) === 0) {
       await client.query(
         `
-        INSERT INTO services (type, title_en, title_ru, title_am, description_en, description_ru, description_am, price, image_url, is_active)
+        INSERT INTO services (type, title_en, title_ru, title_hy, description_en, description_ru, description_hy, price, image_url, is_active)
         VALUES
           ('install', 'Air conditioner installation', 'Установка кондиционеров', 'Օդորակիչների տեղադրում', NULL, NULL, NULL, NULL, NULL, TRUE),
           ('repair', 'Air conditioner repair', 'Ремонт кондиционеров', 'Օդորակիչների վերանորոգում', NULL, NULL, NULL, NULL, NULL, TRUE),
@@ -49,80 +58,80 @@ async function main() {
       VALUES
         ('home', 'hero', '{"title_ru":"ЦЕНТР КЛИМАТА","subtitle_ru":"Обслуживание кондиционеров и сплит-систем","cta_ru":"Оставьте заявку онлайн"}'::jsonb),
         ('home', 'contacts', '{"phone":"+(374) 94 00-00-00","email":"climatcenter@gmail.com"}'::jsonb),
-        ('global', 'contacts', '{"phone":"+(374) 94 00-00-00","email":"climatcenter@gmail.com","hours_ru":"Круглосуточно, без выходных","hours_en":"Daily, 24/7","hours_am":"Ամեն օր, 24/7","address_ru":"г. Ереван, ул. Прошяна, 1, кв. 1","address_en":"c. Yerevan, Proshyan street 1, apt. 1","address_am":"ք. Երևան, Պռոշյան փողոց 1, բն. 1"}'::jsonb),
+        ('global', 'contacts', '{"phone":"+(374) 94 00-00-00","email":"climatcenter@gmail.com","hours_ru":"Круглосуточно, без выходных","hours_en":"Daily, 24/7","hours_hy":"Ամեն օր, 24/7","address_ru":"г. Ереван, ул. Прошяна, 1, кв. 1","address_en":"c. Yerevan, Proshyan street 1, apt. 1","address_hy":"ք. Երևան, Պռոշյան փողոց 1, բն. 1"}'::jsonb),
         ('global', 'social', '{"whatsapp_url":"https://wa.me/37494000000","telegram_url":"https://t.me/your_handle","facebook_url":"https://facebook.com/your_page","instagram_url":"https://instagram.com/your_profile"}'::jsonb),
         ('about', 'page', '{
           "title_ru":"О компании",
           "title_en":"About us",
-          "title_am":"Մեր մասին",
+          "title_hy":"Մեր մասին",
           "subtitle_ru":"Сервис, которому можно доверять: аккуратная работа, понятные рекомендации и гарантия.",
           "subtitle_en":"Service you can rely on — clear recommendations, tidy work, and warranty.",
-          "subtitle_am":"Հուսալի սպասարկում՝ պարզ խորհուրդներով, մաքուր աշխատանքով և երաշխիքով։",
+          "subtitle_hy":"Հուսալի սպասարկում՝ պարզ խորհուրդներով, մաքուր աշխատանքով և երաշխիքով։",
           "section1Title_ru":"Опыт",
           "section1Title_en":"Experience",
-          "section1Title_am":"Փորձ",
+          "section1Title_hy":"Փորձ",
           "section1Body_ru":"Устанавливаем, ремонтируем и обслуживаем кондиционеры и сплит‑системы для квартир, офисов и коммерческих помещений.",
           "section1Body_en":"We install, repair, and service air conditioners for apartments, offices, and commercial spaces.",
-          "section1Body_am":"Տեղադրում, վերանորոգում և սպասարկում ենք օդորակիչներ բնակարանների, գրասենյակների և կոմերցիոն տարածքների համար։",
+          "section1Body_hy":"Տեղադրում, վերանորոգում և սպասարկում ենք օդորակիչներ բնակարանների, գրասենյակների և կոմերցիոն տարածքների համար։",
           "section2Title_ru":"Подход",
           "section2Title_en":"Approach",
-          "section2Title_am":"Մոտեցում",
+          "section2Title_hy":"Մոտեցում",
           "section2Body_ru":"Начинаем с диагностики, предлагаем оптимальное решение и объясняем, что и почему будем делать.",
           "section2Body_en":"We start with diagnostics, recommend the right solution, and clearly explain the scope of work.",
-          "section2Body_am":"Սկսում ենք ախտորոշումից, առաջարկում ճիշտ լուծում և պարզ ձևով բացատրում աշխատանքի ծավալը։",
+          "section2Body_hy":"Սկսում ենք ախտորոշումից, առաջարկում ճիշտ լուծում և պարզ ձևով բացատրում աշխատանքի ծավալը։",
           "section3Title_ru":"Качество и гарантия",
           "section3Title_en":"Quality & warranty",
-          "section3Title_am":"Որակ և երաշխիք",
+          "section3Title_hy":"Որակ և երաշխիք",
           "section3Body_ru":"Используем профессиональный инструмент и расходные материалы. Условия гарантии заранее согласуются.",
           "section3Body_en":"We use professional tools and consumables. Warranty terms are agreed in advance.",
-          "section3Body_am":"Օգտագործում ենք պրոֆեսիոնալ գործիքներ և նյութեր։ Երաշխիքի պայմանները նախապես համաձայնեցվում են։",
+          "section3Body_hy":"Օգտագործում ենք պրոֆեսիոնալ գործիքներ և նյութեր։ Երաշխիքի պայմանները նախապես համաձայնեցվում են։",
           "factsTitle_ru":"Коротко о нас",
           "factsTitle_en":"Quick facts",
-          "factsTitle_am":"Կարճ փաստեր",
+          "factsTitle_hy":"Կարճ փաստեր",
           "fact1Title_ru":"Выезд быстро",
           "fact1Title_en":"Fast arrival",
-          "fact1Title_am":"Արագ այց",
+          "fact1Title_hy":"Արագ այց",
           "fact1Desc_ru":"Во многих районах мастер может приехать в течение 2 часов.",
           "fact1Desc_en":"In many areas a technician can arrive within 2 hours.",
-          "fact1Desc_am":"Շատ շրջաններում վարպետը կարող է հասնել 2 ժամում։",
+          "fact1Desc_hy":"Շատ շրջաններում վարպետը կարող է հասնել 2 ժամում։",
           "fact2Title_ru":"Понятно и честно",
           "fact2Title_en":"Transparent service",
-          "fact2Title_am":"Թափանցիկ աշխատանք",
+          "fact2Title_hy":"Թափանցիկ աշխատանք",
           "fact2Desc_ru":"Объясняем объём работ и даём прозрачные рекомендации.",
           "fact2Desc_en":"We explain the scope of work and provide clear recommendations.",
-          "fact2Desc_am":"Բացատրում ենք աշխատանքի ծավալը և առաջարկները։",
+          "fact2Desc_hy":"Բացատրում ենք աշխատանքի ծավալը և առաջարկները։",
           "fact3Title_ru":"Гарантия",
           "fact3Title_en":"Warranty",
-          "fact3Title_am":"Երաշխիք",
+          "fact3Title_hy":"Երաշխիք",
           "fact3Desc_ru":"Гарантия на работы и запчасти — по договору.",
           "fact3Desc_en":"Warranty for work and parts according to agreement.",
-          "fact3Desc_am":"Երաշխիք՝ աշխատանքների և մասերի համար՝ ըստ պայմանագրի։",
+          "fact3Desc_hy":"Երաշխիք՝ աշխատանքների և մասերի համար՝ ըստ պայմանագրի։",
           "ctaTitle_ru":"Нужна помощь сейчас?",
           "ctaTitle_en":"Need help right now?",
-          "ctaTitle_am":"Պետք է օգնություն հիմա՞",
+          "ctaTitle_hy":"Պետք է օգնություն հիմա՞",
           "ctaSubtitle_ru":"Позвоните нам или откройте страницу контактов — там все способы связи.",
           "ctaSubtitle_en":"Call us or open the contacts page for all options.",
-          "ctaSubtitle_am":"Զանգահարեք կամ բացեք կոնտակտների էջը՝ բոլոր տարբերակների համար։",
+          "ctaSubtitle_hy":"Զանգահարեք կամ բացեք կոնտակտների էջը՝ բոլոր տարբերակների համար։",
           "call_ru":"Позвонить",
           "call_en":"Call",
-          "call_am":"Զանգահարել",
+          "call_hy":"Զանգահարել",
           "contacts_ru":"Контакты",
           "contacts_en":"Contacts",
-          "contacts_am":"Կոնտակտներ"
+          "contacts_hy":"Կոնտակտներ"
         }'::jsonb),
         ('contacts', 'page', '{
           "title_ru":"Контакты",
           "title_en":"Contacts",
-          "title_am":"Կոնտակտներ",
+          "title_hy":"Կոնտակտներ",
           "subtitle_ru":"Выберите удобный способ связи — телефон, почта или мессенджер.",
           "subtitle_en":"Choose a convenient way to reach us — phone, email, or messenger.",
-          "subtitle_am":"Ընտրեք հարմար կապի միջոց՝ հեռախոս, էլ. փոստ կամ մեսենջեր։",
+          "subtitle_hy":"Ընտրեք հարմար կապի միջոց՝ հեռախոս, էլ. փոստ կամ մեսենջեր։",
           "socialTitle_ru":"Соцсети / мессенджеры",
           "socialTitle_en":"Social / messengers",
-          "socialTitle_am":"Սոցցանցեր / մեսենջերներ",
+          "socialTitle_hy":"Սոցցանցեր / մեսենջերներ",
           "socialSubtitle_ru":"Напишите нам в мессенджер или в соцсетях.",
           "socialSubtitle_en":"Write to us in a messenger or on social networks.",
-          "socialSubtitle_am":"Գրեք մեզ մեսենջերում կամ սոցցանցերում։"
+          "socialSubtitle_hy":"Գրեք մեզ մեսենջերում կամ սոցցանցերում։"
         }'::jsonb)
       ON CONFLICT (page_name, section_name) DO NOTHING
     `

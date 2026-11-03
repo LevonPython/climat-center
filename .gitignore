@@ -40,3 +40,6 @@ logs/
 
 ## Cursor (generated index report)
 .cursor/indexed_files.txt
+
+## Claude Code (personal settings)
+.claude/settings.local.json

@@ -16,7 +16,7 @@ PostgreSQL 16. Connection via `pg.Pool` with `DATABASE_URL` env var.
 - Columns: `snake_case` (`user_name`, `created_at`, `is_active`)
 - Primary keys: `id UUID DEFAULT gen_random_uuid()`
 - Timestamps: `created_at TIMESTAMPTZ DEFAULT now()`, `updated_at TIMESTAMPTZ DEFAULT now()`
-- Multilingual columns: `title_ru`, `title_en`, `title_am` pattern
+- Multilingual columns: `title_ru`, `title_en`, `title_hy` pattern
 
 ## Migrations
 

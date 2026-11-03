@@ -24,8 +24,8 @@ Conduct a thorough code review of the current changes across the monorepo (`serv
 - [ ] Follows project conventions (snake_case DB columns, TypeScript for new files, functional React components)
 
 ### Multilingual / i18n
-- [ ] All three locale suffixes (`_ru`, `_en`, `_am`) are handled for DB fields
-- [ ] Translation keys added to all `client/public/locales/{ru,en,am}/common.json` files
+- [ ] All three locale suffixes (`_ru`, `_en`, `_hy`) are handled for DB fields
+- [ ] Translation keys added to all `client/public/locales/{ru,en,hy}/common.json` files
 - [ ] No hardcoded user-facing strings
 
 ### Security
