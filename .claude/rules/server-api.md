@@ -49,7 +49,7 @@ fooRouter.post(
 - Select explicit columns from `users`. `password_hash` is only read by login and never returned.
 
 ## Errors
-- `errorHandler` sends a non-Postgres `err.message` to the client as-is, so only throw client-safe text.
+- `errorHandler` replaces the message of every 5xx with `Internal Server Error`; details stay in the log. To show a message to the client, set a 4xx on the error: `Object.assign(new Error('Text'), { status: 400 })`.
 - Don't pre-check uniqueness or references. Let Postgres errors `23505` and `23503` bubble; the handler maps them to 409 and 400.
 
 ## Data access

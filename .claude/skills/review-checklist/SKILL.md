@@ -44,7 +44,7 @@ Working tree:
 - Every new route has `verifyToken` and a role guard, or is an intentional public route that the change explains.
 - Input is validated with `express-validator`, and `validationResult` is checked first.
 - SQL is parameterized. Async handlers use try/catch into `next(err)`.
-- Thrown messages are client-safe. `password_hash` never leaves the login query.
+- Errors meant for the client set a 4xx status, or they become a generic 500. `password_hash` never leaves the login query.
 - `server` code stays CommonJS JavaScript.
 - Writes that change public pages call `triggerRevalidate`.
 
