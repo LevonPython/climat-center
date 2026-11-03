@@ -18,7 +18,7 @@ Update both, every time, then run `node .claude/scripts/check-schema-parity.js`.
 
 ## Fields
 - Blocks are keyed by `(page_name, section_name)`.
-- `multilingual: true` expands `key` to `key_ru`, `key_en`, `key_am`.
+- `multilingual: true` expands `key` to `key_ru`, `key_en`, `key_hy`.
 - Values are `string | null`. Schemas use `additionalProperties: false`, so unknown keys are rejected.
 
 ## Changes that affect stored data
@@ -28,4 +28,4 @@ Stored `content_json` is only validated when it is saved or restored.
 - Seeds use `ON CONFLICT ... DO NOTHING`, so a new default in `seed.js` never reaches an existing row.
 
 ## Reads
-`GET /api/content/:lang` maps `title_am` to `title`, with no fallback between languages. A missing value is absent from the response, so pages must fall back to `t()`.
+`GET /api/content/:lang` maps `title_hy` to `title`, with no fallback between languages. A missing value is absent from the response, so pages must fall back to `t()`.

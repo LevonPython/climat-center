@@ -15,7 +15,7 @@ Pages Router only (`client/pages/`). App Router advice from the `vercel:nextjs` 
 
 ```tsx
 export const getStaticProps: GetStaticProps<Props> = async ({ locale }) => {
-  const lang = locale || 'am';
+  const lang = locale || 'hy';
   let title: string | undefined;
   try {
     const content = await apiFetch<{ pages: any }>(`/api/content/${lang}`);
@@ -31,7 +31,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ locale }) => {
 ```
 
 ## i18n
-- Default locale is `am`. Always pass `nextI18nextConfig` as the third argument to `serverSideTranslations`.
+- Default locale is `hy`. Always pass `nextI18nextConfig` as the third argument to `serverSideTranslations`.
 - Every user-facing string goes through `useTranslation`, with `content ?? t('key')` for DB-backed fields.
 
 ## Components and pages

@@ -53,16 +53,16 @@ servicesRouter.post(
   body('type').isString().trim().notEmpty().toLowerCase().isIn(['install', 'repair', 'service']),
   body('title_en').optional({ nullable: true }).isString().trim(),
   body('title_ru').optional({ nullable: true }).isString().trim(),
-  body('title_am').optional({ nullable: true }).isString().trim(),
+  body('title_hy').optional({ nullable: true }).isString().trim(),
   body().custom((_, { req }) => {
-    const titles = [req.body.title_ru, req.body.title_en, req.body.title_am];
+    const titles = [req.body.title_ru, req.body.title_en, req.body.title_hy];
     const hasAnyTitle = titles.some((v) => typeof v === 'string' && v.trim().length > 0);
     if (!hasAnyTitle) throw new Error('At least one title is required');
     return true;
   }),
   body('description_en').optional({ nullable: true }).isString(),
   body('description_ru').optional({ nullable: true }).isString(),
-  body('description_am').optional({ nullable: true }).isString(),
+  body('description_hy').optional({ nullable: true }).isString(),
   body('price').optional({ nullable: true }).isInt({ min: 0 }).toInt(),
   body('image_url').optional({ nullable: true }).isString(),
   body('is_active').optional().isBoolean().toBoolean(),
@@ -77,10 +77,10 @@ servicesRouter.post(
         type,
         title_en: titleEnRaw,
         title_ru: titleRuRaw,
-        title_am: titleAmRaw,
+        title_hy: titleHyRaw,
         description_en,
         description_ru,
-        description_am,
+        description_hy,
         price,
         image_url,
         is_active
@@ -88,17 +88,17 @@ servicesRouter.post(
 
       const title_en = typeof titleEnRaw === 'string' ? titleEnRaw.trim() || null : titleEnRaw;
       const title_ru = typeof titleRuRaw === 'string' ? titleRuRaw.trim() || null : titleRuRaw;
-      const title_am = typeof titleAmRaw === 'string' ? titleAmRaw.trim() || null : titleAmRaw;
+      const title_hy = typeof titleHyRaw === 'string' ? titleHyRaw.trim() || null : titleHyRaw;
 
       const result = await query(
         `
         INSERT INTO services
-          (type, title_en, title_ru, title_am, description_en, description_ru, description_am, price, image_url, is_active)
+          (type, title_en, title_ru, title_hy, description_en, description_ru, description_hy, price, image_url, is_active)
         VALUES
           ($1,$2,$3,$4,$5,$6,$7,$8,$9, COALESCE($10, TRUE))
         RETURNING *
       `,
-        [type, title_en, title_ru, title_am, description_en, description_ru, description_am, price, image_url, is_active]
+        [type, title_en, title_ru, title_hy, description_en, description_ru, description_hy, price, image_url, is_active]
       );
 
       // Fire-and-forget: services page is statically regenerated on the Next.js side.
@@ -118,10 +118,10 @@ servicesRouter.put(
   body('type').optional().isString().trim().notEmpty().toLowerCase().isIn(['install', 'repair', 'service']),
   body('title_en').optional({ nullable: true }).isString(),
   body('title_ru').optional({ nullable: true }).isString(),
-  body('title_am').optional({ nullable: true }).isString(),
+  body('title_hy').optional({ nullable: true }).isString(),
   body('description_en').optional({ nullable: true }).isString(),
   body('description_ru').optional({ nullable: true }).isString(),
-  body('description_am').optional({ nullable: true }).isString(),
+  body('description_hy').optional({ nullable: true }).isString(),
   body('price').optional({ nullable: true }).isInt({ min: 0 }).toInt(),
   body('image_url').optional({ nullable: true }).isString(),
   body('is_active').optional().isBoolean().toBoolean(),
@@ -133,7 +133,7 @@ servicesRouter.put(
       }
 
       const { id } = req.params;
-      const fields = ['type', 'title_en', 'title_ru', 'title_am', 'description_en', 'description_ru', 'description_am', 'price', 'image_url', 'is_active'];
+      const fields = ['type', 'title_en', 'title_ru', 'title_hy', 'description_en', 'description_ru', 'description_hy', 'price', 'image_url', 'is_active'];
       const sets = [];
       const params = [];
 

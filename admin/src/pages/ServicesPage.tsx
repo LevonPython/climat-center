@@ -8,10 +8,10 @@ type Service = {
   type: string;
   title_en: string | null;
   title_ru: string | null;
-  title_am: string | null;
+  title_hy: string | null;
   description_en: string | null;
   description_ru: string | null;
-  description_am: string | null;
+  description_hy: string | null;
   price: number | null;
   image_url: string | null;
   is_active: boolean;
@@ -94,7 +94,7 @@ export function ServicesPage() {
   const rows = useMemo(() => servicesQ.data || [], [servicesQ.data]);
 
   function validateDraft(d: ServiceDraft) {
-    const titleVals = [d.title_ru, d.title_en, d.title_am];
+    const titleVals = [d.title_ru, d.title_en, d.title_hy];
     const hasTitle = titleVals.some((v) => typeof v === 'string' && v.trim().length > 0);
     if (!hasTitle) {
       return { title: t('services.validationTitleRequired') };
@@ -127,10 +127,10 @@ export function ServicesPage() {
       type: s.type,
       title_ru: s.title_ru,
       title_en: s.title_en,
-      title_am: s.title_am,
+      title_hy: s.title_hy,
       description_ru: s.description_ru,
       description_en: s.description_en,
-      description_am: s.description_am,
+      description_hy: s.description_hy,
       price: s.price,
       image_url: s.image_url,
       is_active: s.is_active
@@ -211,11 +211,11 @@ export function ServicesPage() {
             />
           </label>
           <label className="grid gap-1">
-            <span className="text-sm font-semibold">{t('services.titleAm')}</span>
+            <span className="text-sm font-semibold">{t('services.titleHy')}</span>
             <input
-              value={draft.title_am || ''}
+              value={draft.title_hy || ''}
               onChange={(e) => {
-                setDraft((d) => ({ ...d, title_am: e.target.value || null }));
+                setDraft((d) => ({ ...d, title_hy: e.target.value || null }));
                 setFieldErrors((prev) => (prev?.title ? null : prev));
               }}
               className="rounded-xl border border-slate-200 px-3 py-2"
@@ -293,7 +293,7 @@ export function ServicesPage() {
           <tbody>
             {rows.map((s) => (
               <tr key={s.id} className="border-t border-slate-200">
-                <td className="px-4 py-3">{s.title_ru || s.title_en || s.title_am || '—'}</td>
+                <td className="px-4 py-3">{s.title_ru || s.title_en || s.title_hy || '—'}</td>
                 <td className="px-4 py-3">{s.type}</td>
                 <td className="px-4 py-3">{s.is_active ? t('common.yes') : t('common.no')}</td>
                 <td className="px-4 py-3 flex gap-2">

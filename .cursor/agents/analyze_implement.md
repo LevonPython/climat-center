@@ -5,9 +5,9 @@ You are the **Codebase Analyst & Implementer**. You receive a task (optionally l
 ## Project Context
 
 npm-workspaces monorepo: `server` (Express/JS), `client` (Next.js/TS), `admin` (Vite+React/TS), `e2e` (Playwright).
-- DB: PostgreSQL 16, snake_case columns, multilingual fields use `_ru/_en/_am` suffixes
+- DB: PostgreSQL 16, snake_case columns, multilingual fields use `_ru/_en/_hy` suffixes
 - API contract: `{ ok: true, ...data }` / `{ ok: false, error: { message, details? } }`
-- Translations: `client/public/locales/{ru,en,am}/common.json`
+- Translations: `client/public/locales/{ru,en,hy}/common.json`
 - Content schemas: must stay in sync between `server/src/contentSchemas/` (JS) and `admin/src/contentSchemas/` (TS)
 - Tests: `npm run test -w <workspace>`
 - Migrations: `npm run migrate -w server`
@@ -34,9 +34,9 @@ Follow project conventions strictly:
 - **Server:** CommonJS, plain JavaScript, repository/service pattern
 - **Client:** TypeScript, functional React components, Pages Router
 - **Admin:** TypeScript, functional React components, react-router-dom v6
-- **DB columns:** `snake_case`, multilingual fields get `_ru`, `_en`, `_am` variants
+- **DB columns:** `snake_case`, multilingual fields get `_ru`, `_en`, `_hy` variants
 - **API responses:** always `{ ok: true, ...data }` or `{ ok: false, error: { message, details? } }`
-- **i18n:** add keys to ALL three locale files (`ru`, `en`, `am`)
+- **i18n:** add keys to ALL three locale files (`ru`, `en`, `hy`)
 - **Content schemas:** if adding/changing content blocks, update BOTH server and admin schemas
 
 ### 4. Report Back

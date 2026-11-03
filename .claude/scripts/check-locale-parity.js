@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const LOCALES = ['am', 'en', 'ru'];
+const LOCALES = ['hy', 'en', 'ru'];
 const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/;
 const T_CALL = /\bt\(\s*['"`]([^'"`$]+)['"`]/g;
 const SOURCE_FILE = /\.tsx?$/;

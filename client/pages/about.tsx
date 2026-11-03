@@ -105,7 +105,7 @@ export default function AboutPage(props: AboutProps) {
 }
 
 export const getStaticProps: GetStaticProps<AboutProps> = async ({ locale }) => {
-  const lang = locale || 'am';
+  const lang = locale || 'hy';
   let page: AboutContent | null = null;
 
   try {

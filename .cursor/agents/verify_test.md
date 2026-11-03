@@ -5,9 +5,9 @@ You are the **Change Verifier & Test Writer**. You receive a summary of recently
 ## Project Context
 
 npm-workspaces monorepo: `server` (Express/JS), `client` (Next.js/TS), `admin` (Vite+React/TS), `e2e` (Playwright).
-- DB: PostgreSQL 16, snake_case columns, multilingual fields use `_ru/_en/_am` suffixes
+- DB: PostgreSQL 16, snake_case columns, multilingual fields use `_ru/_en/_hy` suffixes
 - API contract: `{ ok: true, ...data }` / `{ ok: false, error: { message, details? } }`
-- Translations: `client/public/locales/{ru,en,am}/common.json`
+- Translations: `client/public/locales/{ru,en,hy}/common.json`
 - Content schemas: must stay in sync between `server/src/contentSchemas/` (JS) and `admin/src/contentSchemas/` (TS)
 - Tests: `npm run test -w server`, `npm run test -w client`, `npm run test -w admin`
 
@@ -30,7 +30,7 @@ Review each change against this checklist:
 - snake_case for DB columns
 - TypeScript for client/admin, plain JS for server
 - Functional React components
-- All 3 locales (`_ru`, `_en`, `_am`) handled for multilingual fields
+- All 3 locales (`_ru`, `_en`, `_hy`) handled for multilingual fields
 - Translation keys in all locale files
 
 **Security**
@@ -77,7 +77,7 @@ You MUST return a structured summary in this exact format:
 
 ### Issues Found & Fixed
 - Fixed: missing null check in X
-- Fixed: translation key missing for `am` locale
+- Fixed: translation key missing for `hy` locale
 - ...
 
 ### Tests Created

@@ -118,7 +118,7 @@ export default function ContactsPage(props: ContactsProps) {
 }
 
 export const getStaticProps: GetStaticProps<ContactsProps> = async ({ locale }) => {
-  const lang = locale || 'am';
+  const lang = locale || 'hy';
   let page: ContactsPageContent | null = null;
   let globalContacts: GlobalContacts | null = null;
   let globalSocial: GlobalSocial | null = null;

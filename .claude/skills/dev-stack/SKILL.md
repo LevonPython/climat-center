@@ -28,6 +28,8 @@ Check first, because a service may already be running:
 curl -s -m 2 localhost:5000/api/health
 ```
 
+Check who holds each port with `lsof -nP -iTCP:<port> -sTCP:LISTEN`. Another project's server may be on 3000 or 5173, and its responses will look like a broken app. **Never stop a process you didn't start, and never clean up by port.** If 3000 is taken, run the client on another port from `client/`: `npx next dev -p 3100`. Vite moves to the next free port without warning, so read its output.
+
 Start what is missing, each as a separate background process:
 
 ```bash
@@ -40,7 +42,7 @@ npm run dev -w admin
 
 ```bash
 curl -s localhost:5000/api/health
-curl -s localhost:5000/api/content/am
+curl -s localhost:5000/api/content/hy
 curl -s -o /dev/null -w '%{http_code}\n' localhost:3000/
 curl -s -o /dev/null -w '%{http_code}\n' localhost:3000/en
 curl -s -o /dev/null -w '%{http_code}\n' localhost:3000/ru
@@ -61,4 +63,5 @@ For a UI change, open the affected screen and read it in Armenian at 360px width
 | `relation ... does not exist` | Migrations not applied | `npm run migrate -w server` |
 | Admin Content page is empty or partial | Seed never overwrites | `db-content-reset` skill |
 | Site shows only `t()` fallback text | API was down when the page fetched | Start the API and reload |
-| Port already in use | Another process holds it | `lsof -i :5000`, then ask before killing anything you didn't start |
+| Port already in use | Another process holds it | Use another port, or ask the user to stop it |
+| Admin shows "Sign-in error" with the right password | The API is unreachable or CORS blocks the origin | Check the API is running; in production check `CORS_ORIGINS` |

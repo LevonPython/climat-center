@@ -1,6 +1,6 @@
 ---
 name: i18n-sync
-description: Add, rename or remove UI translation strings across the client and admin catalogues in all three locales (am, en, ru). Use when a change adds user-facing text, when a translation is missing, or when keys may have drifted.
+description: Add, rename or remove UI translation strings across the client and admin catalogues in all three locales (hy, en, ru). Use when a change adds user-facing text, when a translation is missing, or when keys may have drifted.
 ---
 
 # Translations
@@ -9,15 +9,15 @@ description: Add, rename or remove UI translation strings across the client and 
 
 | Text appears in | Files |
 |---|---|
-| Public site | `client/public/locales/{am,en,ru}/common.json` |
-| Admin panel | `admin/public/locales/{am,en,ru}/common.json` |
+| Public site | `client/public/locales/{hy,en,ru}/common.json` |
+| Admin panel | `admin/public/locales/{hy,en,ru}/common.json` |
 
 They are independent. A string used in both apps goes in both. Text that editors change belongs in a content block instead (see the `content-block` skill).
 
 ## Add a string
 
 1. Add the key to all three files of the right catalogue, in the same position, under the existing section (`booking.*`, `services.*`, and so on).
-2. Write real translations. `am` is the default locale, so it must be real Armenian. If you are unsure of a translation, say so in your report rather than leaving a placeholder.
+2. Write real translations. `hy` is the default locale, so it must be real Armenian. If you are unsure of a translation, say so in your report rather than leaving a placeholder.
 3. Use it through `t('section.key')` from `useTranslation`. Prefer literal keys so the check can see them.
 4. Run the check.
 

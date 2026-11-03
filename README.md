@@ -113,14 +113,14 @@ You should see `climat_center` in the list.
 
 ## Admin panel
 
-The admin app manages **bookings**, **services**, **content**, and **users**. It does not currently include a screen for **quiz submissions**; quiz data is stored via the API and can be listed with `GET /api/quiz-submissions` (requires admin/editor auth). Public site translations (e.g. quiz options in EN/RU/AM) live in `client/public/locales/` and do not affect the admin UI.
+The admin app manages **bookings**, **services**, **content**, and **users**. It does not currently include a screen for **quiz submissions**; quiz data is stored via the API and can be listed with `GET /api/quiz-submissions` (requires admin/editor auth). Public site translations (e.g. quiz options in EN/RU/HY) live in `client/public/locales/` and do not affect the admin UI.
 
 ### Content editing (safe, schema-driven)
 
 The **Content** screen is designed to be safe for non-technical editors:
 
 - **Form-first UI**: content is edited via labeled inputs and grouped sections; keys are not editable.
-- **Language tabs**: multilingual fields are edited with RU/EN/AM tabs (stored in DB as `*_ru`, `*_en`, `*_am`).
+- **Language tabs**: multilingual fields are edited with RU/EN/HY tabs (stored in DB as `*_ru`, `*_en`, `*_hy`).
 - **Validation**: the editor blocks saving when content violates the block schema (unknown keys, wrong value types).
 - **History + restore**: each save creates a version entry; you can load or restore previous versions from the UI.
 - **Advanced JSON mode**: an explicit, gated toggle that shows the raw `content_json` for power users. It still uses the same schema validation (unknown keys are rejected).
@@ -153,7 +153,7 @@ To avoid waiting for the ISR timer, the API triggers a secure Next.js endpoint a
 
 - Next.js endpoint (Vercel / public site): `POST /api/revalidate?secret=...`
   - Body: `{ "event": "content" }` or `{ "event": "services" }`
-  - Revalidates an allowlisted set of routes (including locale routes like `/en/...` and `/am/...`).
+  - Revalidates an allowlisted set of routes (including locale routes like `/en/...` and `/ru/...`).
 - Express triggers it after successful DB writes, e.g. after `PUT /api/content`.
 
 This gives you static performance + near-instant content updates without redeploying the public site.

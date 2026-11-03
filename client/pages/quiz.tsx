@@ -20,7 +20,7 @@ const FALLBACKS = {
     problems: ['Не морозит', 'Течет вода', 'Не включается', 'Шумит', 'Обмерзает', 'Неприятный запах'],
     acTypes: ['Настенный', 'Кассетный', 'Канальный', 'Напольно-потолочный', 'Оконный', 'Колонный']
   },
-  am: {
+  hy: {
     problems: ['Չի սառչում', 'Ջուր է հոսում', 'Չի միանում', 'Աղմուկ է անում', 'Սառչում է', 'Անհաճոյական հոտ'],
     acTypes: ['Պատի', 'Կասետային', 'Խողովակային', 'Հատակ-առաստաղ', 'Պատուհանի', 'Սյունակային']
   }
@@ -49,7 +49,7 @@ function displayLabel(value: string, options: string[], keyPrefix: string, fallb
 export default function QuizPage() {
   const { t } = useTranslation('common');
   const { locale } = useRouter();
-  const localeKey = (locale && locale in FALLBACKS ? locale : 'am') as keyof typeof FALLBACKS;
+  const localeKey = (locale && locale in FALLBACKS ? locale : 'hy') as keyof typeof FALLBACKS;
   const fallbacks = FALLBACKS[localeKey];
 
   const problems = translatedOrFallback(t, 'problem', [...fallbacks.problems]);
@@ -291,7 +291,7 @@ export default function QuizPage() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const lang = locale || 'am';
+  const lang = locale || 'hy';
   return {
     props: {
       ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig))

@@ -42,4 +42,4 @@ Run from the repo root:
 node -e "require('dotenv').config({path:'server/.env'}); const {Client}=require('pg'); (async()=>{const c=new Client({connectionString:process.env.DATABASE_URL}); await c.connect(); const r=await c.query('select page_name, section_name from content_blocks order by page_name, section_name'); console.log(r.rows); await c.end();})().catch(e=>{console.error(e.code||e.message); process.exit(1);});"
 ```
 
-Every block in `server/src/contentSchemas/registry.js` should be listed. If the API is running, `curl -s localhost:5000/api/content/am` should return non-empty `pages`.
+Every block in `server/src/contentSchemas/registry.js` should be listed. If the API is running, `curl -s localhost:5000/api/content/hy` should return non-empty `pages`.

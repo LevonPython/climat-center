@@ -3,12 +3,12 @@ import { useRouter } from 'next/router';
 const LOCALES = [
   { id: 'ru', label: 'RU' },
   { id: 'en', label: 'EN' },
-  { id: 'am', label: 'AM' }
+  { id: 'hy', label: 'HY' }
 ] as const;
 
 export function LanguageSwitcher() {
   const router = useRouter();
-  const current = (router.locale || 'am') as (typeof LOCALES)[number]['id'];
+  const current = (router.locale || 'hy') as (typeof LOCALES)[number]['id'];
 
   return (
     <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1">

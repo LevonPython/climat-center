@@ -22,10 +22,10 @@ type BookingPayload = {
 
 function pickServiceTitle(svc: Service, lang: string) {
   const title =
-    (lang === 'ru' ? svc.title_ru : lang === 'am' ? svc.title_am : svc.title_en) ||
+    (lang === 'ru' ? svc.title_ru : lang === 'hy' ? svc.title_hy : svc.title_en) ||
     svc.title_en ||
     svc.title_ru ||
-    svc.title_am ||
+    svc.title_hy ||
     svc.type;
   return title || '—';
 }
@@ -33,7 +33,7 @@ function pickServiceTitle(svc: Service, lang: string) {
 export default function BookingPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const lang = router.locale || 'am';
+  const lang = router.locale || 'hy';
   const selectedServiceId = typeof router.query.serviceId === 'string' ? router.query.serviceId : '';
 
   const [services, setServices] = useState<Service[]>([]);
@@ -240,7 +240,7 @@ export default function BookingPage() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const lang = locale || 'am';
+  const lang = locale || 'hy';
   return {
     props: {
       ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig))

@@ -2,7 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import HttpBackend from 'i18next-http-backend';
 
-const LOCALES = ['ru', 'en', 'am'] as const;
+const LOCALES = ['ru', 'en', 'hy'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 const STORAGE_KEY = 'admin-locale';
@@ -14,7 +14,7 @@ export function getStoredLocale(): Locale {
   } catch {
     /* ignore */
   }
-  return 'am';
+  return 'hy';
 }
 
 export function setStoredLocale(locale: Locale): void {
@@ -30,7 +30,7 @@ i18n
   .use(initReactI18next)
   .init({
     lng: getStoredLocale(),
-    fallbackLng: 'am',
+    fallbackLng: 'hy',
     supportedLngs: LOCALES,
     ns: ['common'],
     defaultNS: 'common',

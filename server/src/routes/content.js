@@ -15,7 +15,7 @@ function resolveLangContent(contentJson, lang) {
 
   // Copy non-suffixed keys
   for (const [k, v] of Object.entries(contentJson)) {
-    if (!k.endsWith('_en') && !k.endsWith('_ru') && !k.endsWith('_am')) {
+    if (!k.endsWith('_en') && !k.endsWith('_ru') && !k.endsWith('_hy')) {
       out[k] = v;
     }
   }
@@ -77,7 +77,7 @@ contentRouter.get(
 
 contentRouter.get(
   '/:lang',
-  param('lang').isIn(['en', 'ru', 'am']),
+  param('lang').isIn(['en', 'ru', 'hy']),
   async (req, res, next) => {
     try {
       const errors = validationResult(req);

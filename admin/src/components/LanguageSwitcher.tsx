@@ -4,7 +4,7 @@ import type { Locale } from '../i18n';
 const LOCALES: { id: Locale; label: string }[] = [
   { id: 'ru', label: 'RU' },
   { id: 'en', label: 'EN' },
-  { id: 'am', label: 'AM' }
+  { id: 'hy', label: 'HY' }
 ];
 
 export function LanguageSwitcher() {

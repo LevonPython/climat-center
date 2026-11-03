@@ -41,11 +41,11 @@ A block is defined twice, and nothing in the test suite notices when the two cop
 - **Remove or rename a field**: edit both registries and move the stored data in a migration (see the `db-migration` skill). Otherwise the editor keeps the stale key and blocks every save.
   ```sql
   UPDATE content_blocks
-  SET content_json = (content_json - 'old_ru' - 'old_en' - 'old_am')
+  SET content_json = (content_json - 'old_ru' - 'old_en' - 'old_hy')
     || jsonb_strip_nulls(jsonb_build_object(
          'new_ru', content_json->'old_ru',
          'new_en', content_json->'old_en',
-         'new_am', content_json->'old_am'))
+         'new_hy', content_json->'old_hy'))
   WHERE page_name = 'home' AND section_name = 'promo';
   ```
   Tell the user that older entries in the block's version history keep the old keys and can no longer be restored.

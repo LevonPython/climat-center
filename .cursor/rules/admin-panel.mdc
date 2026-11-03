@@ -32,4 +32,4 @@ saveM = useMutation({
 
 ## Content Editing
 
-Content schemas are defined in `admin/src/contentSchemas/registry.ts`. The `ContentPage` uses schema-driven form rendering with language tabs (ru/en/am), version history, and an optional advanced JSON mode.
+Content schemas are defined in `admin/src/contentSchemas/registry.ts`. The `ContentPage` uses schema-driven form rendering with language tabs (ru/en/hy), version history, and an optional advanced JSON mode.

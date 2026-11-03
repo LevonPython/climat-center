@@ -6,26 +6,26 @@ export type Service = {
   type: string;
   title_en?: string | null;
   title_ru?: string | null;
-  title_am?: string | null;
+  title_hy?: string | null;
   description_en?: string | null;
   description_ru?: string | null;
-  description_am?: string | null;
+  description_hy?: string | null;
   price?: number | null;
   image_url?: string | null;
 };
 
 function pickLang(svc: Service, lang: string) {
   const title =
-    (lang === 'ru' ? svc.title_ru : lang === 'am' ? svc.title_am : svc.title_en) ||
+    (lang === 'ru' ? svc.title_ru : lang === 'hy' ? svc.title_hy : svc.title_en) ||
     svc.title_ru ||
     svc.title_en ||
-    svc.title_am ||
+    svc.title_hy ||
     '—';
   const description =
-    (lang === 'ru' ? svc.description_ru : lang === 'am' ? svc.description_am : svc.description_en) ||
+    (lang === 'ru' ? svc.description_ru : lang === 'hy' ? svc.description_hy : svc.description_en) ||
     svc.description_ru ||
     svc.description_en ||
-    svc.description_am ||
+    svc.description_hy ||
     '';
   return { title, description };
 }

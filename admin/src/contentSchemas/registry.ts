@@ -1,4 +1,4 @@
-export type Lang = 'ru' | 'en' | 'am';
+export type Lang = 'ru' | 'en' | 'hy';
 
 export type FieldKind = 'string' | 'text' | 'url' | 'email' | 'phone';
 
@@ -44,7 +44,7 @@ export function schemaKey(page_name: string, section_name: string) {
   return `${page_name}/${section_name}`;
 }
 
-const ALL_LANGS: Lang[] = ['ru', 'en', 'am'];
+const ALL_LANGS: Lang[] = ['ru', 'en', 'hy'];
 
 function expandFieldKeys(field: FieldDef): string[] {
   if (!field.multilingual) return [field.key];

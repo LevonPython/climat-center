@@ -12,7 +12,7 @@ Pages Router (`client/pages/`). Do NOT use App Router. Static pages use `getStat
 
 ## i18n
 
-`next-i18next` with `serverSideTranslations`. Default locale: `ru`, available: `['ru', 'en', 'am']`. Always include `serverSideTranslations(locale, ['common'])` in `getStaticProps`/`getServerSideProps`.
+`next-i18next` with `serverSideTranslations`. Default locale: `ru`, available: `['ru', 'en', 'hy']`. Always include `serverSideTranslations(locale, ['common'])` in `getStaticProps`/`getServerSideProps`.
 
 ```tsx
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';

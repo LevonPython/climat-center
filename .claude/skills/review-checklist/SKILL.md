@@ -54,9 +54,9 @@ Working tree:
 - A new table is in `truncateAll`.
 
 **Multilingual**
-- New DB fields have `_ru`, `_en` and `_am` variants.
+- New DB fields have `_ru`, `_en` and `_hy` variants.
 - No hardcoded user-facing text in `client` or `admin`.
-- New UI text is non-technical, and `am` holds real Armenian.
+- New UI text is non-technical, and `hy` holds real Armenian.
 
 **Content blocks**
 - Both registries changed together.
