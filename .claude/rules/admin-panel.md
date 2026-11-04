@@ -37,4 +37,12 @@ const saveM = useMutation({
 - Format dates with the active locale. Existing `ru-RU` calls are legacy; don't copy them.
 
 ## Content editing
-`admin/src/pages/ContentPage.tsx` is schema-driven with language tabs, version history and an advanced JSON mode. Change the registry rather than special-casing a block in the page.
+`admin/src/components/BlockEditor.tsx` is the one schema-driven editor, with language tabs, version history and an advanced JSON mode. Site settings, the older page text and page sections all use it. Change the schema on the server rather than special-casing a block in the admin.
+
+## Shared pieces
+- `request` and `send` in `admin/src/lib/request.ts` throw on a failed response. New screens use them instead of checking `resp.ok`, and show errors with `errorText`, which gives plain messages for session, permission, size and connection problems.
+- `FieldEditor` renders a field by its `kind`, `RichTextEditor` is TipTap limited to what the server's sanitizer keeps, and `MediaPicker` chooses from the file library.
+- Reordering uses `ReorderButtons` and `moveItem`, which work by keyboard and need no extra dependency.
+- Every form with its own draft calls `useUnsavedGuard`. `LeaveGuard` then asks before any move to another screen, including the browser's Back button. Switching views inside a screen asks through `useConfirmLeave`.
+- A failed background refresh keeps the data, so show the full-screen error only when `data` is missing, or an expired session wipes unsaved work.
+- Put help text in `LabeledField`, not inside a `<label>`, or it becomes part of the field's spoken name.

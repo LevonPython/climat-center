@@ -39,7 +39,6 @@ Hint from the user: $ARGUMENTS
    | `server/` | `node .claude/scripts/test-server.js` |
    | `client/` | `npm run test -w client` and `npx tsc --noEmit --incremental false -p client` |
    | `admin/` | `npm run test -w admin` and `npx tsc --noEmit --incremental false -p admin` |
-   | `*/contentSchemas/` | `node .claude/scripts/check-schema-parity.js` |
    | `*/public/locales/` or new `t()` calls | `node .claude/scripts/check-locale-parity.js` |
 
    If a check fails, stop and report it. Don't commit around a failure unless the user says to.

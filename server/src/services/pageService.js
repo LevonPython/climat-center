@@ -45,6 +45,9 @@ async function updatePage(id, values) {
   if (existing.slug === HOME_SLUG && values.slug && values.slug !== HOME_SLUG) {
     throw httpError(400, 'The home page address cannot change.');
   }
+  if (existing.slug === HOME_SLUG && existing.status === 'published' && values.status === 'hidden') {
+    throw httpError(400, 'The home page cannot be hidden.');
+  }
   await assertNoParentCycle(id, values.parent_id);
 
   const page = await pageRepository.update(id, values);

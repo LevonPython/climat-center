@@ -120,6 +120,17 @@ if (!dbUrl) {
         expect(version.rows[0].content_json.body_hy).toContain(newUrl);
       });
 
+      test('a file can only be replaced by one of the same kind', async () => {
+        const asset = await createAsset();
+        const storedBefore = fs.readdirSync(UPLOAD_ROOT).length;
+        const res = await api.editor.put(`/api/admin/media/${asset.id}/file`).attach('file', Buffer.from('%PDF-1.4'), { filename: 'b.pdf', contentType: 'application/pdf' });
+        expect(res.status).toBe(400);
+        const row = await query('SELECT url, kind FROM media_assets WHERE id = $1', [asset.id]);
+        expect(row.rows[0]).toEqual({ url: asset.url, kind: 'image' });
+        expect(fs.existsSync(storedPath(asset.url))).toBe(true);
+        expect(fs.readdirSync(UPLOAD_ROOT)).toHaveLength(storedBefore);
+      });
+
       test('only admins can delete, and the file goes too', async () => {
         const asset = await createAsset();
         expect((await api.editor.delete(`/api/admin/media/${asset.id}`)).status).toBe(403);

@@ -30,9 +30,8 @@ Working tree:
 
 1. Work out the scope. Use the requested scope if one was given. Otherwise use `git diff HEAD` plus untracked files. If the tree is clean, use `git diff main...HEAD`.
 2. Read each changed file in full, not just its diff.
-3. Run both mechanical checks:
+3. Run the mechanical check:
    ```bash
-   node .claude/scripts/check-schema-parity.js
    node .claude/scripts/check-locale-parity.js
    ```
 4. Go through the checklist. Report only problems in the changed code. Existing issues elsewhere are not findings, and skip style opinions.
@@ -59,7 +58,7 @@ Working tree:
 - New UI text is non-technical, and `hy` holds real Armenian.
 
 **Content blocks**
-- Both registries changed together.
+- New labels are in `admin/public/locales/*/schema.json`.
 - A removed or renamed field has a data migration.
 - Pages fall back to `t()`.
 

@@ -8,7 +8,7 @@ npm-workspaces monorepo: `server` (Express/JS), `client` (Next.js/TS), `admin` (
 - DB: PostgreSQL 16, snake_case columns, multilingual fields use `_ru/_en/_hy` suffixes
 - API contract: `{ ok: true, ...data }` / `{ ok: false, error: { message, details? } }`
 - Translations: `client/public/locales/{ru,en,hy}/common.json`
-- Content schemas: must stay in sync between `server/src/contentSchemas/` (JS) and `admin/src/contentSchemas/` (TS)
+- Content schemas: defined in `server/src/contentSchemas/`, and the admin reads them from `GET /api/admin/schemas`
 - Tests: `npm run test -w server`, `npm run test -w client`, `npm run test -w admin`
 
 ## Instructions

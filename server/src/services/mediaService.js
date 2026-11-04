@@ -3,13 +3,17 @@ const { httpError } = require('../config/httpError');
 const { mediaRepository } = require('../repositories/mediaRepository');
 const { deleteFile, storeFile } = require('./fileStorage');
 
+function fileKind(file) {
+  return file.mimetype.startsWith('image/') ? 'image' : 'document';
+}
+
 function fileValues(file, url) {
   return {
     url,
     filename: file.originalname,
     mime_type: file.mimetype,
     size_bytes: file.size,
-    kind: file.mimetype.startsWith('image/') ? 'image' : 'document'
+    kind: fileKind(file)
   };
 }
 
@@ -31,6 +35,8 @@ async function updateAsset(id, values) {
 
 async function replaceAssetFile(id, file) {
   const existing = await requireAsset(id);
+  // Every saved reference moves to the new file, and a PDF can't stand in for a picture.
+  if (fileKind(file) !== existing.kind) throw httpError(400, 'Choose a file of the same kind.');
   const url = await storeFile(file);
   const asset = await withClient(async (client) => {
     await client.query('BEGIN');

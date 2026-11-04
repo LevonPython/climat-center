@@ -1,44 +1,45 @@
 ---
 name: content-block
-description: Add or change a CMS content block across the server registry, admin registry, seed, and public page. Use when adding editable text to a page, changing block fields, or when the two content schema registries may have drifted.
+description: Add or change a CMS content block or page section type on the server, with its admin labels, seed and public rendering. Use when adding editable text to a page or changing block fields.
 ---
 
 # Content blocks
 
-A block is defined twice, and nothing in the test suite notices when the two copies disagree. The parity check at the end of this workflow is the only guard, so it always runs.
+Definitions live only on the server, and the admin builds its forms from them through `GET /api/admin/schemas`. There are two kinds:
+- **Site blocks** in `server/src/contentSchemas/registry.js`: one per site, keyed by `(page_name, section_name)`, such as contacts and branding.
+- **Section types** in `server/src/contentSchemas/blockTypes.js`: added to pages any number of times, with lists, images and rich text.
 
-## Add a block
+## Add a site block
 
-1. **Server registry**: `server/src/contentSchemas/registry.js`, in `ALL_BLOCKS`:
+1. **Registry**: add to `ALL_BLOCKS`:
    ```js
-   defineBlock('home', 'promo', [
-     { key: 'title', multilingual: true },
-     { key: 'phone' }
-   ]),
+   defineBlock(
+     'home',
+     'promo',
+     {
+       title: 'Home page: promotion',
+       description: 'Promotion shown on the home page.',
+       groups: [{ id: 'main', label: 'Promotion', fieldKeys: ['title', 'phone'] }]
+     },
+     [text('title', 'Title'), phone]
+   ),
    ```
-2. **Admin registry**: `admin/src/contentSchemas/registry.ts`, in `ALL_BLOCK_DEFS`, with the same keys plus UI metadata:
-   ```ts
-   defineBlock({
-     page_name: 'home',
-     section_name: 'promo',
-     title: 'Home / Promo',
-     groups: [{ id: 'main', label: 'Main', fieldKeys: ['title', 'phone'] }],
-     fields: [
-       { key: 'title', label: 'Title', kind: 'string', multilingual: true },
-       { key: 'phone', label: 'Phone', kind: 'phone' }
-     ]
-   }),
-   ```
-3. **Seed**: add a default row in `server/scripts/seed.js`. It only reaches databases that don't have the row yet. Existing databases get it from the admin form or the `db-content-reset` skill.
+2. **Labels**: add every new label to `admin/public/locales/{hy,ru,en}/schema.json`, in real Armenian and Russian.
+3. **Seed**: add a default row in `server/scripts/seed.js` if the page needs one. It only reaches databases that don't have the row yet, and the admin can also create it on first save.
 4. **Public page**: read it in `getStaticProps` from `content.pages?.home?.promo`, pass `value ?? null`, and render `value ?? t('key')`. The API has no fallback between languages, so `t()` is always needed.
 5. **New page only**: add its path to `pathsForEvent` in `client/pages/api/revalidate.ts`.
-6. **Tests**: extend `server/tests/content.test.js` if behaviour changes, and run `node .claude/scripts/test-server.js`.
-7. **Parity**: `node .claude/scripts/check-schema-parity.js`
+6. **Tests**: extend `server/tests/content.test.js` if behaviour changes, then run `node .claude/scripts/test-server.js` and `npm run test -w admin`. `schemaLabels.test.ts` fails if a label has no translation.
+
+## Add a section type
+
+1. **Definition**: add to `ALL_BLOCK_TYPES` in `blockTypes.js` with `defineBlockType(type, label, description, fields)`.
+2. **Labels**: as above.
+3. **Public site**: render the new type wherever the site renders page sections.
 
 ## Change an existing block
 
-- **Add a field**: edit both registries. Existing rows are fine, because the editor fills the new key with `null`.
-- **Remove or rename a field**: edit both registries and move the stored data in a migration (see the `db-migration` skill). Otherwise the editor keeps the stale key and blocks every save.
+- **Add a field**: edit the definition and add its label. Existing rows are fine, because the editor fills the new key with `null`.
+- **Remove or rename a field**: edit the definition and move the stored data in a migration (see the `db-migration` skill). Otherwise the editor keeps the stale key and blocks every save.
   ```sql
   UPDATE content_blocks
   SET content_json = (content_json - 'old_ru' - 'old_en' - 'old_hy')
@@ -50,9 +51,3 @@ A block is defined twice, and nothing in the test suite notices when the two cop
   ```
   Tell the user that older entries in the block's version history keep the old keys and can no longer be restored.
 - **`required: true`**: this only requires the key to exist. `null` passes, so don't use it to force editors to fill a value in.
-
-## What the parity check compares
-
-`check-schema-parity.js` loads both registries and compares block keys, expanded field keys and `required` keys. It exits non-zero on any difference. UI-only metadata (`label`, `kind`, `groups`) exists only in admin and isn't compared.
-
-A difference is never "expected": fix the registry that is wrong, not the check.

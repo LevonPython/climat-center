@@ -13,6 +13,8 @@ type Booking = {
   status: 'new' | 'in_progress' | 'completed' | 'cancelled';
   address: string | null;
   problem_description: string | null;
+  work_types: string[] | null;
+  source_page: string | null;
   created_at: string;
 };
 
@@ -79,6 +81,8 @@ export function BookingsPage() {
               <th className="text-left font-semibold px-4 py-3">{t('bookings.phone')}</th>
               <th className="text-left font-semibold px-4 py-3">{t('bookings.address')}</th>
               <th className="text-left font-semibold px-4 py-3">{t('bookings.comment')}</th>
+              <th className="text-left font-semibold px-4 py-3">{t('bookings.work')}</th>
+              <th className="text-left font-semibold px-4 py-3">{t('bookings.fromPage')}</th>
               <th className="text-left font-semibold px-4 py-3">{t('bookings.status')}</th>
             </tr>
           </thead>
@@ -92,6 +96,8 @@ export function BookingsPage() {
                 <td className="px-4 py-3 whitespace-nowrap">{b.phone}</td>
                 <td className="px-4 py-3">{b.address || '—'}</td>
                 <td className="px-4 py-3">{b.problem_description || '—'}</td>
+                <td className="px-4 py-3">{(b.work_types || []).map((work) => t(`bookings.workTypes.${work}`)).join(', ') || '—'}</td>
+                <td className="px-4 py-3 break-all">{b.source_page || '—'}</td>
                 <td className="px-4 py-3">
                   <select
                     className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
@@ -109,7 +115,7 @@ export function BookingsPage() {
             ))}
             {bookings.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-slate-600">
+                <td colSpan={8} className="px-4 py-10 text-center text-slate-600">
                   {t('bookings.empty')}
                 </td>
               </tr>

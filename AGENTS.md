@@ -11,7 +11,7 @@
 - Commands: `npm install` (root); dev/test per workspace; migrate/seed/reset content/reset admin in `server`.
 - Locales: `hy` (default), `en`, `ru`; multilingual DB fields use `*_ru/_en/_hy`; client translations in `client/public/locales/{ru,en,hy}/common.json` via `next-i18next`.
 - API responses: `{ ok: true, ...data }` or `{ ok: false, error: { message, details? } }`; shared `ApiResponse<T>` in `client/lib/api.ts` and `admin/src/api.ts`.
-- Content blocks: `content_blocks` keyed by `(page_name, section_name)`; schemas must stay in sync between `server/src/contentSchemas/` (JS) and `admin/src/contentSchemas/` (TS).
+- Content blocks: `content_blocks` keyed by `(page_name, section_name)`; schemas live in `server/src/contentSchemas/` and the admin builds its forms from `GET /api/admin/schemas`.
 - Code style: TypeScript for new files in `client`, `admin`, `e2e`; `server` stays CommonJS JavaScript; prefer React functional components; use snake_case for database columns.
 - Architecture: new server resources and shared logic use service and repository layers (`server/src/services/`, `server/src/repositories/`); existing routes keep inline SQL unless a refactor is requested.
 - If admin content is empty and seeding doesn’t overwrite (seed uses `ON CONFLICT ... DO NOTHING`), run `npm run migrate -w server` then `npm run reset:content -w server`.

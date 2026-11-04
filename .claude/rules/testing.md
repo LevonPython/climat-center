@@ -23,7 +23,7 @@ No workspace has a lint or typecheck script. CI (`.github/workflows/ci.yml`) run
 ## Existing patterns
 - Server: supertest against `createApp()` with real Postgres and helpers from `server/tests/helpers/db.js`. Don't mock the database. A new table goes into `truncateAll`.
 - Client: mock `next-i18next` and `next/router` as in `client/__tests__/BookingForm.test.tsx`. Renamed translation keys must be updated in those mock maps.
-- Admin: mock `../src/api` and wrap in `QueryClientProvider` as in `admin/__tests__/ServicesPage.test.tsx`.
+- Admin: mock `../src/api` and render with `renderScreen` and `routeApi` from `admin/test/helpers.tsx`, as in `admin/__tests__/PagesPage.test.tsx`. Mock `RichTextEditor` with a textarea, because TipTap needs real browser layout.
 
 ## Before calling it done
 - Search the suites for whatever you changed (component, route, class, translation key) and run the specs that come back. `grep -rn "<name>" server/tests client/__tests__ admin/__tests__ e2e/tests`

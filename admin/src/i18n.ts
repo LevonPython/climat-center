@@ -32,7 +32,7 @@ i18n
     lng: getStoredLocale(),
     fallbackLng: 'hy',
     supportedLngs: LOCALES,
-    ns: ['common'],
+    ns: ['common', 'schema'],
     defaultNS: 'common',
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json'
