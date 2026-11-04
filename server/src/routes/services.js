@@ -4,8 +4,23 @@ const { body, param, query: queryValidator, validationResult } = require('expres
 const { query } = require('../config/db');
 const { triggerRevalidate } = require('../config/revalidateClient');
 const { verifyToken, requireAnyRole } = require('../middleware/auth');
+const { multilingual } = require('../middleware/validate');
 
 const servicesRouter = express.Router();
+
+const STRUCTURE_FIELDS = [
+  'page_id', 'category', 'menu_title_ru', 'menu_title_en', 'menu_title_hy', 'pill_title_ru', 'pill_title_en', 'pill_title_hy',
+  'show_in_menu', 'show_in_pills', 'sort_order'
+];
+
+const structureValidators = () => [
+  body('page_id').optional({ nullable: true }).isUUID(),
+  body('category').optional().isIn(['service', 'fault']),
+  ...['menu_title', 'pill_title'].flatMap(multilingual),
+  body('show_in_menu').optional().isBoolean().toBoolean(),
+  body('show_in_pills').optional().isBoolean().toBoolean(),
+  body('sort_order').optional().isInt({ min: 0 }).toInt()
+];
 
 servicesRouter.get(
   '/',
@@ -35,7 +50,7 @@ servicesRouter.get(
         SELECT *
         FROM services
         ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-        ORDER BY created_at DESC
+        ORDER BY sort_order, created_at DESC
       `;
 
       const result = await query(sql, params);
@@ -66,6 +81,7 @@ servicesRouter.post(
   body('price').optional({ nullable: true }).isInt({ min: 0 }).toInt(),
   body('image_url').optional({ nullable: true }).isString(),
   body('is_active').optional().isBoolean().toBoolean(),
+  ...structureValidators(),
   async (req, res, next) => {
     try {
       const errors = validationResult(req);
@@ -93,12 +109,28 @@ servicesRouter.post(
       const result = await query(
         `
         INSERT INTO services
-          (type, title_en, title_ru, title_hy, description_en, description_ru, description_hy, price, image_url, is_active)
+          (type, title_en, title_ru, title_hy, description_en, description_ru, description_hy, price, image_url, is_active,
+           page_id, category, menu_title_ru, menu_title_en, menu_title_hy, pill_title_ru, pill_title_en, pill_title_hy,
+           show_in_menu, show_in_pills, sort_order)
         VALUES
-          ($1,$2,$3,$4,$5,$6,$7,$8,$9, COALESCE($10, TRUE))
+          ($1,$2,$3,$4,$5,$6,$7,$8,$9, COALESCE($10, TRUE),
+           $11, COALESCE($12, 'service'), $13, $14, $15, $16, $17, $18,
+           COALESCE($19, TRUE), COALESCE($20, FALSE), COALESCE($21, 0))
         RETURNING *
       `,
-        [type, title_en, title_ru, title_hy, description_en, description_ru, description_hy, price, image_url, is_active]
+        [
+          type,
+          title_en,
+          title_ru,
+          title_hy,
+          description_en,
+          description_ru,
+          description_hy,
+          price,
+          image_url,
+          is_active,
+          ...STRUCTURE_FIELDS.map((field) => req.body[field])
+        ]
       );
 
       // Fire-and-forget: services page is statically regenerated on the Next.js side.
@@ -125,6 +157,7 @@ servicesRouter.put(
   body('price').optional({ nullable: true }).isInt({ min: 0 }).toInt(),
   body('image_url').optional({ nullable: true }).isString(),
   body('is_active').optional().isBoolean().toBoolean(),
+  ...structureValidators(),
   async (req, res, next) => {
     try {
       const errors = validationResult(req);
@@ -133,7 +166,7 @@ servicesRouter.put(
       }
 
       const { id } = req.params;
-      const fields = ['type', 'title_en', 'title_ru', 'title_hy', 'description_en', 'description_ru', 'description_hy', 'price', 'image_url', 'is_active'];
+      const fields = ['type', 'title_en', 'title_ru', 'title_hy', 'description_en', 'description_ru', 'description_hy', 'price', 'image_url', 'is_active', ...STRUCTURE_FIELDS];
       const sets = [];
       const params = [];
 

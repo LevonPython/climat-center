@@ -5,36 +5,15 @@ const { query, withClient } = require('../config/db');
 const { verifyToken, requireAnyRole } = require('../middleware/auth');
 const { triggerRevalidate } = require('../config/revalidateClient');
 const { validateContentJson } = require('../contentSchemas/validate');
+const { resolveLangContent } = require('../services/localization');
 
 const contentRouter = express.Router();
-
-function resolveLangContent(contentJson, lang) {
-  if (!contentJson || typeof contentJson !== 'object') return {};
-  const out = {};
-  const suffix = `_${lang}`;
-
-  // Copy non-suffixed keys
-  for (const [k, v] of Object.entries(contentJson)) {
-    if (!k.endsWith('_en') && !k.endsWith('_ru') && !k.endsWith('_hy')) {
-      out[k] = v;
-    }
-  }
-
-  // Map suffixed keys to base key (title_ru -> title)
-  for (const [k, v] of Object.entries(contentJson)) {
-    if (k.endsWith(suffix)) {
-      out[k.slice(0, -suffix.length)] = v;
-    }
-  }
-
-  return out;
-}
 
 // Raw blocks (for admin editor)
 contentRouter.get('/blocks', verifyToken, requireAnyRole(['admin', 'editor']), async (req, res, next) => {
   try {
     const result = await query(
-      'SELECT id, page_name, section_name, content_json, updated_at FROM content_blocks ORDER BY page_name, section_name',
+      'SELECT id, page_name, section_name, content_json, updated_at FROM content_blocks WHERE page_id IS NULL ORDER BY page_name, section_name',
       []
     );
     return res.json({ ok: true, content_blocks: result.rows });
@@ -87,7 +66,7 @@ contentRouter.get(
 
       const { lang } = req.params;
       const result = await query(
-        'SELECT id, page_name, section_name, content_json, updated_at FROM content_blocks ORDER BY page_name, section_name',
+        'SELECT id, page_name, section_name, content_json, updated_at FROM content_blocks WHERE page_id IS NULL ORDER BY page_name, section_name',
         []
       );
 
@@ -133,7 +112,7 @@ contentRouter.put(
       let schemaPage = page_name;
       let schemaSection = section_name;
       if (id) {
-        const existing = await query('SELECT page_name, section_name FROM content_blocks WHERE id = $1', [id]);
+        const existing = await query('SELECT page_name, section_name FROM content_blocks WHERE id = $1 AND page_id IS NULL', [id]);
         if (existing.rowCount === 0) return res.status(404).json({ ok: false, error: { message: 'Not found' } });
         schemaPage = existing.rows[0].page_name;
         schemaSection = existing.rows[0].section_name;

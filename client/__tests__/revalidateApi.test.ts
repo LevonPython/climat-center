@@ -61,6 +61,23 @@ describe('/api/revalidate', () => {
     expect(res.payload?.ok).toBe(false);
   });
 
+  test('revalidates requested paths in every locale', async () => {
+    const req: any = { method: 'POST', query: { secret: 'test-secret' }, body: { paths: ['/usluga/remont'] } };
+    const res = createRes();
+    await handler(req, res);
+    expect(res.statusCode).toBe(200);
+    expect(res.revalidate.mock.calls.map((c: any[]) => c[0])).toEqual(['/usluga/remont', '/en/usluga/remont', '/ru/usluga/remont']);
+  });
+
+  test('rejects unsafe or oversized path lists', async () => {
+    for (const paths of [['https://evil.example/x'], ['/UP/../x'], Array(21).fill('/a'), []]) {
+      const req: any = { method: 'POST', query: { secret: 'test-secret' }, body: { paths } };
+      const res = createRes();
+      await handler(req, res);
+      expect(res.statusCode).toBe(400);
+    }
+  });
+
   test('revalidates allowlisted content paths', async () => {
     const req: any = { method: 'POST', query: { secret: 'test-secret' }, body: { event: 'content' } };
     const res = createRes();

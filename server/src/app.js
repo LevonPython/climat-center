@@ -10,6 +10,8 @@ const { bookingsRouter } = require('./routes/bookings');
 const { contentRouter } = require('./routes/content');
 const { uploadRouter } = require('./routes/upload');
 const { quizSubmissionsRouter } = require('./routes/quizSubmissions');
+const { pagesRouter, siteRouter, translationsRouter } = require('./routes/site');
+const { adminRouter } = require('./routes/admin');
 
 function createApp() {
   const app = express();
@@ -42,6 +44,10 @@ function createApp() {
   app.use('/api/content', contentRouter);
   app.use('/api/upload', uploadRouter);
   app.use('/api/quiz-submissions', quizSubmissionsRouter);
+  app.use('/api/site', siteRouter);
+  app.use('/api/pages', pagesRouter);
+  app.use('/api/translations', translationsRouter);
+  app.use('/api/admin', adminRouter);
 
   app.use(errorHandler);
   return app;

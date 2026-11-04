@@ -40,7 +40,7 @@ Runs Express via [`server/api/index.js`](../server/api/index.js) and [`server/ve
 | `REVALIDATE_SECRET` | Shared with the Next.js project |
 | `BLOB_READ_WRITE_TOKEN` | Enable Vercel Blob for `/api/upload` (create a Blob store in the Vercel project; token is auto-injected or set manually) |
 
-Optional: `UPLOAD_DIR`, `MAX_UPLOAD_MB` (local-style uploads only apply when Blob token is not set; on Vercel prefer Blob).
+Optional: `UPLOAD_DIR`, `MAX_UPLOAD_MB` (local-style uploads only apply when Blob token is not set; on Vercel prefer Blob). The default limit is 4 MB, because Vercel rejects request bodies over about 4.5 MB.
 
 Deploy the **server first**, note the production URL (e.g. `https://climat-center-server.vercel.app`).
 

@@ -1,9 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type RevalidateEvent = 'content' | 'services';
-type Body = { event?: RevalidateEvent };
+type Body = { event?: RevalidateEvent; paths?: unknown };
 
 const LOCALE_PREFIXES = ['', '/en', '/ru'] as const;
+const PATH_PATTERN = /^\/[a-z0-9/-]*$/;
+const MAX_PATHS = 20;
 
 function localizePath(basePath: string, localePrefix: (typeof LOCALE_PREFIXES)[number]) {
   if (!localePrefix) return basePath;
@@ -11,14 +13,11 @@ function localizePath(basePath: string, localePrefix: (typeof LOCALE_PREFIXES)[n
   return `${localePrefix}${basePath}`;
 }
 
-function pathsForEvent(event: RevalidateEvent): string[] {
-  const basePaths =
-    event === 'content'
-      ? ['/', '/about', '/contacts']
-      : event === 'services'
-        ? ['/services']
-        : [];
+function basePathsForEvent(event: RevalidateEvent): string[] {
+  return event === 'content' ? ['/', '/about', '/contacts'] : ['/services'];
+}
 
+function localizePaths(basePaths: string[]): string[] {
   const out: string[] = [];
   for (const p of basePaths) {
     for (const prefix of LOCALE_PREFIXES) {
@@ -26,6 +25,15 @@ function pathsForEvent(event: RevalidateEvent): string[] {
     }
   }
   return out;
+}
+
+function isValidPathList(paths: unknown): paths is string[] {
+  return (
+    Array.isArray(paths) &&
+    paths.length > 0 &&
+    paths.length <= MAX_PATHS &&
+    paths.every((p) => typeof p === 'string' && PATH_PATTERN.test(p))
+  );
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -47,11 +55,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const event = body?.event;
-  if (event !== 'content' && event !== 'services') {
+  const requestedPaths = body?.paths;
+  let paths: string[];
+  if (isValidPathList(requestedPaths)) {
+    paths = localizePaths(requestedPaths);
+  } else if (event === 'content' || event === 'services') {
+    paths = localizePaths(basePathsForEvent(event));
+  } else {
     return res.status(400).json({ ok: false, error: { message: 'Invalid event' } });
   }
 
-  const paths = pathsForEvent(event);
   const revalidated: string[] = [];
   const failed: Record<string, string> = {};
 

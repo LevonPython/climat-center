@@ -42,7 +42,8 @@ function errorHandler(err, req, res, next) {
     ok: false,
     error: {
       message,
-      status
+      status,
+      ...(status < 500 && err.details ? { details: err.details } : {})
     }
   });
 }

@@ -41,18 +41,27 @@ async function truncateAll(client) {
   await client.query('TRUNCATE TABLE services CASCADE');
   await client.query('TRUNCATE TABLE content_blocks CASCADE');
   await client.query('TRUNCATE TABLE users CASCADE');
+  await client.query('TRUNCATE TABLE pages CASCADE');
+  await client.query('TRUNCATE TABLE nav_items CASCADE');
+  await client.query('TRUNCATE TABLE gallery_items CASCADE');
+  await client.query('TRUNCATE TABLE media_assets CASCADE');
+  await client.query('TRUNCATE TABLE ui_translations CASCADE');
 }
 
-async function ensureAdminUser(client, username, password) {
+async function ensureUser(client, username, password, role) {
   const passwordHash = await bcrypt.hash(password, 10);
   await client.query(
     `
     INSERT INTO users (username, password_hash, role)
-    VALUES ($1, $2, 'admin')
-    ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash, role = 'admin'
+    VALUES ($1, $2, $3)
+    ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash, role = EXCLUDED.role
   `,
-    [username, passwordHash]
+    [username, passwordHash, role]
   );
+}
+
+async function ensureAdminUser(client, username, password) {
+  await ensureUser(client, username, password, 'admin');
 }
 
 async function withTestDb(fn) {
@@ -72,6 +81,7 @@ module.exports = {
   withTestDb,
   runMigrations,
   truncateAll,
-  ensureAdminUser
+  ensureAdminUser,
+  ensureUser
 };
 

@@ -1,13 +1,14 @@
 const Ajv = require('ajv');
 
 const { ALL_BLOCKS, schemaKey } = require('./registry');
+const { ALL_BLOCK_TYPES, getBlockType } = require('./blockTypes');
 
 const ajv = new Ajv({
   allErrors: true,
   allowUnionTypes: true
 });
 
-for (const b of ALL_BLOCKS) {
+for (const b of [...ALL_BLOCKS, ...ALL_BLOCK_TYPES]) {
   ajv.addSchema(b.jsonSchema, b.jsonSchema.$id);
 }
 
@@ -48,5 +49,22 @@ function validateContentJson(page_name, section_name, content_json) {
   };
 }
 
-module.exports = { validateContentJson };
+function validateBlockType(blockType, content_json) {
+  const def = getBlockType(blockType);
+  if (!def) {
+    return { ok: false, kind: 'unknown_block_type', message: `Unknown block type: ${blockType}` };
+  }
+
+  const validate = ajv.getSchema(def.jsonSchema.$id);
+  if (validate(content_json)) return { ok: true };
+
+  return {
+    ok: false,
+    kind: 'schema_validation_failed',
+    message: 'Schema validation failed',
+    errors: validate.errors || []
+  };
+}
+
+module.exports = { validateContentJson, validateBlockType };
 
