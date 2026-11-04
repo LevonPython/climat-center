@@ -12,7 +12,8 @@ jest.mock('../src/config/revalidateClient', () => ({
 
 jest.mock('../src/middleware/auth', () => ({
   verifyToken: (req, _res, next) => next(),
-  requireAnyRole: () => (req, _res, next) => next()
+  requireAnyRole: () => (req, _res, next) => next(),
+  requireRole: () => (req, _res, next) => next()
 }));
 
 const { query } = require('../src/config/db');
@@ -28,6 +29,25 @@ function createTestApp() {
   app.use((err, _req, res, _next) => res.status(500).json({ ok: false, error: { message: err?.message || 'Error' } }));
   return app;
 }
+
+describe('reordering services', () => {
+  test('refreshes the public pages', async () => {
+    const { adminRouter } = require('../src/routes/admin');
+    const app = express();
+    app.use(express.json());
+    app.use('/api/admin', adminRouter);
+    query.mockReset();
+    triggerRevalidate.mockClear();
+    query.mockResolvedValue({ rowCount: 1, rows: [] });
+
+    const res = await request(app)
+      .put('/api/admin/services/order')
+      .send({ ids: ['11111111-1111-4111-8111-111111111111'] });
+
+    expect(res.status).toBe(200);
+    expect(triggerRevalidate).toHaveBeenCalledWith('services');
+  });
+});
 
 describe('services mutations trigger revalidate(services)', () => {
   const app = createTestApp();

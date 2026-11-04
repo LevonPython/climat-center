@@ -2,8 +2,9 @@
 paths:
   - "server/src/contentSchemas/**"
   - "admin/src/contentSchemas/**"
+  - "admin/src/components/BlockEditor.tsx"
+  - "admin/src/components/FieldEditor.tsx"
   - "server/src/routes/content.js"
-  - "admin/src/pages/ContentPage.tsx"
   - "server/scripts/seed.js"
 ---
 
@@ -11,18 +12,20 @@ paths:
 
 For adding or changing a block use the `content-block` skill.
 
-## Two registries, one contract
-Update both, every time, then run `node .claude/scripts/check-schema-parity.js`. Nothing in the test suite catches drift.
-- `server/src/contentSchemas/registry.js`: AJV validation on save.
-- `admin/src/contentSchemas/registry.ts`: form rendering and client-side validation. Adds `label`, `kind`, `help`, `groups`, `title`, `description`.
+## One source
+Definitions live only on the server. The admin builds its forms from `GET /api/admin/schemas`, so there is nothing to keep in sync.
+- `server/src/contentSchemas/registry.js`: site blocks keyed by `(page_name, section_name)`, such as contacts, branding and the older fixed pages.
+- `server/src/contentSchemas/blockTypes.js`: types of page sections, with repeatable lists, images and rich text.
+- `server/src/contentSchemas/validate.js` validates both with AJV on save.
 
-## Block types
-Page sections use the types in `server/src/contentSchemas/blockTypes.js`, not these registries. They support repeatable lists, images and rich text, and only exist on the server. Admin screens read them from `GET /api/admin/schemas`.
+## Labels
+Labels are written in English on the server. The admin translates them by their exact text from `admin/public/locales/{hy,ru,en}/schema.json`. A new or changed label must be added to all three, and `admin/__tests__/schemaLabels.test.ts` fails until it is.
 
 ## Fields
-- Blocks are keyed by `(page_name, section_name)`.
 - `multilingual: true` expands `key` to `key_ru`, `key_en`, `key_hy`.
-- Values are `string | null`. Schemas use `additionalProperties: false`, so unknown keys are rejected.
+- `kind` picks the form control: `string`, `text`, `url`, `email`, `phone`, `rich_text`, `image`, `select` or `list`.
+- Values are `string | null`, a `list` is an array of objects, and a `select` must be one of `options`. Schemas use `additionalProperties: false`, so unknown keys are rejected.
+- Each `fieldKeys` entry in a site block's `groups` must name a real field, and every field must be in a group. A server test checks this.
 
 ## Changes that affect stored data
 Stored `content_json` is only validated when it is saved or restored.

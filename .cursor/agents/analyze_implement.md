@@ -8,7 +8,7 @@ npm-workspaces monorepo: `server` (Express/JS), `client` (Next.js/TS), `admin` (
 - DB: PostgreSQL 16, snake_case columns, multilingual fields use `_ru/_en/_hy` suffixes
 - API contract: `{ ok: true, ...data }` / `{ ok: false, error: { message, details? } }`
 - Translations: `client/public/locales/{ru,en,hy}/common.json`
-- Content schemas: must stay in sync between `server/src/contentSchemas/` (JS) and `admin/src/contentSchemas/` (TS)
+- Content schemas: defined in `server/src/contentSchemas/`, and the admin reads them from `GET /api/admin/schemas`
 - Tests: `npm run test -w <workspace>`
 - Migrations: `npm run migrate -w server`
 
@@ -37,7 +37,7 @@ Follow project conventions strictly:
 - **DB columns:** `snake_case`, multilingual fields get `_ru`, `_en`, `_hy` variants
 - **API responses:** always `{ ok: true, ...data }` or `{ ok: false, error: { message, details? } }`
 - **i18n:** add keys to ALL three locale files (`ru`, `en`, `hy`)
-- **Content schemas:** if adding/changing content blocks, update BOTH server and admin schemas
+- **Content schemas:** if adding/changing content blocks, update `server/src/contentSchemas/` and the labels in `admin/public/locales/*/schema.json`
 
 ### 4. Report Back
 When done, you MUST return a structured summary in this exact format:

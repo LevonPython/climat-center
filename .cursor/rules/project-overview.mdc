@@ -32,4 +32,4 @@ All endpoints return `{ ok: true, ...data }` on success or `{ ok: false, error: 
 
 ## Content Model
 
-DB-backed content blocks (`content_blocks` table) are keyed by `(page_name, section_name)`. Content schemas are defined in **both** `server/src/contentSchemas/` (JS) and `admin/src/contentSchemas/` (TS) and must stay in sync.
+DB-backed content blocks (`content_blocks` table) are keyed by `(page_name, section_name)`. Content schemas are defined in `server/src/contentSchemas/`, and the admin reads them from `GET /api/admin/schemas`.

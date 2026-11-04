@@ -84,6 +84,14 @@ if (!dbUrl) {
         expect((await api.admin.delete(`/api/admin/pages/${home.id}`)).status).toBe(400);
       });
 
+      test('a published home page cannot be hidden, because the site would have no front page', async () => {
+        const home = (await api.admin.get('/api/admin/pages')).body.pages.find((page) => page.slug === 'home')
+          || (await createPage({ slug: 'home', type: 'home' }));
+        expect((await api.admin.put(`/api/admin/pages/${home.id}`).send({ status: 'published' })).status).toBe(200);
+        expect((await api.admin.put(`/api/admin/pages/${home.id}`).send({ status: 'hidden' })).status).toBe(400);
+        expect((await api.admin.get(`/api/admin/pages/${home.id}`)).body.page.status).toBe('published');
+      });
+
       test('deleting a page also deletes its sections', async () => {
         const page = await createPage({ slug: 'with-sections' });
         const added = await api.admin.post(`/api/admin/pages/${page.id}/sections`).send({ block_type: 'rich_text' });
@@ -254,6 +262,24 @@ if (!dbUrl) {
       expect(res.status).toBe(200);
       expect(res.body.block_types.map((b) => b.type)).toContain('price_cards');
       expect(JSON.stringify(res.body)).not.toContain('jsonSchema');
+    });
+
+    test('describes site blocks so the admin can build their forms', async () => {
+      const res = await api.editor.get('/api/admin/schemas');
+      const branding = res.body.site_blocks.find((b) => b.page_name === 'global' && b.section_name === 'branding');
+      expect(branding.title).toBe('Logo and company name');
+      expect(branding.groups.map((g) => g.id)).toEqual(['text', 'images']);
+      expect(branding.fields.find((field) => field.key === 'logo_url').kind).toBe('image');
+    });
+
+    test('every group of a site block names real fields', async () => {
+      const res = await api.editor.get('/api/admin/schemas');
+      for (const block of res.body.site_blocks) {
+        const known = block.fields.map((field) => field.key);
+        const grouped = block.groups.flatMap((group) => group.fieldKeys);
+        expect(grouped.filter((key) => !known.includes(key))).toEqual([]);
+        expect(known.filter((key) => !grouped.includes(key))).toEqual([]);
+      }
     });
   });
 }

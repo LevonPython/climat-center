@@ -23,6 +23,12 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<Api
   if (!data || typeof data !== 'object') {
     return { ok: false, error: { message: `Bad response (${res.status})`, status: res.status } };
   }
+  if (data.ok === false) return { ...data, error: { ...data.error, status: res.status } };
   return data as ApiResponse<T>;
+}
+
+// Local uploads are stored as paths on the API; Vercel Blob files already have a full address.
+export function assetUrl(url: string): string {
+  return url.startsWith('/') ? `${baseUrl}${url}` : url;
 }
 
