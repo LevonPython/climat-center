@@ -68,6 +68,56 @@ if (!dbUrl) {
         expect(res.status).toBe(400);
       });
 
+      test.each([
+        ['Armenian', 'նկար օդորակիչ.png'],
+        ['Russian', 'кондиционер.png']
+      ])('keeps a file name written in %s', async (_name, filename) => {
+        const res = await upload(api.editor, { filename, contentType: 'image/png' });
+        expect(res.status).toBe(201);
+        expect(res.body.asset.filename).toBe(filename);
+        expect(path.basename(res.body.asset.url)).toMatch(/^[\w.-]+$/);
+      });
+
+      test('rejects a second file in one upload', async () => {
+        const res = await api.editor
+          .post('/api/admin/media')
+          .attach('file', Buffer.from('one'), PNG)
+          .attach('file', Buffer.from('two'), { filename: 'b.png', contentType: 'image/png' });
+        expect(res.status).toBe(400);
+      });
+
+      test('rejects a file under another field name', async () => {
+        const res = await api.editor.post('/api/admin/media').attach('other', Buffer.from('image'), PNG);
+        expect(res.status).toBe(400);
+      });
+
+      test('rejects extra form fields, which no admin form sends', async () => {
+        const res = await api.editor.post('/api/admin/media').field('extra', 'x').attach('file', Buffer.from('image'), PNG);
+        expect(res.status).toBe(400);
+      });
+
+      test('a malformed upload is refused as bad input, not reported as a server failure', async () => {
+        const res = await api.editor
+          .post('/api/admin/media')
+          .set('Content-Type', 'multipart/form-data; boundary=xyz')
+          .send('--xyz\r\nContent-Disposition: form-data; name="file"; filename="a.png"\r\nContent-Type: image/png\r\n\r\nnever closed');
+        expect(res.status).toBe(400);
+        expect(res.body.ok).toBe(false);
+      });
+
+      test('the older upload route has the same protections', async () => {
+        const twoFiles = await api.editor
+          .post('/api/upload')
+          .attach('file', Buffer.from('one'), PNG)
+          .attach('file', Buffer.from('two'), { filename: 'b.png', contentType: 'image/png' });
+        expect(twoFiles.status).toBe(400);
+        const malformed = await api.editor
+          .post('/api/upload')
+          .set('Content-Type', 'multipart/form-data; boundary=xyz')
+          .send('--xyz\r\nContent-Disposition: form-data; name="file"; filename="a.png"\r\n\r\nnever closed');
+        expect(malformed.status).toBe(400);
+      });
+
       test('rejects a missing file and an oversized file', async () => {
         expect((await api.editor.post('/api/admin/media')).status).toBe(400);
         expect((await upload(api.editor, PNG, Buffer.alloc(2 * 1024 * 1024))).status).toBe(413);
