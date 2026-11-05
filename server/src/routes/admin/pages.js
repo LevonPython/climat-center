@@ -114,6 +114,7 @@ adminSectionsRouter.put(
 
 adminSectionsRouter.delete(
   '/:id',
+  requireRole('admin'),
   param('id').isUUID(),
   validateRequest,
   asyncRoute(async (req, res) => {

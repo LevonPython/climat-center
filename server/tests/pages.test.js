@@ -184,11 +184,12 @@ if (!dbUrl) {
         expect(res.body.page.sections.map((s) => s.id)).toEqual([second, first]);
       });
 
-      test('deletes a section', async () => {
+      test('only admins can delete a section', async () => {
         const created = await addSection({ block_type: 'rich_text' });
         const id = created.body.section.id;
-        expect((await api.editor.delete(`/api/admin/sections/${id}`)).status).toBe(200);
-        expect((await api.editor.delete(`/api/admin/sections/${id}`)).status).toBe(404);
+        expect((await api.editor.delete(`/api/admin/sections/${id}`)).status).toBe(403);
+        expect((await api.admin.delete(`/api/admin/sections/${id}`)).status).toBe(200);
+        expect((await api.admin.delete(`/api/admin/sections/${id}`)).status).toBe(404);
       });
     });
 
