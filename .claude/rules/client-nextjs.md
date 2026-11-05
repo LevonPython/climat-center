@@ -26,6 +26,7 @@ The public site is data, not code. `pages/[...slug].tsx` and `pages/index.tsx` r
 ## Components and pages
 - Functional components with explicit prop types in `client/components/`. No state library.
 - Wrap pages in `<Layout title={...}>`. `useSite()` gives menus, settings and services, and `useRequestPopup()` opens the request form.
+- Picture grids use `next/image`, so visitors get thumbnails rather than full files. Only the Blob store named in `client/next.config.js` can be resized, and `isResizable` in `client/lib/assets.ts` leaves every other address as it is.
 - `apiFetch<T>` from `client/lib/api.ts`. Reuse `client/lib/phone.ts` and `client/lib/contactPhone.ts`.
 - Only `NEXT_PUBLIC_*` reaches the browser. `REVALIDATE_SECRET` stays server-side.
 - `dangerouslySetInnerHTML` appears only in `components/site/RichText.tsx`. The server sanitizes that HTML on save, so never add another use.

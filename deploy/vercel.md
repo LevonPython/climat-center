@@ -99,3 +99,4 @@ Connect the repo in each Vercel project (**Import Git Repository**). No extra Gi
 
 - **Schema changes**: run `npm run migrate -w server` locally (or in CI) against Neon; there is no automatic migrate on Vercel deploy.
 - **Uploads**: with `BLOB_READ_WRITE_TOKEN` set, uploads go to Vercel Blob and return public `https://…` URLs. Without it, the API expects a writable disk (not suitable for serverless).
+- **Picture grids**: `client/next.config.js` names the one Blob store whose pictures Vercel may resize. If you replace the store, update `BLOB_HOST` there, or those grids go back to loading full-size files.
