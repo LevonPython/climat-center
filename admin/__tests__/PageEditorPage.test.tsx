@@ -190,6 +190,29 @@ describe('PageEditorPage', () => {
     await waitFor(() => expect(callsTo(apiFetchMock, 'DELETE', '/api/admin/sections/a')).toHaveLength(1));
   });
 
+  test('a refused delete keeps the open section and its unsaved edits', async () => {
+    renderEditor([section('a')], {
+      'DELETE /api/admin/sections/a': { ok: false, error: { message: 'Forbidden', status: 403 } }
+    });
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Изменить: Раздел a' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'Текст' }), { target: { value: 'draft' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Удалить: Раздел a' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('нет прав');
+    expect(screen.getByRole('textbox', { name: 'Текст' })).toHaveValue('draft');
+  });
+
+  test('a successful delete closes the open section', async () => {
+    renderEditor([section('a')], { 'DELETE /api/admin/sections/a': { ok: true } });
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Изменить: Раздел a' }));
+    fireEvent.change(await screen.findByRole('textbox', { name: 'Текст' }), { target: { value: 'draft' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Удалить: Раздел a' }));
+
+    await waitFor(() => expect(screen.queryByRole('textbox', { name: 'Текст' })).not.toBeInTheDocument());
+  });
+
   test('edits a section with the form its block type describes', async () => {
     renderEditor([section('a')], {
       'PUT /api/admin/sections/a': { ok: true, section: section('a', { content_json: { body_hy: '<p>Տեքստ</p>' } }) }

@@ -76,11 +76,14 @@ export function SectionsEditor({ pageId, sections }: SectionsEditorProps) {
 
   function remove(section: Section, name: string) {
     if (!window.confirm(t('sections.confirmDelete', { name }))) return;
-    if (openId === section.id) {
-      openDirty.current = false;
-      setOpenId(null);
-    }
-    deleteM.mutate(section.id);
+    deleteM.mutate(section.id, {
+      onSuccess: () => {
+        if (openId === section.id) {
+          openDirty.current = false;
+          setOpenId(null);
+        }
+      }
+    });
   }
 
   async function save(id: string, content_json: Content) {
