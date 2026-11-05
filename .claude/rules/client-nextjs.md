@@ -7,39 +7,28 @@ paths:
 
 Pages Router only (`client/pages/`). App Router advice from the `vercel:nextjs` or `nextjs-developer` skills (Server Components, Server Actions, `app/`) does not apply here.
 
-## Data fetching
-- ISR with `revalidate: 60`: home, about, contacts, services. SSR: booking, quiz.
-- **A new ISR page must be added to `pathsForEvent`** in `client/pages/api/revalidate.ts`, or admin saves won't refresh it.
-- Wrap API calls in `getStaticProps` in try/catch so builds survive an offline API.
-- Next can't serialize `undefined`, so pass `value ?? null` in props.
+## Pages
+The public site is data, not code. `pages/[...slug].tsx` and `pages/index.tsx` render any page from `GET /api/pages/:lang/:slug` through `components/PageView.tsx`, and `components/sections/` holds one component per block type (`SECTION_COMPONENTS`). A new page in the admin needs no code. A new block type needs a component there.
+- Only `booking` and `quiz` are separate files, and they use `loadCommonPropsSafely`.
+- `sitemap.xml` and `robots.txt` are generated from the published pages.
+- Old addresses (`/about`, `/contacts`, `/services`) redirect in `next.config.js`.
 
-```tsx
-export const getStaticProps: GetStaticProps<Props> = async ({ locale }) => {
-  const lang = locale || 'hy';
-  let title: string | undefined;
-  try {
-    const content = await apiFetch<{ pages: any }>(`/api/content/${lang}`);
-    if (content.ok) title = content.pages?.home?.hero?.title;
-  } catch {
-    // API may be offline during build
-  }
-  return {
-    props: { ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig)), title: title ?? null },
-    revalidate: 60
-  };
-};
-```
+## Data fetching
+- ISR with `revalidate: 60` and `fallback: 'blocking'`.
+- If the API fails, `getStaticProps` throws so the last good page stays up. A page with no title in this language is a 404: languages don't fall back to each other.
+- A save in the admin refreshes the edited page through `pages/api/revalidate.ts`. Changes that touch every page, such as menus and settings, show within 60 seconds.
+- Next can't serialize `undefined`, so pass `value ?? null` in props.
 
 ## i18n
 - Default locale is `hy`. Always pass `nextI18nextConfig` as the third argument to `serverSideTranslations`.
-- Every user-facing string goes through `useTranslation`, with `content ?? t('key')` for DB-backed fields.
+- Every user-facing string goes through `useTranslation`. Interface text edited in the admin is merged over the bundled catalogue in `lib/site.ts`, and `components/site/PageTranslations.tsx` renders from each page's merged text. Don't go back to `appWithTranslation`: on the server it reads one shared store that never sees those edits.
 
 ## Components and pages
 - Functional components with explicit prop types in `client/components/`. No state library.
-- Wrap pages in `<Layout title={...}>`. New pages need a translated title and meta description.
+- Wrap pages in `<Layout title={...}>`. `useSite()` gives menus, settings and services, and `useRequestPopup()` opens the request form.
 - `apiFetch<T>` from `client/lib/api.ts`. Reuse `client/lib/phone.ts` and `client/lib/contactPhone.ts`.
 - Only `NEXT_PUBLIC_*` reaches the browser. `REVALIDATE_SECRET` stays server-side.
-- Don't use `dangerouslySetInnerHTML` for CMS content; nothing uses it today.
+- `dangerouslySetInnerHTML` appears only in `components/site/RichText.tsx`. The server sanitizes that HTML on save, so never add another use.
 - Confirmations say what happened in plain words ("Request sent"), with no IDs or technical errors.
 
 ## Accessibility

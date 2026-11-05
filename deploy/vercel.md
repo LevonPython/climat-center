@@ -57,6 +57,7 @@ Deploy the **server first**, note the production URL (e.g. `https://climat-cente
 |----------|--------|
 | `NEXT_PUBLIC_API_URL` | Server URL, e.g. `https://<server>.vercel.app` (no trailing slash) |
 | `REVALIDATE_SECRET` | Same value as on the server |
+| `NEXT_PUBLIC_SITE_URL` | The public address, e.g. `https://your-domain.example`, used for canonical links, language links and the sitemap. Without it the site uses the Vercel production address |
 
 ## 3. Admin — `climat-center-admin`
 
@@ -77,6 +78,18 @@ Deploy the **server first**, note the production URL (e.g. `https://climat-cente
 
 1. Set **`CORS_ORIGINS`** on the server to the exact **https** origins of the client and admin deployments (and any custom domains).
 2. Redeploy the server if you change CORS or secrets.
+
+## Importing the site content
+
+Pages, pictures and galleries come from `server/content/`, plus the original files in `server/content/raw/`, which are not in git. Run this from a checkout that has them, after migrations and before merging code that depends on the content. It is safe to run again: pages that already exist are left alone unless you add `--overwrite`, which replaces edits made in the admin.
+
+```bash
+DATABASE_URL='<neon-connection-string>' BLOB_READ_WRITE_TOKEN='<blob-token>' npm run content:import -w server -- --remote
+```
+
+It's safe to run again: pages, services and settings that already exist stay as they are, so edits made in the admin survive. Menu items and gallery pictures deleted in the admin come back, and `--overwrite` replaces pages.
+
+To rebuild the raw files: `node server/scripts/content/crawl.js`, then `node server/scripts/content/fetchAssets.js`. Both wait 10 seconds between requests, as the old site's `robots.txt` asks, so they take about 2 hours.
 
 ## GitHub
 
