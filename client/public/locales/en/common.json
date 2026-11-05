@@ -1,82 +1,8 @@
 {
   "brand": "Climate Center",
   "nav": {
-    "home": "Home",
-    "services": "Services",
     "booking": "Booking",
-    "quiz": "Quick quiz",
-    "about": "About",
-    "contacts": "Contacts",
-    "menu": "Menu"
-  },
-  "social": {
-    "whatsapp": "WhatsApp",
-    "telegram": "Telegram",
-    "facebook": "Facebook",
-    "instagram": "Instagram"
-  },
-  "about": {
-    "title": "About us",
-    "subtitle": "Service you can rely on — clear pricing, tidy work, and warranty.",
-    "section1Title": "Experience",
-    "section1Body": "We install and service air conditioners and split systems for apartments, offices, and commercial spaces. We focus on consistent quality and predictable results.",
-    "section2Title": "Approach",
-    "section2Body": "We start with diagnostics, recommend the right solution, and explain what will be done and why. We work neatly and follow safety standards.",
-    "section3Title": "Quality & warranty",
-    "section3Body": "We use professional tools and consumables. Warranty terms depend on the type of work and are agreed in advance.",
-    "factsTitle": "Quick facts",
-    "fact1Title": "Fast arrival",
-    "fact1Desc": "In many areas a technician can arrive within 2 hours.",
-    "fact2Title": "Transparent service",
-    "fact2Desc": "We explain the scope of work and provide clear recommendations.",
-    "fact3Title": "Warranty",
-    "fact3Desc": "Warranty for work and parts according to agreement.",
-    "ctaTitle": "Need help right now?",
-    "ctaSubtitle": "Call us or open the contacts page for all options.",
-    "call": "Call",
-    "contacts": "Contacts"
-  },
-  "contacts": {
-    "title": "Contacts",
-    "subtitle": "Choose a convenient way to reach us — phone, email, or messenger.",
-    "phone": "Phone",
-    "email": "Email",
-    "hours": "Working hours",
-    "hoursValue": "Daily, 24/7",
-    "address": "Address",
-    "social": "Social / messengers",
-    "socialSubtitle": "Write to us in a messenger or on social networks.",
-    "map": "Map",
-    "mapSubtitle": "Map embed can be added here later."
-  },
-  "hero": {
-    "kicker": "24/7 service",
-    "title": "AC installation, repair and maintenance",
-    "subtitle": "A specialist can arrive within 2 hours in many areas.",
-    "cta": "Request a call",
-    "secondaryCta": "View services"
-  },
-  "usp": {
-    "fastTitle": "Fast arrival",
-    "fastDesc": "We try to arrive as quickly as possible.",
-    "guaranteeTitle": "Work warranty",
-    "guaranteeDesc": "Warranty for work and parts.",
-    "toolsTitle": "Professional equipment",
-    "toolsDesc": "Proper diagnostics and maintenance tools."
-  },
-  "services": {
-    "title": "Services",
-    "subtitle": "Pick a service and we’ll contact you.",
-    "card": {
-      "signUp": "Book",
-      "priceOnRequest": "Price on request",
-      "fromPrice": "from {{price}} ₽"
-    }
-  },
-  "serviceTypes": {
-    "install": "Install",
-    "repair": "Repair",
-    "service": "Service"
+    "quiz": "Quick quiz"
   },
   "booking": {
     "title": "Leave a request",
@@ -96,14 +22,28 @@
     "type": "Type",
     "submit": "Send",
     "success": "Thanks! We received your request.",
-    "problems": ["Not cooling", "Water leaking", "Won't turn on", "Making noise", "Freezing up", "Bad smell"],
+    "problems": [
+      "Not cooling",
+      "Water leaking",
+      "Won't turn on",
+      "Making noise",
+      "Freezing up",
+      "Bad smell"
+    ],
     "problem0": "Not cooling",
     "problem1": "Water leaking",
     "problem2": "Won't turn on",
     "problem3": "Making noise",
     "problem4": "Freezing up",
     "problem5": "Bad smell",
-    "acTypes": ["Wall-mounted", "Cassette", "Ducted", "Floor-ceiling", "Window", "Floor standing"],
+    "acTypes": [
+      "Wall-mounted",
+      "Cassette",
+      "Ducted",
+      "Floor-ceiling",
+      "Window",
+      "Floor standing"
+    ],
     "acType0": "Wall-mounted",
     "acType1": "Cassette",
     "acType2": "Ducted",
@@ -126,20 +66,62 @@
     "problem": "Comment",
     "problemPlaceholder": "Describe the issue",
     "submit": "Submit request",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "nameRequired": "Enter your name."
   },
   "actions": {
     "next": "Next",
     "back": "Back"
   },
-  "footer": {
-    "tagline": "AC service and maintenance.",
-    "contacts": "Contacts",
-    "address": "Address",
-    "addressValue": "c. Yerevan, Proshyan street 1, apt. 1"
-  },
   "errors": {
     "generic": "Something went wrong. Please try again."
+  },
+  "layout": {
+    "menu": "Menu",
+    "services": "Services and maintenance",
+    "servicesShort": "Services",
+    "faults": "Faults",
+    "certificates": "Our certificates",
+    "cities": "Cities",
+    "mainMenu": "Main menu",
+    "contactDetails": "Contact details",
+    "brands": "Brands we service",
+    "contactsTitle": "Our **contacts**",
+    "copyright": "© 2011 - {{year}}",
+    "home": "Home",
+    "breadcrumbs": "You are here",
+    "call": "Call us"
+  },
+  "request": {
+    "title": "Online request",
+    "note": "Leave your contact details and we will call you back during working hours.",
+    "question": "What work do you need?",
+    "work": {
+      "repair": "Repair",
+      "install": "Installation",
+      "purchase": "Buying an air conditioner",
+      "cleaning": "Cleaning",
+      "other": "Other"
+    },
+    "workRequired": "Choose at least one kind of work.",
+    "submit": "Send",
+    "sent": "Request sent. We will call you back soon.",
+    "failed": "The request could not be sent. Please call us or try again.",
+    "consent": "By giving your details, you agree to their processing.",
+    "inlineTitle": "Leave a **request**",
+    "after": "We will call you back during working hours"
+  },
+  "sections": {
+    "priceOnRequest": "Price on request",
+    "showAllPrices": "Show all prices",
+    "collapsePrices": "Collapse",
+    "prices": "Prices",
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close",
+    "imageViewer": "Picture",
+    "showPicture": "Show picture {{number}}",
+    "video": "Video",
+    "map": "Map"
   }
 }
-

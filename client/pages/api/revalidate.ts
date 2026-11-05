@@ -14,7 +14,7 @@ function localizePath(basePath: string, localePrefix: (typeof LOCALE_PREFIXES)[n
 }
 
 function basePathsForEvent(event: RevalidateEvent): string[] {
-  return event === 'content' ? ['/', '/about', '/contacts'] : ['/services'];
+  return event === 'content' ? ['/'] : ['/', '/uslugi/uslugi-i-servis', '/uslugi/neispravnosti'];
 }
 
 function localizePaths(basePaths: string[]): string[] {
