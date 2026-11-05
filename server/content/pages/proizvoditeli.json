@@ -1,0 +1,19 @@
+{
+  "slug": "proizvoditeli",
+  "type": "static",
+  "parent": null,
+  "status": "published",
+  "translate": true,
+  "title": "Производители в Ереване",
+  "meta_title": "Производители | Центр климата в Ереване",
+  "meta_description": "в Ереване",
+  "sections": [
+    {
+      "block_type": "gallery",
+      "content": {
+        "heading": null,
+        "collection": "brands"
+      }
+    }
+  ]
+}

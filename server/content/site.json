@@ -1,0 +1,796 @@
+{
+  "pills": [
+    {
+      "label": "Дозаправка",
+      "href": "/usluga/dozapravka-kondicionerov"
+    },
+    {
+      "label": "Ремонт",
+      "href": "/usluga/remont-kondicionerov"
+    },
+    {
+      "label": "Установка",
+      "href": "/usluga/ustanovka-kondicionerov"
+    },
+    {
+      "label": "Профилактика",
+      "href": "/usluga/profilaktika-kondicionerov"
+    },
+    {
+      "label": "Демонтаж",
+      "href": "/usluga/demontazh-kondicionerov"
+    },
+    {
+      "label": "Диагностика",
+      "href": "/usluga/diagnostika-kondicionerov"
+    },
+    {
+      "label": "Дезинфекция",
+      "href": "/usluga/dezinfekciya-kondicionerov"
+    },
+    {
+      "label": "Чистка",
+      "href": "/usluga/chistka-kondicionerov"
+    },
+    {
+      "label": "Неприятный запах?",
+      "href": "/usluga/nepriyatnyy-zapah-iz-kondicionera"
+    },
+    {
+      "label": "Шумит?",
+      "href": "/usluga/shumit-kondicioner"
+    },
+    {
+      "label": "Не включается?",
+      "href": "/usluga/ne-vklyuchaetsya-kondicioner"
+    },
+    {
+      "label": "Течет вода?",
+      "href": "/usluga/iz-kondicionera-techet-voda"
+    },
+    {
+      "label": "Не морозит?",
+      "href": "/usluga/ne-holodit-kondicioner"
+    }
+  ],
+  "services": [
+    {
+      "label": "Ремонт кондиционеров",
+      "href": "/usluga/remont-kondicionerov"
+    },
+    {
+      "label": "Продажа кондиционеров",
+      "href": "/usluga/prodazha-kondicionerov"
+    },
+    {
+      "label": "Установка кондиционеров",
+      "href": "/usluga/ustanovka-kondicionerov"
+    },
+    {
+      "label": "Чистка кондиционеров",
+      "href": "/usluga/chistka-kondicionerov"
+    },
+    {
+      "label": "Дозаправка кондиционеров",
+      "href": "/usluga/dozapravka-kondicionerov"
+    },
+    {
+      "label": "Дезинфекция кондиционеров",
+      "href": "/usluga/dezinfekciya-kondicionerov"
+    },
+    {
+      "label": "Диагностика кондиционеров",
+      "href": "/usluga/diagnostika-kondicionerov"
+    },
+    {
+      "label": "Демонтаж кондиционеров",
+      "href": "/usluga/demontazh-kondicionerov"
+    },
+    {
+      "label": "Профилактика кондиционеров",
+      "href": "/usluga/profilaktika-kondicionerov"
+    },
+    {
+      "label": "Проект кондиционирования",
+      "href": "/usluga/proektirovanie-sistemy-kondicionirovaniya"
+    },
+    {
+      "label": "Продажа и установка бризеров",
+      "href": "/usluga/prodazha-i-ustanovka-brizerov"
+    },
+    {
+      "label": "VRF и VRV системы",
+      "href": "/usluga/remont-i-obsluzhivanie-vrf-i-vrv-sistem"
+    },
+    {
+      "label": "Чиллеры и фанкойлы",
+      "href": "/usluga/montazh-i-obsluzhivanie-chillerov-i-fankoylov"
+    },
+    {
+      "label": "Прецизионные кондиционеры",
+      "href": "/usluga/montazh-i-obsluzhivanie-precizionnyh-kondicionerov"
+    },
+    {
+      "label": "Канальные кондиционеры",
+      "href": "/usluga/montazh-i-obsluzhivanie-kanalnyh-kondicionerov"
+    },
+    {
+      "label": "Обслуживание вентиляции",
+      "href": "/usluga/obsluzhivanie-i-remont-sistem-ventilyacii"
+    },
+    {
+      "label": "Промышленные кондиционеры",
+      "href": "/usluga/montazh-i-obsluzhivanie-promyshlennyh-kondicionerov"
+    },
+    {
+      "label": "Монтаж теплового насоса",
+      "href": "/usluga/montazh-teplovogo-nasosa-vozduh-voda"
+    }
+  ],
+  "faults": [
+    {
+      "label": "Не морозит?",
+      "href": "/usluga/ne-holodit-kondicioner"
+    },
+    {
+      "label": "Течет вода?",
+      "href": "/usluga/iz-kondicionera-techet-voda"
+    },
+    {
+      "label": "Не включается?",
+      "href": "/usluga/ne-vklyuchaetsya-kondicioner"
+    },
+    {
+      "label": "Шумит?",
+      "href": "/usluga/shumit-kondicioner"
+    },
+    {
+      "label": "Обмерзает?",
+      "href": "/usluga/obmerzaet-kondicioner"
+    },
+    {
+      "label": "Неприятный запах?",
+      "href": "/usluga/nepriyatnyy-zapah-iz-kondicionera"
+    },
+    {
+      "label": "Утечка фреона",
+      "href": "/usluga/utechka-freona"
+    },
+    {
+      "label": "Выдает ошибку",
+      "href": "/usluga/vydaet-oshibku"
+    }
+  ],
+  "topbar": [
+    {
+      "label": "О компании",
+      "href": "/o-kompanii-centr-klimata"
+    },
+    {
+      "label": "Наши работы",
+      "href": "/nashi-raboty"
+    }
+  ],
+  "footer_links": [
+    {
+      "label": "Пользовательское соглашение",
+      "href": "/polzovatelskoe-soglashenie"
+    },
+    {
+      "label": "Часто задаваемые вопросы",
+      "href": "/chasto-zadavaemye-voprosy-v-sfere-remonta-kondicionerov"
+    }
+  ],
+  "header": [
+    {
+      "label": "АКЦИИ",
+      "href": "/actions"
+    },
+    {
+      "label": "Контакты",
+      "href": "/kontakty"
+    }
+  ],
+  "brands": [
+    {
+      "image": "media:/sites/default/files/page/haier.jpg",
+      "title": "Haier"
+    },
+    {
+      "image": "media:/sites/default/files/page/york.jpg",
+      "title": "york"
+    },
+    {
+      "image": "media:/sites/default/files/page/beko.jpg",
+      "title": "beko"
+    },
+    {
+      "image": "media:/sites/default/files/page/ballu.jpg",
+      "title": "ballu"
+    },
+    {
+      "image": "media:/sites/default/files/page/airwell.jpg",
+      "title": "airwell"
+    },
+    {
+      "image": "media:/sites/default/files/page/vitek.jpg",
+      "title": "vitek"
+    },
+    {
+      "image": "media:/sites/default/files/page/toshiba.jpg",
+      "title": "toshiba"
+    },
+    {
+      "image": "media:/sites/default/files/page/sharp.jpg",
+      "title": "sharp"
+    },
+    {
+      "image": "media:/sites/default/files/page/sanyo.jpg",
+      "title": "sanyo"
+    },
+    {
+      "image": "media:/sites/default/files/page/samsung.jpg",
+      "title": "samsung"
+    },
+    {
+      "image": "media:/sites/default/files/page/panasonic.jpg",
+      "title": "panasonic"
+    },
+    {
+      "image": "media:/sites/default/files/page/mitsu.jpg",
+      "title": "Mitsubishi"
+    },
+    {
+      "image": "media:/sites/default/files/page/midea.jpg",
+      "title": "midea"
+    },
+    {
+      "image": "media:/sites/default/files/page/mcq.jpg",
+      "title": "Mcquay"
+    },
+    {
+      "image": "media:/sites/default/files/page/lg.jpg",
+      "title": "lg"
+    },
+    {
+      "image": "media:/sites/default/files/page/lessar.jpg",
+      "title": "lessar"
+    },
+    {
+      "image": "media:/sites/default/files/page/kentatsu.jpg",
+      "title": "kentatsu"
+    },
+    {
+      "image": "media:/sites/default/files/page/hyundai.jpg",
+      "title": "hyundai"
+    },
+    {
+      "image": "media:/sites/default/files/page/hualing.jpg",
+      "title": "hualing"
+    },
+    {
+      "image": "media:/sites/default/files/page/hitachi.jpg",
+      "title": "hitachi"
+    },
+    {
+      "image": "media:/sites/default/files/page/general.jpg",
+      "title": "general"
+    },
+    {
+      "image": "media:/sites/default/files/page/climate.jpg",
+      "title": "general climate"
+    },
+    {
+      "image": "media:/sites/default/files/page/fujitsu.jpg",
+      "title": "fujitsu"
+    },
+    {
+      "image": "media:/sites/default/files/page/electrolux.jpg",
+      "title": "electrolux"
+    },
+    {
+      "image": "media:/sites/default/files/page/delonghi.jpg",
+      "title": "delonghi"
+    },
+    {
+      "image": "media:/sites/default/files/page/dantex.jpg",
+      "title": "dantex"
+    },
+    {
+      "image": "media:/sites/default/files/page/daikin.jpg",
+      "title": "daikin"
+    },
+    {
+      "image": "media:/sites/default/files/page/carrier.jpg",
+      "title": "carrier"
+    },
+    {
+      "image": "media:/sites/default/files/page/bork.jpg",
+      "title": "bork"
+    }
+  ],
+  "certificates": [
+    {
+      "image": "media:/sites/default/files/scan1-2025.jpg",
+      "title": "сертификат"
+    },
+    {
+      "image": "media:/sites/default/files/scan2-2025.jpeg",
+      "title": "приложение"
+    },
+    {
+      "image": "media:/sites/default/files/vypiska-sro.jpg",
+      "title": "НОПРИЗ"
+    },
+    {
+      "image": "media:/sites/default/files/Sertificat-IGC2.jpg",
+      "title": "Сертификат IGC"
+    },
+    {
+      "image": "media:/sites/default/files/severcon-sert.jpg",
+      "title": "Сертификат Северкон"
+    },
+    {
+      "image": "media:/sites/default/files/JUST-sertifikat.jpg",
+      "title": "Сертификат JUST"
+    },
+    {
+      "image": "media:/sites/default/files/TCL-sertifikat.jpg",
+      "title": "Сертификат TSL"
+    }
+  ],
+  "header_texts": {
+    "hours_text": "Работаем круглосуточно без выходных",
+    "arrival_text": "Специалист приедет к вам в течение 2 часов",
+    "free_visit_text": "Бесплатный выезд специалиста*",
+    "cta_label": "оставьте заявку онлайн"
+  },
+  "branding": {
+    "site_name": "Центр климата",
+    "tagline": "установка, ремонт и обслуживание кондиционеров",
+    "logo_url": "media:/sites/all/themes/new/logo.png",
+    "hero_image_url": "media:/sites/all/themes/new/image/big_banner.webp"
+  },
+  "footer": {
+    "disclaimer": "*При выполнении ремонта - выезд инженера и диагностика бесплатные! Цены, указанные на сайте, не являются публичной офертой."
+  },
+  "form": {
+    "title": "Заявка онлайн",
+    "note": "Оставьте Ваши контакты и мы перезвоним в рабочее время.",
+    "question": "Какие работы вам нужны?",
+    "options": [
+      "Ремонт",
+      "Установка",
+      "Покупка кондиционера",
+      "Чистка",
+      "Другое"
+    ],
+    "consent": "Указывая свои данные, Вы даете полное согласие на обработку персональных данных в соответствии с Политикой конфиденциальности администрации сайта"
+  },
+  "works": [
+    {
+      "image": "media:/sites/default/files/izobrazhenie_whatsapp_2025-05-30_v_18.30.06_2c2c5390.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/lzzxvh_cmlhq_7pf7kwhh65r0roxqht-ikioi6sfgalumhyyx5c0ifs4oqvrsilxvnpaskt0j2eqovf7pkkzi8ey.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/jrde4azkmmvaj3tyo8oxpsw4qskixegtiplfwx9kel4co7ij54szkmn-emmntde2mbipt4s5x8h9dx9vk8z55qeb.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/uqlvik04n1w.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/rabota22.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/uytvpr-kxqy.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/proekt_ventilyatsii_i_konditsionirovania_ofisnoe_pomeschenie_ul_izhorskaya_d_6_k_6_page-0012.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/proekt_ventilyatsii_i_konditsionirovania_ofisnoe_pomeschenie_ul_izhorskaya_d_6_k_6_page-0013.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/proekt_ventilyatsii_i_konditsionirovania_ofisnoe_pomeschenie_ul_izhorskaya_d_6_k_6_page-0014.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/1945_k0tgmzeh21m.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/1942_ustanovka-konditsionera.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/1944_virhmlrkrfw.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/yhln_swsrec.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/d7wvwk9lgts.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/4lgh49jng4y.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/vxtrnsxd0f4.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/5-rnwus9a24.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/2kubevnmfhk.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/7zp-qrxtbdm.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/blh3nm8bj9u.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/d_ma6saykjc.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/eoal5veavsy.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/eoqrtgrqzcy.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ghtpc-0chvo.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/hw1mxkcp5m8.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/chastnyi-dom.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/k_uidlxhtf8.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/zapravka-chiller.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/nu-t5qe2nbq.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/novostroika.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/moika-chiller.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/sb6q9xweqxq.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ieorzzrzyum.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/kalxlqfpgma.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/inmzgnjiovi.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/7kz2fgzs2ms.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/8adl-thqvw0.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/b7cods5wluo.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/bmfvr0lq4jc.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/eetsz2ahlxa.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/h_fo3fpdc_g.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ksyw0xbd1sa.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/kz0gdr9xz0q.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/l37uttoi0ya.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/lrsrdixsgdk.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ltjvr5qevtm.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/mwzjj9fampg.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/odptu0j6g1k.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/pcb_w7p_1ss.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/po65_okhu-w.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/shgivzgoy9u.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/so2i_7uxzc.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/uabmr3pumda.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/vc-0d2pmmsw.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/abaqottv6fy.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/acmvtp-16o8.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/eixsm-hckje.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ydo-x_zitzq.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/hzr2vpgug0c.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/odcu8dtm0vq.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/iqu7s78ps-q.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/jrp5k5sbd6k.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/odcu8dtm0vq_0.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/tweq50srib0.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/uwduhtwlef8.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ddu8xo8pc-q.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/-9q3dr_jbea.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/nfrtotluphm.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/uiww0lzzimm.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/jlbrwqt6jng.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/yusdk54cdku.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/rsjw4smofg4.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/fwl-jdnnceg.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/w5ygndpes0o.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/42kj80zeydo.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ptk5zmusqik.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/bcc5qykeuak.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/svxowtjorbq.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/_cjmvh3_d3q.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/nktxcie6gm4.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/mf2vk8dxqpi.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/bjqxqzdatg0.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/l1_dj7qwmcu.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/obsluzhivanie_kondicionera.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/remont_kondicionera.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ustanovka_vneshnego_bloka.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ustanovka_kondicionera_2.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ustanovka_kondicionera.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/wc0mysu4c3s.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/u5w3uzjllwq.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/m-z-vlc7ca8.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/zmivpn0qzce.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ejyyozplm3k.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ilovepdf_merged_page-0006.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ilovepdf_merged_page-0007.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/ilovepdf_merged_page-0008.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/izobrazhenie_whatsapp_2025-05-30_v_10.48.54_d921fafa.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/izobrazhenie_whatsapp_2025-05-30_v_10.48.54_5cdbae74.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/izobrazhenie_whatsapp_2025-05-30_v_18.30.06_eb8c9da1.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/izobrazhenie_whatsapp_2025-05-30_v_18.30.08_46f771f8.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/izobrazhenie_whatsapp_2025-06-30_v_16.26.10_98b8caf4.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/izobrazhenie_whatsapp_2025-06-30_v_16.26.11_88502e28.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/sdfs.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/izobrazhenie_whatsapp_2025-07-13_v_18.49.20_8de7e7c0.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/rabota.jpg",
+      "title": ""
+    },
+    {
+      "image": "media:/sites/default/files/rabota3.jpg",
+      "title": ""
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "slug": "kontakty",
+  "type": "static",
+  "parent": null,
+  "status": "published",
+  "translate": true,
+  "title": "Контакты в Ереване",
+  "meta_title": "Контакты | Центр климата в Ереване",
+  "meta_description": null,
+  "sections": [
+    {
+      "block_type": "contacts_strip",
+      "content": {
+        "heading": null
+      }
+    },
+    {
+      "block_type": "map",
+      "content": {
+        "heading": null
+      }
+    },
+    {
+      "block_type": "request_form",
+      "content": {
+        "heading": null,
+        "button_label": null
+      }
+    }
+  ]
+}

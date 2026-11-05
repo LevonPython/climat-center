@@ -1,5 +1,9 @@
 const ALL_LANGS = ['ru', 'en', 'hy'];
 
+// These fields are rendered as href or iframe src on the public site, so script URLs must never get in.
+const SAFE_LINK_PATTERN = '^$|^(/(?!/)|https?://|mailto:|tel:)';
+const WEB_ADDRESS_PATTERN = '^$|^https?://';
+
 function schemaKey(page_name, section_name) {
   return `${page_name}/${section_name}`;
 }
@@ -16,6 +20,8 @@ function fieldSchema(field) {
   if (field.kind === 'select') {
     return { enum: [...field.options, null] };
   }
+  if (field.kind === 'link') return { type: ['string', 'null'], pattern: SAFE_LINK_PATTERN };
+  if (field.kind === 'url') return { type: ['string', 'null'], pattern: WEB_ADDRESS_PATTERN };
   return { type: ['string', 'null'] };
 }
 
