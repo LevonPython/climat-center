@@ -1,6 +1,6 @@
 import { Image } from '@tiptap/extension-image';
 import { TableKit } from '@tiptap/extension-table';
-import { EditorContent, useEditor, type Editor } from '@tiptap/react';
+import { EditorContent, Extension, useEditor, type Editor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -46,6 +46,23 @@ function ToolButton(props: { label: string; active?: boolean; disabled?: boolean
     </button>
   );
 }
+
+// Keeps the two-column look of an imported list when its text is edited here.
+const ListColumns = Extension.create({
+  name: 'listColumns',
+  addGlobalAttributes: () => [
+    {
+      types: ['bulletList'],
+      attributes: {
+        class: {
+          default: null,
+          parseHTML: (element: HTMLElement) => element.getAttribute('class'),
+          renderHTML: (attributes: Record<string, string | null>) => (attributes.class ? { class: attributes.class } : {})
+        }
+      }
+    }
+  ]
+});
 
 function Toolbar({ editor, onImage }: { editor: Editor; onImage: () => void }) {
   const { t } = useTranslation();
@@ -123,7 +140,8 @@ export function RichTextEditor({ label, value, lang, invalid, onChange }: RichTe
         link: { openOnClick: false }
       }),
       Image,
-      TableKit
+      TableKit,
+      ListColumns
     ],
     content: value || '',
     shouldRerenderOnTransaction: true,

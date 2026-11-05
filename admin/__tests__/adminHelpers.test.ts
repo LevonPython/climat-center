@@ -61,6 +61,13 @@ describe('content helpers', () => {
     expect(codes.sort()).toEqual(['invalidOption', 'notList', 'notText', 'unknownKey']);
   });
 
+  test('a link field takes a site path, but not a script', () => {
+    const linkFields: FieldDef[] = [{ key: 'link_url', label: 'Link', kind: 'link' }];
+    expect(validateDraft(linkFields, { link_url: '/usluga/remont' })).toEqual([]);
+    expect(validateDraft(linkFields, { link_url: 'javascript:alert(1)' })).toEqual([{ path: 'link_url', code: 'invalidLink' }]);
+    expect(validateDraft(linkFields, { link_url: '//evil.example' })).toEqual([{ path: 'link_url', code: 'invalidLink' }]);
+  });
+
   test('a list set to null is rejected, because the server would refuse it', () => {
     expect(validateDraft(fields, { items: null })).toEqual([{ path: 'items', code: 'notList' }]);
   });
@@ -127,7 +134,7 @@ describe('errorText', () => {
 
 describe('public texts', () => {
   test('every label of the public site is listed with its text in all languages', () => {
-    const brand = PUBLIC_TEXTS.find((text) => text.key === 'nav.home');
+    const brand = PUBLIC_TEXTS.find((text) => text.key === 'nav.booking');
     expect(brand?.defaults.hy).toBeTruthy();
     expect(brand?.defaults.ru).toBeTruthy();
     expect(brand?.defaults.en).toBeTruthy();
