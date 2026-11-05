@@ -89,6 +89,15 @@ test('the works gallery has three columns', async ({ page }) => {
   expect(lefts).toBe(3);
 });
 
+test('the works gallery loads resized pictures, not the full files', async ({ page }) => {
+  test.skip(IS_LOCAL, 'Local uploads are stored on the API, not in the Blob store.');
+  await page.goto('/en/nashi-raboty');
+  const picture = page.getByRole('main').getByRole('button', { name: /Show picture/ }).first().locator('img');
+  await expect(picture).toBeVisible();
+  await expect.poll(() => picture.evaluate((image: HTMLImageElement) => image.currentSrc)).toContain('/_next/image');
+  await expect.poll(() => picture.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+});
+
 test('a service opens from the hero with its breadcrumbs and prices', async ({ page }) => {
   await page.goto('/en');
   await page.getByRole('navigation', { name: 'Services and maintenance' }).getByRole('link', { name: 'Repair', exact: true }).click();

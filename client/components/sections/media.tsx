@@ -1,10 +1,13 @@
 import { useTranslation } from 'next-i18next';
+import Image from 'next/image';
 import { useState } from 'react';
-import { assetUrl } from '../../lib/assets';
+import { assetUrl, isResizable } from '../../lib/assets';
 import { isEmbeddableVideo } from '../../lib/richText';
 import { Lightbox, type LightboxImage } from '../site/Lightbox';
 import { useSite } from '../site/SiteContext';
 import { PlainTitle, SectionBox } from './shared';
+
+const GRID_PICTURE_SIZES = '(min-width: 768px) 310px, (min-width: 640px) 50vw, 100vw';
 
 function ImageGrid({ images }: { images: (LightboxImage & { title?: string | null })[] }) {
   const { t } = useTranslation('common');
@@ -13,9 +16,8 @@ function ImageGrid({ images }: { images: (LightboxImage & { title?: string | nul
     <>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
         {images.map((image, index) => (
-          <button key={index} type="button" aria-label={image.title || image.alt || t('sections.showPicture', { number: index + 1 })} className="block overflow-hidden" onClick={() => setOpen(index)}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={assetUrl(image.url)} alt={image.alt || ''} loading="lazy" className="aspect-[4/3] h-auto w-full object-cover" />
+          <button key={index} type="button" aria-label={image.title || image.alt || t('sections.showPicture', { number: index + 1 })} className="relative block aspect-[4/3] w-full overflow-hidden" onClick={() => setOpen(index)}>
+            <Image src={assetUrl(image.url)} alt={image.alt || ''} fill sizes={GRID_PICTURE_SIZES} unoptimized={!isResizable(image.url)} className="object-cover" />
           </button>
         ))}
       </div>
