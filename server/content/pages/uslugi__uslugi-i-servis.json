@@ -1,0 +1,19 @@
+{
+  "slug": "uslugi/uslugi-i-servis",
+  "type": "listing",
+  "parent": null,
+  "status": "published",
+  "translate": true,
+  "title": "Услуги и сервис",
+  "meta_title": "Услуги и сервис | Центр климата",
+  "meta_description": "Наши услуги. Профессиональный сервис в сфере кондиционирования воздуха в Ереване",
+  "sections": [
+    {
+      "block_type": "listing",
+      "content": {
+        "heading": null,
+        "category": "service"
+      }
+    }
+  ]
+}

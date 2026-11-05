@@ -1,14 +1,19 @@
 import { GetServerSideProps } from 'next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const nextI18nextConfig = require('../next-i18next.config');
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Layout } from '../components/Layout';
 import { apiFetch } from '../lib/api';
 import { isValidArmenianPhone, sanitizePhoneInput } from '../lib/phone';
-import type { Service } from '../components/ServiceCard';
+import { loadCommonPropsSafely } from '../lib/site';
+
+type Service = {
+  id: string;
+  type: string;
+  title_en?: string | null;
+  title_ru?: string | null;
+  title_hy?: string | null;
+};
 
 type BookingPayload = {
   user_name: string;
@@ -228,7 +233,7 @@ export default function BookingPage() {
             <button
               type="submit"
               disabled={!canSubmit || submitting}
-              className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-60"
+              className="inline-flex items-center justify-center rounded-xl bg-brand px-4 py-3 text-sm font-bold text-white hover:opacity-90 disabled:opacity-60"
             >
               {submitting ? t('form.sending') : t('form.submit')}
             </button>
@@ -240,11 +245,6 @@ export default function BookingPage() {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const lang = locale || 'hy';
-  return {
-    props: {
-      ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig))
-    }
-  };
+  return { props: await loadCommonPropsSafely(locale || 'hy') };
 };
 

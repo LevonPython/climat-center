@@ -1,0 +1,19 @@
+{
+  "slug": "nashi-raboty",
+  "type": "gallery",
+  "parent": null,
+  "status": "published",
+  "translate": true,
+  "title": "Наши работы в Ереване",
+  "meta_title": "Наши работы | Центр климата в Ереване",
+  "meta_description": "Ознакомьтесь с нашими работами в сфере кондиционирования и вентиляции. Наше портфолио в Ереване",
+  "sections": [
+    {
+      "block_type": "gallery",
+      "content": {
+        "heading": null,
+        "collection": "works"
+      }
+    }
+  ]
+}

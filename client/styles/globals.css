@@ -8,5 +8,66 @@ body {
 }
 
 body {
-  @apply bg-white text-slate-900;
+  @apply bg-white text-[14px] leading-[1.4] text-ink;
+}
+
+a {
+  color: #00adef;
+}
+
+/* Stored rich text can't carry utility classes, so its look lives here. */
+@layer components {
+  .rich-text {
+    @apply overflow-hidden text-[15px];
+  }
+  .rich-text p {
+    @apply mb-3;
+  }
+  .rich-text h2 {
+    @apply mb-4 mt-6 text-[140%] font-medium uppercase;
+  }
+  .rich-text h3,
+  .rich-text h4 {
+    @apply mb-2.5 mt-4 text-[120%] font-medium uppercase;
+  }
+  .rich-text ul {
+    @apply mb-4 pl-[17px];
+  }
+  .rich-text ul > li {
+    @apply mb-3 min-h-[17px] list-none bg-[url('/theme/li.png')] bg-[0_1px] bg-no-repeat pl-[34px];
+  }
+  .rich-text ul.two-columns {
+    @apply gap-5 md:columns-2;
+  }
+  .rich-text ul.two-columns > li {
+    @apply break-inside-avoid;
+  }
+  .rich-text ol {
+    counter-reset: rich-list;
+    @apply mb-5 pl-[17px];
+  }
+  .rich-text ol > li {
+    @apply relative mb-2.5 min-h-[34px] list-none pl-11 pt-2.5;
+  }
+  .rich-text ol > li::before {
+    counter-increment: rich-list;
+    content: counter(rich-list);
+    @apply absolute left-0 top-1 h-[34px] w-[34px] bg-panel text-center font-semibold leading-[34px] text-brand;
+  }
+  .rich-text blockquote {
+    @apply mb-4 border-l-4 border-brand bg-mist px-4 py-3;
+  }
+  .rich-text img {
+    @apply my-2 h-auto max-w-full;
+  }
+  .rich-text a > img {
+    @apply cursor-zoom-in;
+  }
+  .rich-text table {
+    @apply mb-8 max-w-full border-collapse;
+  }
+  .rich-text td,
+  .rich-text th {
+    @apply border border-brand px-2 py-1.5;
+  }
 }

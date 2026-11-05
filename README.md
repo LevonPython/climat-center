@@ -113,11 +113,11 @@ You should see `climat_center` in the list.
 
 ## Admin panel
 
-The admin app manages **bookings**, **services**, **content**, and **users**. It does not currently include a screen for **quiz submissions**; quiz data is stored via the API and can be listed with `GET /api/quiz-submissions` (requires admin/editor auth). Public site translations (e.g. quiz options in EN/RU/HY) live in `client/public/locales/` and do not affect the admin UI.
+The admin app manages **bookings**, **pages**, **services**, **menus**, **galleries**, **files**, **site settings**, **interface text** and **users**. It does not currently include a screen for **quiz submissions**; quiz data is stored via the API and can be listed with `GET /api/quiz-submissions` (requires admin/editor auth). Public site translations (e.g. quiz options in EN/RU/HY) live in `client/public/locales/` and do not affect the admin UI.
 
 ### Content editing (safe, schema-driven)
 
-The **Content** screen is designed to be safe for non-technical editors:
+The **Pages** and **Site settings** screens are designed to be safe for non-technical editors:
 
 - **Form-first UI**: content is edited via labeled inputs and grouped sections; keys are not editable.
 - **Language tabs**: multilingual fields are edited with RU/EN/HY tabs (stored in DB as `*_ru`, `*_en`, `*_hy`).
@@ -127,21 +127,13 @@ The **Content** screen is designed to be safe for non-technical editors:
 
 ## Content model + static pages (SSG/ISR)
 
-The public site (`client/`) is **statically generated** where possible:
+The public site (`client/`) renders every page from the database through one catch-all route, so a new page in the admin needs no code:
 
-- `/`, `/services`, `/about`, `/contacts` use `getStaticProps` (SSG).
+- `GET /api/pages/:lang/:slug` returns a page and its sections. `GET /api/site/:lang` returns menus, settings, services and galleries.
+- `client/pages/[...slug].tsx` and `client/pages/index.tsx` use `getStaticProps` (SSG with ISR).
 - `/booking` and `/quiz` stay dynamic (SSR) because they are transactional flows.
 
-Content for the main pages comes from the API / database:
-
-- `GET /api/content/:lang` (Express) reads from the `content_blocks` table and returns a nested object:
-  - `pages[page_name][section_name]`
-- Example blocks used by the public site:
-  - `pages.home.hero`
-  - `pages.about.page`
-  - `pages.contacts.page`
-  - `pages.global.contacts`
-  - `pages.global.social`
+The content came from climatecentr.ru through `server/scripts/content/`. See "Importing the site content" in [`deploy/vercel.md`](deploy/vercel.md).
 
 ### ISR (time-based refresh)
 

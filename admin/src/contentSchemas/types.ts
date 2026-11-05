@@ -1,7 +1,7 @@
 export type Lang = 'hy' | 'ru' | 'en';
 export const LANGS: Lang[] = ['hy', 'ru', 'en'];
 
-export type FieldKind = 'string' | 'text' | 'url' | 'email' | 'phone' | 'rich_text' | 'image' | 'select' | 'list';
+export type FieldKind = 'string' | 'text' | 'url' | 'link' | 'email' | 'phone' | 'rich_text' | 'image' | 'select' | 'list';
 
 export type FieldDef = {
   key: string;

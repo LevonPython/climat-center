@@ -43,3 +43,10 @@ logs/
 
 ## Claude Code (personal settings)
 .claude/settings.local.json
+
+# Downloaded copy of the reference site. The tracked JSON in server/content is the source of truth.
+server/content/raw/
+
+# Local test output
+e2e/test-results/
+server/uploads-admin-check/

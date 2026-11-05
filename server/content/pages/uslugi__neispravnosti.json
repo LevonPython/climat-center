@@ -1,0 +1,19 @@
+{
+  "slug": "uslugi/neispravnosti",
+  "type": "listing",
+  "parent": null,
+  "status": "published",
+  "translate": true,
+  "title": "Неисправности",
+  "meta_title": "Неисправности | Центр климата",
+  "meta_description": "Диагностируем и устраняем любые неисправности кондиционеров и другого климатического оборудования в Ереване",
+  "sections": [
+    {
+      "block_type": "listing",
+      "content": {
+        "heading": null,
+        "category": "fault"
+      }
+    }
+  ]
+}

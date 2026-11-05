@@ -34,6 +34,16 @@ describe('sanitizeRichText', () => {
   });
 });
 
+describe('list columns in rich text', () => {
+  test('a list keeps its two columns', () => {
+    expect(sanitizeRichText('<ul class="two-columns"><li>a</li></ul>')).toBe('<ul class="two-columns"><li>a</li></ul>');
+  });
+
+  test('no other class gets through', () => {
+    expect(sanitizeRichText('<ul class="two-columns evil"><li class="x">a</li></ul><p class="two-columns">b</p>')).toBe('<ul class="two-columns"><li>a</li></ul><p>b</p>');
+  });
+});
+
 describe('sanitizeContent', () => {
   test('cleans rich text in every language and inside lists, and leaves plain fields alone', () => {
     const dirty = '<p>a</p><script>x</script>';

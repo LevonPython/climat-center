@@ -1,6 +1,6 @@
 import { LANGS, type Content, type FieldDef, type Lang } from './types';
 
-export type IssueCode = 'unknownKey' | 'notText' | 'notList' | 'invalidOption' | 'invalidUrl' | 'invalidEmail' | 'invalidPhone';
+export type IssueCode = 'unknownKey' | 'notText' | 'notList' | 'invalidOption' | 'invalidUrl' | 'invalidLink' | 'invalidEmail' | 'invalidPhone';
 export type ValidationIssue = { path: string; code: IssueCode };
 
 export function isObjectRecord(v: unknown): v is Record<string, unknown> {
@@ -29,6 +29,10 @@ function isValidUrl(s: string): boolean {
   } catch {
     return false;
   }
+}
+
+function isSafeLink(s: string): boolean {
+  return /^(\/(?!\/)|https?:\/\/|mailto:|tel:)/i.test(s);
 }
 
 function isValidEmail(s: string): boolean {
@@ -96,6 +100,7 @@ export function validateDraft(fields: FieldDef[], draft: Content, prefix = ''): 
       const trimmed = value.trim();
       if (!trimmed) continue;
       if (field.kind === 'url' && !isValidUrl(trimmed)) issues.push({ path, code: 'invalidUrl' });
+      if (field.kind === 'link' && !isSafeLink(trimmed)) issues.push({ path, code: 'invalidLink' });
       if (field.kind === 'email' && !isValidEmail(trimmed)) issues.push({ path, code: 'invalidEmail' });
       if (field.kind === 'phone' && !isValidPhone(trimmed)) issues.push({ path, code: 'invalidPhone' });
     }

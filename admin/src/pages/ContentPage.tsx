@@ -25,8 +25,8 @@ type Entry = {
 
 const entryKey = (block: { page_name: string; section_name: string }) => `${block.page_name}/${block.section_name}`;
 
-// "global" is the site settings screen; "pages" holds the text of the older fixed pages.
-export function ContentPage({ scope }: { scope: 'global' | 'pages' }) {
+// The site settings screen: blocks used across the whole site.
+export function ContentPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const label = useSchemaLabel();
@@ -54,8 +54,8 @@ export function ContentPage({ scope }: { scope: 'global' | 'pages' }) {
     const withoutDef = rows
       .filter((row) => !known.has(entryKey(row)))
       .map((row) => ({ key: entryKey(row), page_name: row.page_name, section_name: row.section_name, def: null, row }));
-    return [...fromDefs, ...withoutDef].filter((entry) => (entry.page_name === 'global') === (scope === 'global'));
-  }, [schemasQ.data, blocksQ.data, scope]);
+    return [...fromDefs, ...withoutDef].filter((entry) => entry.page_name === 'global');
+  }, [schemasQ.data, blocksQ.data]);
 
   const selected = entries.find((entry) => entry.key === selectedKey) || entries[0] || null;
 

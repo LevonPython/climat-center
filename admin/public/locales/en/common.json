@@ -2,7 +2,6 @@
   "nav": {
     "bookings": "Bookings",
     "services": "Services",
-    "content": "Current pages text",
     "users": "Users",
     "pages": "Pages",
     "navigation": "Menus",
@@ -108,7 +107,6 @@
     "saveError": "Could not save the service. Try again."
   },
   "content": {
-    "title": "Current pages text",
     "blocks": "Blocks",
     "noBlocks": "No blocks",
     "unsaved": "Unsaved",

@@ -31,7 +31,6 @@ const NAV_ITEMS = [
   { to: '/media', labelKey: 'nav.media' },
   { to: '/settings', labelKey: 'nav.settings' },
   { to: '/translations', labelKey: 'nav.translations' },
-  { to: '/content', labelKey: 'nav.content' },
   { to: '/users', labelKey: 'nav.users' }
 ];
 
@@ -101,9 +100,8 @@ const PRIVATE_ROUTES = [
   { path: '/navigation', titleKey: 'navigation.title', element: <NavigationPage /> },
   { path: '/galleries', titleKey: 'galleries.title', element: <GalleriesPage /> },
   { path: '/media', titleKey: 'media.title', element: <MediaPage /> },
-  { path: '/settings', titleKey: 'settings.title', element: <ContentPage key="global" scope="global" /> },
+  { path: '/settings', titleKey: 'settings.title', element: <ContentPage /> },
   { path: '/translations', titleKey: 'translations.title', element: <TranslationsPage /> },
-  { path: '/content', titleKey: 'content.title', element: <ContentPage key="pages" scope="pages" /> },
   { path: '/users', titleKey: 'users.title', element: <UsersPage /> }
 ];
 

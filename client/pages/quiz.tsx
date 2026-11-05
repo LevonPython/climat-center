@@ -1,11 +1,9 @@
 import { GetServerSideProps } from 'next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const nextI18nextConfig = require('../next-i18next.config');
 import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import { Layout } from '../components/Layout';
+import { loadCommonPropsSafely } from '../lib/site';
 import { apiFetch } from '../lib/api';
 import { isValidArmenianPhone, sanitizePhoneInput } from '../lib/phone';
 
@@ -135,7 +133,7 @@ export default function QuizPage() {
                     onClick={() => setProblem(p)}
                     className={[
                       'rounded-xl border px-3 py-3 text-left text-sm font-semibold',
-                      problem === p ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 hover:bg-slate-50'
+                      problem === p ? 'border-slate-900 bg-brand text-white' : 'border-slate-200 hover:bg-slate-50'
                     ].join(' ')}
                   >
                     {p}
@@ -147,7 +145,7 @@ export default function QuizPage() {
                   type="button"
                   disabled={!canNext1}
                   onClick={() => setStep(2)}
-                  className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+                  className="rounded-xl bg-brand px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
                 >
                   {t('actions.next')}
                 </button>
@@ -166,7 +164,7 @@ export default function QuizPage() {
                     onClick={() => setAcType(p)}
                     className={[
                       'rounded-xl border px-3 py-3 text-left text-sm font-semibold',
-                      acType === p ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 hover:bg-slate-50'
+                      acType === p ? 'border-slate-900 bg-brand text-white' : 'border-slate-200 hover:bg-slate-50'
                     ].join(' ')}
                   >
                     {p}
@@ -185,7 +183,7 @@ export default function QuizPage() {
                   type="button"
                   disabled={!canNext2}
                   onClick={() => setStep(3)}
-                  className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+                  className="rounded-xl bg-brand px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
                 >
                   {t('actions.next')}
                 </button>
@@ -257,7 +255,7 @@ export default function QuizPage() {
                         setPhoneTouched(false);
                         setError(null);
                       }}
-                      className="mt-3 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
+                      className="mt-3 rounded-xl bg-brand px-4 py-2 text-sm font-bold text-white hover:opacity-90"
                     >
                       {t('quiz.reset')}
                     </button>
@@ -275,7 +273,7 @@ export default function QuizPage() {
                       type="button"
                       disabled={!canSubmit || submitting}
                       onClick={submit}
-                      className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+                      className="rounded-xl bg-brand px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
                     >
                       {submitting ? t('form.sending') : t('quiz.submit')}
                     </button>
@@ -292,10 +290,6 @@ export default function QuizPage() {
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const lang = locale || 'hy';
-  return {
-    props: {
-      ...(await serverSideTranslations(lang, ['common'], nextI18nextConfig))
-    }
-  };
+  return { props: await loadCommonPropsSafely(lang) };
 };
 

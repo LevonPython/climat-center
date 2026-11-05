@@ -92,15 +92,29 @@ describe('/api/revalidate', () => {
       expect.arrayContaining([
         '/',
         '/en',
-        '/ru',
-        '/about',
-        '/en/about',
-        '/ru/about',
-        '/contacts',
-        '/en/contacts',
-        '/ru/contacts'
+        '/ru'
       ])
     );
+    // About and contacts are now normal pages, refreshed by their own path when edited.
+    expect(called).not.toContain('/about');
+    expect(called).not.toContain('/contacts');
+  });
+
+  test('a services change refreshes the home page and both service lists', async () => {
+    const handler = (await import('../pages/api/revalidate')).default;
+    const req: any = { method: 'POST', query: { secret: process.env.REVALIDATE_SECRET }, body: { event: 'services' } };
+    const res: any = {
+      revalidate: jest.fn(async () => undefined),
+      setHeader: jest.fn(),
+      status: jest.fn(function status(this: any) {
+        return this;
+      }),
+      json: jest.fn()
+    };
+    await handler(req, res);
+    const called = res.revalidate.mock.calls.map((c: any[]) => c[0]);
+    expect(called).toEqual(expect.arrayContaining(['/', '/uslugi/uslugi-i-servis', '/ru/uslugi/neispravnosti', '/en/uslugi/uslugi-i-servis']));
+    expect(called).not.toContain('/services');
   });
 });
 

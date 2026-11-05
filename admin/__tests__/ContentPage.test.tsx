@@ -44,7 +44,7 @@ const blocks = {
   content_blocks: [
     { id: 'c1', page_name: 'global', section_name: 'contacts', content_json: { phone: '+374 10 000000' } },
     { id: 'a1', page_name: 'about', section_name: 'page', content_json: { title_hy: 'Մեր մասին' } },
-    { id: 'x1', page_name: 'old', section_name: 'thing', content_json: {} }
+    { id: 'x1', page_name: 'global', section_name: 'old_thing', content_json: {} }
   ]
 };
 
@@ -56,7 +56,7 @@ describe('ContentPage', () => {
 
   test('site settings lists only the global blocks, by their plain names', async () => {
     routeApi(apiFetchMock, base);
-    renderScreen(<ContentPage scope="global" />);
+    renderScreen(<ContentPage />);
 
     expect(await screen.findByRole('button', { name: 'Контакты' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Подвал сайта' })).toBeInTheDocument();
@@ -64,20 +64,12 @@ describe('ContentPage', () => {
     expect(screen.getByLabelText('Телефон')).toHaveValue('+374 10 000000');
   });
 
-  test('the old pages screen leaves out the global blocks', async () => {
-    routeApi(apiFetchMock, base);
-    renderScreen(<ContentPage scope="pages" />);
-
-    expect(await screen.findByRole('button', { name: 'Страница «О компании»' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Контакты' })).not.toBeInTheDocument();
-  });
-
   test('a saved block is updated by its id', async () => {
     routeApi(apiFetchMock, {
       ...base,
       'PUT /api/content': { ok: true, content_block: { id: 'c1', page_name: 'global', section_name: 'contacts', content_json: { phone: '+374 11 111111' } } }
     });
-    renderScreen(<ContentPage scope="global" />);
+    renderScreen(<ContentPage />);
 
     fireEvent.change(await screen.findByLabelText('Телефон'), { target: { value: '+374 11 111111' } });
     fireEvent.click(screen.getByRole('button', { name: SAVE }));
@@ -91,7 +83,7 @@ describe('ContentPage', () => {
       ...base,
       'PUT /api/content': { ok: true, content_block: { id: 'f1', page_name: 'global', section_name: 'footer', content_json: { copyright_hy: '©' } } }
     });
-    renderScreen(<ContentPage scope="global" />);
+    renderScreen(<ContentPage />);
 
     fireEvent.click(await screen.findByRole('button', { name: 'Подвал сайта' }));
     fireEvent.change(screen.getByLabelText('Авторские права'), { target: { value: '©' } });
@@ -108,7 +100,7 @@ describe('ContentPage', () => {
   test('switching blocks with unsaved changes asks first', async () => {
     const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
     routeApi(apiFetchMock, base);
-    renderScreen(<ContentPage scope="global" />);
+    renderScreen(<ContentPage />);
 
     fireEvent.change(await screen.findByLabelText('Телефон'), { target: { value: '+374 22 222222' } });
     fireEvent.click(screen.getByRole('button', { name: 'Подвал сайта' }));
@@ -120,9 +112,9 @@ describe('ContentPage', () => {
 
   test('a stored block with no definition is not editable', async () => {
     routeApi(apiFetchMock, base);
-    renderScreen(<ContentPage scope="pages" />);
+    renderScreen(<ContentPage />);
 
-    fireEvent.click(await screen.findByRole('button', { name: 'old/thing' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'global/old_thing' }));
 
     expect(screen.getByText('Этот блок нельзя редактировать здесь.')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: SAVE })).not.toBeInTheDocument();

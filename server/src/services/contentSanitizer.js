@@ -13,6 +13,7 @@ const RICH_TEXT_OPTIONS = {
     td: ['colspan', 'rowspan'],
     th: ['colspan', 'rowspan']
   },
+  allowedClasses: { ul: ['two-columns'] },
   allowedSchemes: ['http', 'https', 'mailto', 'tel'],
   allowedSchemesByTag: { img: ['http', 'https'] },
   allowProtocolRelative: false

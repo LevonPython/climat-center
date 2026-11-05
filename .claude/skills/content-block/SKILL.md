@@ -27,7 +27,7 @@ Definitions live only on the server, and the admin builds its forms from them th
 2. **Labels**: add every new label to `admin/public/locales/{hy,ru,en}/schema.json`, in real Armenian and Russian.
 3. **Seed**: add a default row in `server/scripts/seed.js` if the page needs one. It only reaches databases that don't have the row yet, and the admin can also create it on first save.
 4. **Public page**: read it in `getStaticProps` from `content.pages?.home?.promo`, pass `value ?? null`, and render `value ?? t('key')`. The API has no fallback between languages, so `t()` is always needed.
-5. **New page only**: add its path to `pathsForEvent` in `client/pages/api/revalidate.ts`.
+5. **New page only**: nothing to do. Pages come from the admin and the catch-all route renders them.
 6. **Tests**: extend `server/tests/content.test.js` if behaviour changes, then run `node .claude/scripts/test-server.js` and `npm run test -w admin`. `schemaLabels.test.ts` fails if a label has no translation.
 
 ## Add a section type

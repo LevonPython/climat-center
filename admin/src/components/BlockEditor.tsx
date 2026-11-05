@@ -26,6 +26,7 @@ const ISSUE_MESSAGES: Record<IssueCode, string> = {
   notList: 'content.issues.notList',
   invalidOption: 'content.issues.invalidOption',
   invalidUrl: 'content.issues.invalidUrl',
+  invalidLink: 'common.linkInvalid',
   invalidEmail: 'content.issues.invalidEmail',
   invalidPhone: 'content.issues.invalidPhone'
 };

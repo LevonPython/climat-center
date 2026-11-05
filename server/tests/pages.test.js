@@ -265,6 +265,37 @@ if (!dbUrl) {
       expect(JSON.stringify(res.body)).not.toContain('jsonSchema');
     });
 
+    test('section links must be safe, because they are rendered as href', async () => {
+      const page = (await api.admin.post('/api/admin/pages').send({ slug: 'link-check', type: 'static', title_hy: 'Ա' })).body.page;
+      const save = (link_url) =>
+        api.editor.post(`/api/admin/pages/${page.id}/sections`).send({
+          block_type: 'icon_features',
+          content_json: { items: [{ title_hy: 'Ա', link_url }] }
+        });
+      expect((await save('javascript:alert(1)')).status).toBe(400);
+      expect((await save('//evil.example')).status).toBe(400);
+      expect((await save('/usluga/remont')).status).toBe(201);
+      expect((await save('https://example.com')).status).toBe(201);
+      expect((await save(null)).status).toBe(201);
+    });
+
+    test('a video address must be a web address', async () => {
+      const page = (await api.admin.post('/api/admin/pages').send({ slug: 'video-check', type: 'static', title_hy: 'Ա' })).body.page;
+      const save = (video_url) => api.editor.post(`/api/admin/pages/${page.id}/sections`).send({ block_type: 'video', content_json: { video_url } });
+      expect((await save('javascript:alert(1)')).status).toBe(400);
+      expect((await save('https://www.youtube.com/embed/abc')).status).toBe(201);
+    });
+
+    test('products can hold a list of pictures inside each product', async () => {
+      const page = (await api.admin.post('/api/admin/pages').send({ slug: 'products-check', type: 'static', title_hy: 'Ա' })).body.page;
+      const res = await api.editor.post(`/api/admin/pages/${page.id}/sections`).send({
+        block_type: 'products',
+        content_json: { items: [{ title_hy: 'Ա', images: [{ image_url: '/uploads/a.png' }], details_hy: '<p>Բ</p><script>x</script>' }] }
+      });
+      expect(res.status).toBe(201);
+      expect(res.body.section.content_json.items[0].details_hy).toBe('<p>Բ</p>');
+    });
+
     test('describes site blocks so the admin can build their forms', async () => {
       const res = await api.editor.get('/api/admin/schemas');
       const branding = res.body.site_blocks.find((b) => b.page_name === 'global' && b.section_name === 'branding');

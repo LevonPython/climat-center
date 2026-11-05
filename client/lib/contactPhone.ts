@@ -1,4 +1,5 @@
-export const CONTACT_PHONE_DISPLAY = '+(374) 94 00-00-00';
-export const CONTACT_PHONE_TEL = '+37494000000';
-export const CONTACT_PHONE_WHATSAPP = '37494000000';
-export const CONTACT_EMAIL = 'climatcenter@gmail.com';
+// Phone numbers are typed by hand in the admin, so spaces and brackets are expected.
+export function telHref(phone: string): string {
+  const digits = phone.replace(/[^\d+]/g, '');
+  return `tel:${digits}`;
+}
