@@ -89,6 +89,8 @@ DATABASE_URL='<neon-connection-string>' BLOB_READ_WRITE_TOKEN='<blob-token>' npm
 
 It's safe to run again: pages, services and settings that already exist stay as they are, so edits made in the admin survive. Menu items and gallery pictures deleted in the admin come back, and `--overwrite` replaces pages.
 
+To apply a change to a few pages only, add `--overwrite --only=slug,slug`. It replaces those pages and leaves every other page, menu, gallery and setting alone. It does remove any admin edits on the pages it replaces.
+
 To rebuild the raw files: `node server/scripts/content/crawl.js`, then `node server/scripts/content/fetchAssets.js`. Both wait 10 seconds between requests, as the old site's `robots.txt` asks, so they take about 2 hours.
 
 ## GitHub

@@ -7,6 +7,7 @@ const { JSDOM } = require('jsdom');
 
 const { sanitizeRichText } = require('../../src/services/contentSanitizer');
 const { adaptForArmenia } = require('./adapt');
+const { applyRemovals, keepWork } = require('./removals');
 
 const CONTENT_DIR = path.join(__dirname, '..', '..', 'content');
 const RAW_PAGES = path.join(CONTENT_DIR, 'raw', 'pages');
@@ -32,7 +33,7 @@ const MOVED_LINKS = /href="\/(konservaciya-chillerov-na-zimniy-period|diagnostik
 const PROMOTION_PICTURE = '2climatecentr_banner';
 // A scan of a document signed by the Russian company.
 const COMPANY_DOCUMENT = 'skan_centr_klimata';
-const review = { removed: [], prices: new Set(), videos: [], flagged: [] };
+const review = { removed: [], prices: new Set(), flagged: [] };
 let currentPath = '/';
 
 function adapt(text) {
@@ -322,7 +323,6 @@ const COMPONENTS = [
       // The old site reuses this class as a plain column, for text or a picture.
       if (!raw) return section('rich_text', { heading: null, body: richHtml([...el.childNodes]) });
       const video_url = raw.startsWith('//') ? `https:${raw}` : /^https?:/.test(raw) ? raw : `https://www.youtube.com/embed/${raw}`;
-      review.videos.push({ page: currentPath, item: video_url });
       return section('video', { heading: null, video_url });
     }
   },
@@ -703,19 +703,13 @@ function fileNameFor(slug) {
   return `${slug.replace(/\//g, '__')}.json`;
 }
 
-// Noticed while translating. These aren't about Armenia, so no rule can catch them, and the wording is the owner's call.
+// These aren't about Armenia, so no rule can catch them, and whether they are true is the owner's call.
 const COPIED_BUT_DOUBTFUL = [
-  { page: '/predohranitel-v-kondicionere-peregorel-chto-predprinyat', item: 'Says technicians may fit a piece of copper wire in place of a blown fuse. That removes the protection and is a fire risk. Rewrite or remove this part.' },
-  { page: '/usluga/prodazha-i-ustanovka-brizerov', item: 'Says the technology is effective for preventing COVID-19, a medical claim. Keep it only if you can back it up.' },
-  { page: '/osnovnye-neispravnosti-kondicionerov', item: 'Says a freon loss of 2-3% a year is normal and to recharge regularly. The FAQ on /usluga/dozapravka-kondicionerov says a sealed system never needs recharging.' },
-  { page: '/kak-ustanovit-kondicioner-svoimi-rukami-poshagovaya-instrukciya', item: 'Says a model marked 07 or 09 suits rooms of 7 or 9 m². Those numbers are thousands of BTU, which suit rooms of about 20-25 m².' },
-  { page: '/spasaem-kvartiru-ot-zhary-5-prostyh-sposobov-ohladit-kvartiru-i-uvlazhnit-vozduh-bez-kondicionera', item: 'Ends by saying that having an air conditioner often has bad consequences, on the site of a company that sells them.' },
-  { page: '/usluga/remont-kondicionerov', item: 'Figures from the Russian business: 90% of repairs within an hour, 60% of clients from recommendations.' },
-  { page: '/usluga/prodazha-kondicionerov', item: 'Says more than 1000 air conditioners to choose from, free delivery and discounts. Other pages say official dealer and TION dealer, and training at manufacturer centers.' },
-  { page: '/usluga/ustanovka-kondicionerov', item: 'Says discounts apply when buying with installation, prices are reduced, and pensioners get a discount.' },
-  { page: '/kody-oshibok-kondicionerov', item: 'The diagram at the top has Russian labels inside the picture, on all three languages. Replace it in the admin.' },
-  { page: '/usluga/proektirovanie-sistemy-kondicionirovaniya', item: 'The sample design pages are a Russian project, in Russian. Replace them with one of yours.' },
-  { page: '/usluga/remont-kondicionerov', item: 'The before and after picture in the "turnkey" highlight has Russian labels inside the picture, on all three languages. Replace it in the admin.' }
+  { page: '/nashi-raboty', item: "The photos are the Russian company's jobs, not jobs in Armenia. Replace them with your own in the admin." },
+  { page: '/usluga/prodazha-i-ustanovka-brizerov', item: 'The page sells TION breezers and quotes air pollution figures and benefits for asthma and allergies. Keep it only if you sell them and can back that up.' },
+  { page: '/o-kompanii-centr-klimata', item: 'Says more than 8 years of work, and that specialists are trained and hold certificates.' },
+  { page: '/usluga/remont-kondicionerov', item: 'Promises free diagnostics and a large stock of spare parts.' },
+  { page: '(every page)', item: 'The header promises work around the clock, a specialist within 2 hours and a free visit. Other pages promise a 6 to 12 month warranty.' }
 ];
 
 function writeReview(pages) {
@@ -733,10 +727,6 @@ function writeReview(pages) {
     '',
     '## Removed text',
     ...review.removed.map(({ page, item }) => `- \`${page}\`: ${item.replace(/\s+/g, ' ').slice(0, 140)}`),
-    '',
-    '## Videos to check',
-    'These are the Russian company videos. Replace or remove them if they no longer apply.',
-    ...review.videos.map(({ page, item }) => `- \`${page}\`: ${item}`),
     '',
     '## Contact details left in text',
     ...(review.flagged.length ? review.flagged.map(({ page, item }) => `- \`${page}\`: ${item}`) : ['None.']),
@@ -761,7 +751,8 @@ function main() {
   const media = new Set();
 
   for (const [pagePath, row] of entries) {
-    const page = extractPage(load(row.file), pagePath);
+    const { page, notes } = applyRemovals(extractPage(load(row.file), pagePath));
+    for (const item of notes) review.removed.push({ page: pagePath, item });
     pages.push(page);
     fs.writeFileSync(path.join(OUT_PAGES, fileNameFor(page.slug)), `${JSON.stringify(page, null, 2)}\n`);
     if (page.translate) collectText({ ...page, sections: page.sections.filter((item) => !item.hidden) }, texts);
@@ -773,7 +764,8 @@ function main() {
   site.works = [...load(manifest['/nashi-raboty'].file).querySelectorAll('.field-name-field-foto a')].map((a) => ({
     image: mediaRef(a.getAttribute('href')),
     title: ''
-  }));
+  })).filter(keepWork);
+  review.removed.push({ page: '/nashi-raboty', item: 'Nine design drawings with Russian labels' });
   fs.writeFileSync(path.join(CONTENT_DIR, 'site.json'), `${JSON.stringify(site, null, 2)}\n`);
   collectText(site, texts);
   collectMedia(site, media);

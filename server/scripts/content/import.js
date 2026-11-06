@@ -3,6 +3,7 @@
 // Production: DATABASE_URL='...' BLOB_READ_WRITE_TOKEN='...' npm run content:import -w server -- --remote
 // Safe to rerun: pages, services and settings that exist are left alone, so edits made in the admin survive.
 // Menu items and gallery pictures deleted in the admin come back. --overwrite replaces pages.
+// --overwrite --only=slug,slug replaces just those pages and touches nothing else.
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -171,12 +172,16 @@ function pageValues(page, translate, index) {
   };
 }
 
-async function importPages(pages, translate, resolveMedia, overwrite, report) {
+async function importPages(pages, translate, resolveMedia, overwrite, report, only) {
   const bySlug = new Map();
   const written = new Set();
 
   for (const [index, page] of pages.entries()) {
     const existing = await pageRepository.findBySlug(page.slug);
+    if (only && !only.has(page.slug)) {
+      if (existing) bySlug.set(page.slug, existing);
+      continue;
+    }
     if (existing && !overwrite) {
       bySlug.set(page.slug, existing);
       report.pagesKept += 1;
@@ -355,7 +360,7 @@ async function importSettings(site, translate, resolveMedia, overwrite) {
   }
 }
 
-async function runImport({ contentDir = DEFAULT_CONTENT_DIR, overwrite = false } = {}) {
+async function runImport({ contentDir = DEFAULT_CONTENT_DIR, overwrite = false, only = null } = {}) {
   const report = {
     pagesCreated: 0,
     pagesKept: 0,
@@ -368,10 +373,14 @@ async function runImport({ contentDir = DEFAULT_CONTENT_DIR, overwrite = false }
     refusedFiles: new Set()
   };
   const { pages, site, translations } = loadContent(contentDir);
+  const unknown = (only || []).filter((slug) => !pages.some((page) => page.slug === slug));
+  if (unknown.length) throw new Error(`No such pages to import: ${unknown.join(', ')}`);
+  const selected = only && new Set(only);
   const translate = createTranslator(translations, report);
   const resolveMedia = createMediaStore(path.join(contentDir, 'raw', 'files'), report);
 
-  const pagesBySlug = await importPages(pages, translate, resolveMedia, overwrite, report);
+  const pagesBySlug = await importPages(pages, translate, resolveMedia, overwrite, report, selected);
+  if (selected) return report;
   await importServices(site, pagesBySlug, pages, translate, report);
   await importGallery('brands', site.brands, translate, resolveMedia, true);
   // Certificates are Russian documents, so they stay hidden until someone publishes the ones that apply.
@@ -395,7 +404,11 @@ async function main() {
   if (isLocal) delete process.env.BLOB_READ_WRITE_TOKEN;
   delete process.env.PUBLIC_SITE_URL;
 
-  const report = await runImport({ overwrite: args.includes('--overwrite') });
+  const overwrite = args.includes('--overwrite');
+  const only = args.find((arg) => arg.startsWith('--only='))?.slice('--only='.length).split(',');
+  if (only && !overwrite) throw new Error('--only needs --overwrite.');
+
+  const report = await runImport({ overwrite, only });
   console.log(`Pages: ${report.pagesCreated} created, ${report.pagesReplaced} replaced, ${report.pagesKept} kept.`);
   console.log(`Services: ${report.servicesLinked} linked, ${report.servicesKept} kept. Files stored: ${report.filesStored}.`);
   console.log(`Missing translations: ${report.missingTranslations.size}. Missing files: ${report.missingFiles.size}. Refused files: ${report.refusedFiles.size}.`);

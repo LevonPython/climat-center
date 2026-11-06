@@ -25,23 +25,43 @@ They show "price on request" until you enter prices in AMD.
 ## Removed text
 - `/`: за 2499 рублей
 - `/o-kompanii-centr-klimata`: A scan of a quality policy signed by the Russian company
+- `/o-kompanii-centr-klimata`: A Russian company video: https://rutube.ru/play/embed/b923204f8ab44451ade77f584091b55d
+- `/predohranitel-v-kondicionere-peregorel-chto-predprinyat`: The advice to fit a piece of copper wire in place of a blown fuse, a fire risk
+- `/usluga/prodazha-i-ustanovka-brizerov`: The claim that the technology prevents COVID-19, and the TION dealer claim
+- `/usluga/prodazha-kondicionerov`: The claims of free delivery, discounts and more than 1000 air conditioners
+- `/spasaem-kvartiru-ot-zhary-5-prostyh-sposobov-ohladit-kvartiru-i-uvlazhnit-vozduh-bez-kondicionera`: The statement that having an air conditioner often has bad consequences
+- `/kody-oshibok-kondicionerov`: The diagram with Russian labels
+- `/osnovnye-neispravnosti-kondicionerov`: The claim that losing 2-3% of the freon a year is normal and needs regular recharging
 - `/actions`: The Russian promotion (10% until 15 November). The page stays hidden until you add one.
 - `/pokupki-v-kredit`: от 1500 ₽
 - `/pokupki-v-kredit`: до 500 000 ₽
 - `/pokupki-v-kredit`: от 1500 ₽
+- `/kak-ustanovit-kondicioner-svoimi-rukami-poshagovaya-instrukciya`: The wrong statement that a model marked 07 or 09 suits rooms of 7 or 9 m²
+- `/kak-ustanovit-kondicioner-svoimi-rukami-poshagovaya-instrukciya`: A Russian company video: https://vk.com/video_ext.php?oid=-146482554&id=456239024&hd=1
+- `/kak-ustanovit-kondicioner-svoimi-rukami-poshagovaya-instrukciya`: A Russian company video: https://vk.com/video_ext.php?oid=-146482554&id=456239023&hd=1
 - `/sosulka-upala-na-kondicioner`: "Ответственность за сосульки, упавшие с внешнего блока кондиционеров, вплоть до уголовной, несут установившие устройство собственники": юрис
+- `/sosulka-upala-na-kondicioner`: The official dealer claim
+- `/sosulka-upala-na-kondicioner`: A Russian company video: https://rutube.ru/play/embed/1d2fcb1abec2ffd25ea7f83ca18cd58a/
 - `/usluga/montazh-teplovogo-nasosa-vozduh-voda`: по СП 131.13330
+- `/usluga/montazh-teplovogo-nasosa-vozduh-voda`: The official dealer claim
 - `/usluga/ustanovka-kondicionerov`: Скидка 10 % до 15 ноября!
 - `/usluga/ustanovka-kondicionerov`: A Russian picture advertising a discount on installation
 - `/usluga/ustanovka-kondicionerov`: The example sum in rubles for an air conditioner with installation
+- `/usluga/ustanovka-kondicionerov`: Discounts, reduced prices and the discount for pensioners
+- `/usluga/ustanovka-kondicionerov`: A Russian company video: https://rutube.ru/play/embed/b923204f8ab44451ade77f584091b55d
 - `/kontakty`: Moscow office and showroom addresses
 - `/vakansiya`: от 250 000 рублей
 - `/vakansiya`: от 250 000 рублей
+- `/usluga/remont-i-obsluzhivanie-vrf-i-vrv-sistem`: A Russian company video: https://www.youtube.com/embed/eKgvJmZ-KyM
+- `/usluga/montazh-i-obsluzhivanie-chillerov-i-fankoylov`: A Russian company video: https://vk.com/video_ext.php?oid=-146482554&id=456239019&hd=1
 - `/usluga/remont-kondicionerov`: Скидка 10 % до 15 ноября!
+- `/usluga/remont-kondicionerov`: Figures from the Russian business (90% of repairs within an hour, 60% from recommendations), discount offers and the before and after pictur
+- `/usluga/remont-kondicionerov`: A Russian company video: https://rutube.ru/play/embed/b923204f8ab44451ade77f584091b55d
 - `/usluga/proektirovanie-sistemy-kondicionirovaniya`: Градостроительного кодекса, отраслевых стандартов и ГОСТов, НД, ТИ, ТУ, архитектурно-строительных
 - `/usluga/proektirovanie-sistemy-kondicionirovaniya`: , СанПин.
 - `/usluga/proektirovanie-sistemy-kondicionirovaniya`: российским и международным
 - `/usluga/proektirovanie-sistemy-kondicionirovaniya`: Являемся членом СРО.
+- `/usluga/proektirovanie-sistemy-kondicionirovaniya`: The sample design pages, a Russian project in Russian
 - `/usluga/dozapravka-kondicionerov`: от 800 ₽
 - `/usluga/dozapravka-kondicionerov`: от 800 ₽
 - `/usluga/dozapravka-kondicionerov`: от 1100 ₽
@@ -63,21 +83,12 @@ They show "price on request" until you enter prices in AMD.
 - `/usluga/chistka-kondicionerov`: Скидка 10 % до 15 ноября!
 - `/usluga/chistka-kondicionerov`: СНиП 33-75
 - `/usluga/chistka-kondicionerov`: от 2000 рублей
+- `/usluga/chistka-kondicionerov`: A Russian company video: https://www.youtube.com/embed/y1xyPI8hFAg
 - `/usluga/diagnostika-kondicionerov`: от 500 рублей
 - `/usluga/demontazh-kondicionerov`: от 1000 рублей
+- `/usluga/demontazh-kondicionerov`: The special price on a replacement
 - `/usluga/profilaktika-kondicionerov`: от 1000 рублей
-
-## Videos to check
-These are the Russian company videos. Replace or remove them if they no longer apply.
-- `/o-kompanii-centr-klimata`: https://rutube.ru/play/embed/b923204f8ab44451ade77f584091b55d
-- `/kak-ustanovit-kondicioner-svoimi-rukami-poshagovaya-instrukciya`: https://vk.com/video_ext.php?oid=-146482554&id=456239024&hd=1
-- `/kak-ustanovit-kondicioner-svoimi-rukami-poshagovaya-instrukciya`: https://vk.com/video_ext.php?oid=-146482554&id=456239023&hd=1
-- `/sosulka-upala-na-kondicioner`: https://rutube.ru/play/embed/1d2fcb1abec2ffd25ea7f83ca18cd58a/
-- `/usluga/ustanovka-kondicionerov`: https://rutube.ru/play/embed/b923204f8ab44451ade77f584091b55d
-- `/usluga/remont-i-obsluzhivanie-vrf-i-vrv-sistem`: https://www.youtube.com/embed/eKgvJmZ-KyM
-- `/usluga/montazh-i-obsluzhivanie-chillerov-i-fankoylov`: https://vk.com/video_ext.php?oid=-146482554&id=456239019&hd=1
-- `/usluga/remont-kondicionerov`: https://rutube.ru/play/embed/b923204f8ab44451ade77f584091b55d
-- `/usluga/chistka-kondicionerov`: https://www.youtube.com/embed/y1xyPI8hFAg
+- `/nashi-raboty`: Nine design drawings with Russian labels
 
 ## Contact details left in text
 - `/polzovatelskoe-soglashenie`:  Настоящее Соглашение определяет условия использования Пользователями материалов и сервисов сайта  h
@@ -85,14 +96,8 @@ These are the Russian company videos. Replace or remove them if they no longer a
 - `/vakansiya`: Разыскивается профессионал в области ремонта климатической техники Полная занятость Обязанности: Диа
 
 ## Text copied as it was, but worth checking
-- `/predohranitel-v-kondicionere-peregorel-chto-predprinyat`: Says technicians may fit a piece of copper wire in place of a blown fuse. That removes the protection and is a fire risk. Rewrite or remove this part.
-- `/usluga/prodazha-i-ustanovka-brizerov`: Says the technology is effective for preventing COVID-19, a medical claim. Keep it only if you can back it up.
-- `/osnovnye-neispravnosti-kondicionerov`: Says a freon loss of 2-3% a year is normal and to recharge regularly. The FAQ on /usluga/dozapravka-kondicionerov says a sealed system never needs recharging.
-- `/kak-ustanovit-kondicioner-svoimi-rukami-poshagovaya-instrukciya`: Says a model marked 07 or 09 suits rooms of 7 or 9 m². Those numbers are thousands of BTU, which suit rooms of about 20-25 m².
-- `/spasaem-kvartiru-ot-zhary-5-prostyh-sposobov-ohladit-kvartiru-i-uvlazhnit-vozduh-bez-kondicionera`: Ends by saying that having an air conditioner often has bad consequences, on the site of a company that sells them.
-- `/usluga/remont-kondicionerov`: Figures from the Russian business: 90% of repairs within an hour, 60% of clients from recommendations.
-- `/usluga/prodazha-kondicionerov`: Says more than 1000 air conditioners to choose from, free delivery and discounts. Other pages say official dealer and TION dealer, and training at manufacturer centers.
-- `/usluga/ustanovka-kondicionerov`: Says discounts apply when buying with installation, prices are reduced, and pensioners get a discount.
-- `/kody-oshibok-kondicionerov`: The diagram at the top has Russian labels inside the picture, on all three languages. Replace it in the admin.
-- `/usluga/proektirovanie-sistemy-kondicionirovaniya`: The sample design pages are a Russian project, in Russian. Replace them with one of yours.
-- `/usluga/remont-kondicionerov`: The before and after picture in the "turnkey" highlight has Russian labels inside the picture, on all three languages. Replace it in the admin.
+- `/nashi-raboty`: The photos are the Russian company's jobs, not jobs in Armenia. Replace them with your own in the admin.
+- `/usluga/prodazha-i-ustanovka-brizerov`: The page sells TION breezers and quotes air pollution figures and benefits for asthma and allergies. Keep it only if you sell them and can back that up.
+- `/o-kompanii-centr-klimata`: Says more than 8 years of work, and that specialists are trained and hold certificates.
+- `/usluga/remont-kondicionerov`: Promises free diagnostics and a large stock of spare parts.
+- `(every page)`: The header promises work around the clock, a specialist within 2 hours and a free visit. Other pages promise a 6 to 12 month warranty.
