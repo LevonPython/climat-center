@@ -170,7 +170,7 @@ export default function BookingPage() {
               <select
                 value={form.service_id || ''}
                 onChange={(e) => setForm((f) => ({ ...f, service_id: e.target.value || null }))}
-                className="rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-300"
+                className="w-full min-w-0 rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-slate-300"
                 disabled={loading}
               >
                 <option value="">{t('form.serviceAny')}</option>
