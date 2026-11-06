@@ -261,6 +261,27 @@ if (!dbUrl) {
         await query("DELETE FROM pages WHERE slug = 'broken'");
       });
 
+      test('--only replaces just the named pages and leaves the rest of the site alone', async () => {
+        const before = await query("SELECT id, title_ru FROM pages WHERE slug = 'home'");
+        await query("UPDATE pages SET title_ru = 'Edited in the admin' WHERE slug = 'home'");
+        await query("UPDATE nav_items SET is_visible = FALSE");
+        const settings = await query("SELECT section_name, content_json FROM content_blocks WHERE page_id IS NULL ORDER BY section_name");
+        expect(settings.rows.length).toBeGreaterThan(0);
+
+        const report = await runImport({ contentDir: root, overwrite: true, only: ['usluga/remont'] });
+
+        expect(report.pagesReplaced).toBe(1);
+        expect((await query("SELECT title_ru FROM pages WHERE slug = 'home'")).rows[0].title_ru).toBe('Edited in the admin');
+        expect((await query('SELECT count(*)::int AS n FROM nav_items WHERE is_visible')).rows[0].n).toBe(0);
+        expect((await query('SELECT section_name, content_json FROM content_blocks WHERE page_id IS NULL ORDER BY section_name')).rows).toEqual(settings.rows);
+        await query('UPDATE pages SET title_ru = $1 WHERE id = $2', [before.rows[0].title_ru, before.rows[0].id]);
+        await query('UPDATE nav_items SET is_visible = TRUE');
+      });
+
+      test('--only refuses a page it does not know', async () => {
+        await expect(runImport({ contentDir: root, overwrite: true, only: ['no-such-page'] })).rejects.toThrow('no-such-page');
+      });
+
       test('overwrite replaces pages and their sections', async () => {
         const report = await runImport({ contentDir: root, overwrite: true });
         expect(report.pagesReplaced).toBe(5);

@@ -70,7 +70,7 @@ describe('imported pages', () => {
     const types = new Set(pages.map((page) => page.type));
     expect([...types].sort()).toEqual(['article', 'fault', 'gallery', 'home', 'listing', 'service', 'static']);
     expect(pages.find((page) => page.slug === 'nashi-raboty').type).toBe('gallery');
-    expect(site.works.length).toBeGreaterThanOrEqual(100);
+    expect(site.works.length).toBeGreaterThanOrEqual(90);
   });
 
   test.each(pages.map((page) => [page.slug, page]))('%s only holds sections its block types allow', (_slug, page) => {
@@ -110,6 +110,57 @@ describe('imported pages', () => {
   });
 });
 
+describe('what no longer applies', () => {
+  const published = pages.filter((page) => page.status === 'published');
+  const stringsIn = (value) => {
+    if (typeof value === 'string') return [value];
+    if (Array.isArray(value)) return value.flatMap(stringsIn);
+    return value && typeof value === 'object' ? Object.values(value).flatMap(stringsIn) : [];
+  };
+  const hashOf = (text) => crypto.createHash('sha1').update(text).digest('hex').slice(0, 16);
+  const publicText = (lang) => {
+    const russian = published.flatMap((page) => stringsIn({ ...page, sections: page.sections.filter((item) => !item.hidden) }));
+    return (lang === 'ru' ? russian : russian.map((text) => translations[lang][hashOf(text)]).filter(Boolean)).join('\n');
+  };
+
+  test.each([
+    ['ru', /COVID|жучок|дилер|пенсионер|спеццен|скидк|(^|[\s">])акци[яиo]|2-3%|обозначение 07|плохие последствия|В 90%|60% клиентов|Более 1000|цены снижены|\sв 20\d\d/i],
+    ['en', /COVID|wire link|dealer|pensioner|special price|discount|promotion|2-3%|marked 07|bad consequences|In 90%|60% of|More than 1000|prices reduced/i],
+    ['hy', /COVID|բզեզ|դիլեր|թոշակառու|հատուկ գն|զեղչ|(^|[\s">])ակցի|2-3%|07 կամ 09|վատ հետևանքներ|1000 օդորակիչ|գներն իջեցված/i]
+  ])('the %s text has no outdated, unsafe or Russia-only claim', (lang, outdated) => {
+    expect(publicText(lang).match(outdated)).toBeNull();
+  });
+
+  test('the Russian company videos are gone', () => {
+    expect(published.flatMap((page) => page.sections).filter((item) => item.block_type === 'video')).toEqual([]);
+  });
+
+  test.each([
+    ['kody-oshibok-kondicionerov', 'oshibka.jpeg'],
+    ['usluga/remont-kondicionerov', 'cgr.png'],
+    ['usluga/proektirovanie-sistemy-kondicionirovaniya', 'Proekt_OV']
+  ])('%s no longer shows the picture with Russian labels, %s', (slug, file) => {
+    expect(JSON.stringify(pages.find((page) => page.slug === slug))).not.toContain(file);
+  });
+
+  test('the works gallery keeps its photos and loses the drawings with Russian labels', () => {
+    const { works } = JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, 'site.json'), 'utf8'));
+    expect(works).toHaveLength(97);
+    expect(JSON.stringify(works)).not.toMatch(/proekt_ventilyatsii|ilovepdf_merged/);
+  });
+
+  test('the fuse article keeps its other sections', () => {
+    const headings = pages.find((page) => page.slug === 'predohranitel-v-kondicionere-peregorel-chto-predprinyat').sections.map((item) => item.content.heading);
+    expect(headings).toContain('Как происходит замена предохранителя?');
+    expect(headings).not.toContain('Специальный «жучок» вместо предохранителя');
+  });
+
+  test('the repair highlight keeps the three points that still apply', () => {
+    const points = pages.find((page) => page.slug === 'usluga/remont-kondicionerov').sections[2].content.items.map((item) => item.text);
+    expect(points).toEqual(['Всегда в наличии на складе большой запас запчастей!', 'Опытные мастера. Работаем на высотных зданиях!', 'При необходимости можем предложить оперативную замену на новый кондиционер!']);
+  });
+});
+
 describe('what the original site shows', () => {
   const page = (slug) => pages.find((item) => item.slug === slug);
   const blocks = (slug, type) => page(slug).sections.filter((item) => item.block_type === type);
@@ -135,10 +186,6 @@ describe('what the original site shows', () => {
     expect(text(slug)).toContain(words);
   });
 
-  test('the cleaning page keeps its video', () => {
-    expect(blocks('usluga/chistka-kondicionerov', 'video').map((item) => item.content.video_url)).toContain('https://www.youtube.com/embed/y1xyPI8hFAg');
-  });
-
   test('the repair page lists the warning signs on their own', () => {
     const [signs] = blocks('usluga/remont-kondicionerov', 'signs');
     expect(signs.content.items).toHaveLength(5);
@@ -153,8 +200,7 @@ describe('what the original site shows', () => {
   test('the highlights keep their pictures and icons', () => {
     const remont = blocks('usluga/remont-kondicionerov', 'callout');
     const icons = remont.find((item) => item.content.items.every((point) => point.icon_url));
-    expect(icons.content.items).toHaveLength(6);
-    expect(remont.find((item) => item.content.image_url && item.content.items.length)).toBeTruthy();
+    expect(icons.content.items).toHaveLength(3);
     expect(blocks('usluga/ustanovka-kondicionerov', 'callout').find((item) => item.content.image_url && !item.content.items.length)).toBeTruthy();
   });
 
