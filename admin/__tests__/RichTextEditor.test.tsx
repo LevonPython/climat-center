@@ -28,6 +28,43 @@ describe('RichTextEditor with the real editor', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  async function savedAfterAnEdit(html: string): Promise<Document> {
+    const onChange = jest.fn();
+    render(<RichTextEditor label="Текст" value={`<p>Начало</p>${html}`} lang="hy" onChange={onChange} />);
+    await screen.findByRole('textbox', { name: 'Текст' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Маркированный список' }));
+
+    await waitFor(() => expect(onChange).toHaveBeenCalled());
+    return new DOMParser().parseFromString(onChange.mock.calls[onChange.mock.calls.length - 1][0], 'text/html');
+  }
+
+  test('a picture that opens its full size keeps that link after an edit', async () => {
+    const saved = await savedAfterAnEdit('<p><a href="/uploads/big.jpg" title="Монтаж"><img src="/uploads/small.jpg" alt="Монтаж" width="300" height="200"></a></p>');
+
+    const picture = saved.querySelector('a[href="/uploads/big.jpg"] > img[src="/uploads/small.jpg"]');
+    expect(picture).not.toBeNull();
+    expect(picture?.getAttribute('width')).toBe('300');
+    expect(saved.querySelector('a[href="/uploads/big.jpg"]')?.getAttribute('title')).toBe('Монтаж');
+  });
+
+  test('a link to another page opens in the same tab and is not marked nofollow', async () => {
+    const saved = await savedAfterAnEdit('<p>Смотрите <a href="/usluga/remont">ремонт</a>.</p>');
+
+    const link = saved.querySelector('a[href="/usluga/remont"]');
+    expect(link).not.toBeNull();
+    expect(link?.hasAttribute('target')).toBe(false);
+    expect(link?.hasAttribute('rel')).toBe(false);
+  });
+
+  test('a link that already opened in a new tab keeps doing so', async () => {
+    const saved = await savedAfterAnEdit('<p><a href="https://example.com" target="_blank" rel="noopener">сайт</a></p>');
+
+    const link = saved.querySelector('a[href="https://example.com"]');
+    expect(link?.getAttribute('target')).toBe('_blank');
+    expect(link?.getAttribute('rel')).toBe('noopener');
+  });
+
   test('a blank line left at the end is not saved', async () => {
     const onChange = jest.fn();
     render(<RichTextEditor label="Текст" value="<p>Տեքստ</p>" lang="hy" onChange={onChange} />);

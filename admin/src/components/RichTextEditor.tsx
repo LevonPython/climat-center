@@ -47,22 +47,27 @@ function ToolButton(props: { label: string; active?: boolean; disabled?: boolean
   );
 }
 
-// Keeps the two-column look of an imported list when its text is edited here.
-const ListColumns = Extension.create({
-  name: 'listColumns',
-  addGlobalAttributes: () => [
-    {
-      types: ['bulletList'],
-      attributes: {
-        class: {
-          default: null,
-          parseHTML: (element: HTMLElement) => element.getAttribute('class'),
-          renderHTML: (attributes: Record<string, string | null>) => (attributes.class ? { class: attributes.class } : {})
+function keepAttribute(name: string, type: string, attribute: string) {
+  return Extension.create({
+    name,
+    addGlobalAttributes: () => [
+      {
+        types: [type],
+        attributes: {
+          [attribute]: {
+            default: null,
+            parseHTML: (element: HTMLElement) => element.getAttribute(attribute),
+            renderHTML: (attributes: Record<string, string | null>) => (attributes[attribute] ? { [attribute]: attributes[attribute] } : {})
+          }
         }
       }
-    }
-  ]
-});
+    ]
+  });
+}
+
+// Imported text uses these, so editing it here must not drop them: two-column lists and link tooltips.
+const ListColumns = keepAttribute('listColumns', 'bulletList', 'class');
+const LinkTitle = keepAttribute('linkTitle', 'link', 'title');
 
 function Toolbar({ editor, onImage }: { editor: Editor; onImage: () => void }) {
   const { t } = useTranslation();
@@ -137,11 +142,14 @@ export function RichTextEditor({ label, value, lang, invalid, onChange }: RichTe
         codeBlock: false,
         horizontalRule: false,
         strike: false,
-        link: { openOnClick: false }
+        // A link opens in the same tab unless it already said otherwise, and links to this site are not nofollow.
+        link: { openOnClick: false, HTMLAttributes: { target: null, rel: null } }
       }),
-      Image,
+      // Inline, so a picture can sit inside the link that opens it at full size.
+      Image.configure({ inline: true }),
       TableKit,
-      ListColumns
+      ListColumns,
+      LinkTitle
     ],
     content: value || '',
     shouldRerenderOnTransaction: true,
