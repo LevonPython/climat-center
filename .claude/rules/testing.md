@@ -17,7 +17,8 @@ No workspace has a lint or typecheck script. CI (`.github/workflows/ci.yml`) run
 
 ## E2E
 - The specs need imported content: `npm run content:import -w server`.
-- Set `E2E_ADMIN_PASSWORD` to run `admin-to-site.spec.ts`. `E2E_BASE_URL`, `E2E_API_URL` and `E2E_ADMIN_URL` point at other ports.
+- Set `E2E_ADMIN_PASSWORD` to run `admin-to-site.spec.ts`. It creates, edits and deletes each kind of content, so its tests share one file and run one at a time.
+- Run them against `next dev`. On a production build two of them fail by design: a saved page only refreshes if it rebuilds within the server's 3-second limit, and interface text reaches pages other than home within 60 seconds. `E2E_BASE_URL`, `E2E_API_URL` and `E2E_ADMIN_URL` point at other ports.
 - They write requests and edit a page title, so point them at a throwaway database. Specs that write skip themselves when the site isn't on localhost.
 
 ## What to test
