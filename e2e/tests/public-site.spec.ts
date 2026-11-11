@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { IS_LOCAL } from './helpers';
+import { API_URL, IS_LOCAL } from './helpers';
 
 const REPAIR = '/en/usluga/remont-kondicionerov';
 const PHONE = '+37491000000';
@@ -27,6 +27,21 @@ test('longer Armenian words are not cut off on the home page', async ({ page }) 
       .map((el) => el.textContent?.trim().slice(0, 50))
   );
   expect(clipped).toEqual([]);
+});
+
+test('a large logo file keeps the logo at its header size', async ({ page, request }) => {
+  const { settings } = await (await request.get(`${API_URL}/api/site/en`)).json();
+  const stored: string = settings.branding.logo_url;
+  const logoUrl = stored.startsWith('/uploads/') ? `${API_URL}${stored}` : stored;
+  await page.route(logoUrl, (route) =>
+    route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1254" height="1254"><rect width="1254" height="1254" fill="#00adef"/></svg>' })
+  );
+
+  await page.goto('/en');
+  const logo = page.getByRole('banner').locator(`img[src="${logoUrl}"]`);
+  await expect.poll(() => logo.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(1254);
+  const box = await logo.boundingBox();
+  expect(box?.height).toBe(92);
 });
 
 test('the top bar links can be read on its blue background', async ({ page }) => {

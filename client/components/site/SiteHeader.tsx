@@ -49,7 +49,7 @@ export function SiteHeader() {
         <Link href="/" aria-label={siteName} className="flex items-center gap-3 text-[#323232] no-underline">
           {branding.logo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={assetUrl(branding.logo_url)} alt="" className="block max-desk:w-[70px]" />
+            <img src={assetUrl(branding.logo_url)} alt="" className="block h-[92px] w-auto max-desk:h-auto max-desk:w-[70px]" />
           ) : null}
           <span>
             <span className="block whitespace-nowrap text-[30px] font-light uppercase max-desk:text-[22px]">
