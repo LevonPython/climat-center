@@ -6,6 +6,7 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 const { sanitizeRichText } = require('../../src/services/contentSanitizer');
+const { LANGS } = require('../../src/services/localization');
 const { adaptForArmenia } = require('./adapt');
 const { applyRemovals, keepWork } = require('./removals');
 
@@ -777,7 +778,7 @@ function main() {
   const sitemap = [...fs.readFileSync(path.join(CONTENT_DIR, 'raw', 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]).pathname);
   fs.writeFileSync(path.join(CONTENT_DIR, 'coverage.json'), `${JSON.stringify({ sitemap }, null, 2)}\n`);
   fs.mkdirSync(path.join(CONTENT_DIR, 'translations'), { recursive: true });
-  for (const lang of ['hy', 'en']) {
+  for (const lang of LANGS.filter((code) => code !== 'ru')) {
     const file = path.join(CONTENT_DIR, 'translations', `${lang}.json`);
     if (!fs.existsSync(file)) fs.writeFileSync(file, '{}\n');
   }
