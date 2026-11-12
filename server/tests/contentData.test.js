@@ -14,7 +14,8 @@ const coverage = JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, 'coverage.jso
 const strings = JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, 'strings.ru.json'), 'utf8'));
 const translations = {
   hy: JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, 'translations', 'hy.json'), 'utf8')),
-  en: JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, 'translations', 'en.json'), 'utf8'))
+  en: JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, 'translations', 'en.json'), 'utf8')),
+  ar: JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, 'translations', 'ar.json'), 'utf8'))
 };
 
 const OWN_ROUTES = new Set(['/', '/booking', '/quiz']);
@@ -126,7 +127,8 @@ describe('what no longer applies', () => {
   test.each([
     ['ru', /COVID|жучок|дилер|пенсионер|спеццен|скидк|(^|[\s">])акци[яиo]|2-3%|обозначение 07|плохие последствия|В 90%|60% клиентов|Более 1000|цены снижены|\sв 20\d\d/i],
     ['en', /COVID|wire link|dealer|pensioner|special price|discount|promotion|2-3%|marked 07|bad consequences|In 90%|60% of|More than 1000|prices reduced/i],
-    ['hy', /COVID|բզեզ|դիլեր|թոշակառու|հատուկ գն|զեղչ|(^|[\s">])ակցի|2-3%|07 կամ 09|վատ հետևանքներ|1000 օդորակիչ|գներն իջեցված/i]
+    ['hy', /COVID|բզեզ|դիլեր|թոշակառու|հատուկ գն|զեղչ|(^|[\s">])ակցի|2-3%|07 կամ 09|վատ հետևանքներ|1000 օդորակիչ|գներն իջեցված/i],
+    ['ar', /COVID|كوفيد|وكيل|متقاعد|سعر خاص|خصم|خصومات|تخفيضات|عرض ترويجي|2-3%|07 أو 09|عواقب سيئة|في 90%|60% من|أكثر من 1000|الأسعار مخفضة/i]
   ])('the %s text has no outdated, unsafe or Russia-only claim', (lang, outdated) => {
     expect(publicText(lang).match(outdated)).toBeNull();
   });
@@ -252,7 +254,7 @@ describe('regional text', () => {
   });
 });
 
-describe.each(['hy', 'en'])('%s translations', (lang) => {
+describe.each(['hy', 'en', 'ar'])('%s translations', (lang) => {
   const table = translations[lang];
   const entries = Object.entries(strings);
 

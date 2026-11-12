@@ -91,6 +91,14 @@ It's safe to run again: pages, services and settings that already exist stay as 
 
 To apply a change to a few pages only, add `--overwrite --only=slug,slug`. It replaces those pages and leaves every other page, menu, gallery and setting alone. It does remove any admin edits on the pages it replaces.
 
+To add a language to a database that already has content, use `--fill-language=ar` on its own. It needs the raw files but no Blob token, because it uploads nothing:
+
+```bash
+DATABASE_URL='<neon-connection-string>' npm run content:import -w server -- --remote --fill-language=ar
+```
+
+It fills only empty fields in that language, and only where the Russian text is still the one the import wrote, so nothing edited in the admin changes. It marks the pages it fills for review, keeps each section's version history, and lists the fields it left for translating in the admin. Running it again changes nothing.
+
 To rebuild the raw files: `node server/scripts/content/crawl.js`, then `node server/scripts/content/fetchAssets.js`. Both wait 10 seconds between requests, as the old site's `robots.txt` asks, so they take about 2 hours.
 
 ## GitHub

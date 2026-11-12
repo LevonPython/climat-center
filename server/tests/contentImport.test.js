@@ -75,7 +75,7 @@ function buildContent(root) {
 if (!dbUrl) {
   test.skip('content import requires DATABASE_URL', () => {});
 } else {
-  const { runImport } = require('../scripts/content/import');
+  const { fillLanguage, runImport } = require('../scripts/content/import');
 
   describe('content import', () => {
     let api;
@@ -288,6 +288,86 @@ if (!dbUrl) {
         const { page } = (await api.anon.get('/api/pages/hy/usluga/remont')).body;
         expect(page.title).toBe('HY Ремонт');
         expect(page.sections).toHaveLength(2);
+      });
+    });
+
+    describe('adding a language to a database that already has content', () => {
+      const BODY = '<p>Текст <img src="media:/one.png" alt="x"></p><script>alert(1)</script>';
+      const ar = (text) => `AR ${text}`;
+      let other;
+      let report;
+      let pageId;
+
+      const adminPage = async (slug) => {
+        const { pages } = (await api.admin.get('/api/admin/pages')).body;
+        return (await api.admin.get(`/api/admin/pages/${pages.find((page) => page.slug === slug).id}`)).body.page;
+      };
+
+      beforeAll(async () => {
+        api = await setupApi();
+        other = fs.mkdtempSync(path.join(os.tmpdir(), 'content-fill-'));
+        buildContent(other);
+        await runImport({ contentDir: other });
+
+        pageId = (await adminPage('usluga/ustanovka-kondicionerov')).id;
+        await api.admin.put(`/api/admin/pages/${pageId}`).send({ title_ru: 'Изменено в админке' });
+        const home = await adminPage('home');
+        await api.admin.put(`/api/admin/pages/${home.id}`).send({ title_ar: 'من المحرر' });
+
+        const strings = ['Главная', 'Услуги', 'Ремонт', 'Установка', 'Как мы работаем', 'Шаг', 'Ремонт кондиционеров', 'Сертификат', 'Скрытая', 'Круглосуточно', 'Центр', 'Примечание', BODY];
+        writeJson(path.join(other, 'strings.ru.json'), Object.fromEntries(strings.map((text) => [hash(text), text])));
+        const translations = Object.fromEntries(strings.map((text) => [hash(text), ar(text)]));
+        translations[hash(BODY)] = '<p>AR نص <img src="media:/one.png" alt="x"></p>';
+        writeJson(path.join(other, 'translations', 'ar.json'), translations);
+
+        report = await fillLanguage('ar', { contentDir: other });
+      });
+
+      afterAll(() => fs.rmSync(other, { recursive: true, force: true }));
+
+      test('fills pages, sections, settings, services, menus and galleries, and marks the pages for review', async () => {
+        const { page } = (await api.anon.get('/api/pages/ar/usluga/remont')).body;
+        expect(page.title).toBe('AR Ремонт');
+        expect(page.sections[0].content.heading).toBe('AR Как мы работаем');
+        expect(page.sections[0].content.body).toMatch(/^<p>AR نص <img src="\/uploads\/[^"]+one\.png" alt="x" \/><\/p>$/);
+        expect(page.sections[1].content.items[0].title).toBe('AR Шаг');
+        expect((await adminPage('usluga/remont')).needs_review_ar).toBe(true);
+
+        const site = (await api.anon.get('/api/site/ar')).body;
+        expect(site.settings.header.hours_text).toBe('AR Круглосуточно');
+        expect(site.settings.branding.site_name).toBe('AR Центр');
+        const repair = site.services.service.find((service) => service.href === '/usluga/remont');
+        expect([repair.title, repair.menu_title, repair.pill_title]).toEqual(['AR Ремонт', 'AR Ремонт кондиционеров', 'AR Ремонт']);
+        expect(site.nav.topbar.map((item) => item.label)).toEqual(['AR Услуги', 'الحجز عبر الإنترنت', 'استبيان سريع']);
+        expect(site.nav.cities.map((item) => item.label)).toEqual(['يريفان']);
+        expect(site.galleries.brands.map((item) => item.title)).toEqual(['LG']);
+      });
+
+      test('leaves alone text changed in the admin and text that already has Arabic, and reports what it left', async () => {
+        expect((await adminPage('usluga/ustanovka-kondicionerov')).title_ar).toBeNull();
+        expect((await adminPage('home')).title_ar).toBe('من المحرر');
+        expect(report.unfilled).toContain('/usluga/ustanovka-kondicionerov: title');
+      });
+
+      test('does not report Russian-only content, upload files, or touch other languages', async () => {
+        expect(report.unfilled.some((line) => line.startsWith('/vakansiya'))).toBe(false);
+        expect((await adminPage('vakansiya')).title_ar).toBeNull();
+        expect((await query('SELECT COUNT(*)::int AS total FROM media_assets')).rows[0].total).toBe(2);
+        expect((await api.anon.get('/api/pages/hy/usluga/remont')).body.page.title).toBe('HY Ремонт');
+      });
+
+      test('keeps each filled section in its history, and a second run changes nothing', async () => {
+        const section = (await adminPage('usluga/remont')).sections[0];
+        const versions = (await api.admin.get(`/api/admin/sections/${section.id}/versions`)).body.versions;
+        expect(versions[0].content_json.heading_ar).toBe('AR Как мы работаем');
+
+        const again = await fillLanguage('ar', { contentDir: other });
+        expect(again.fieldsFilled).toBe(0);
+        expect(again.pagesMarked).toBe(0);
+      });
+
+      test('refuses a language that is not translated', async () => {
+        await expect(fillLanguage('ru', { contentDir: other })).rejects.toThrow('ru');
       });
     });
 
