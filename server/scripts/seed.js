@@ -37,16 +37,16 @@ async function main() {
       console.warn('Skipping admin user: set SEED_ADMIN_PASSWORD or run npm run reset:admin -w server.');
     }
 
-    // Minimal services seed (3 languages). Adjust titles as needed.
+    // Minimal services seed. Adjust titles as needed.
     const servicesCountRes = await client.query('SELECT COUNT(*)::int AS count FROM services');
     if ((servicesCountRes.rows[0]?.count ?? 0) === 0) {
       await client.query(
         `
-        INSERT INTO services (type, title_en, title_ru, title_hy, description_en, description_ru, description_hy, price, image_url, is_active)
+        INSERT INTO services (type, title_en, title_ru, title_hy, title_ar, is_active)
         VALUES
-          ('install', 'Air conditioner installation', 'Установка кондиционеров', 'Օդորակիչների տեղադրում', NULL, NULL, NULL, NULL, NULL, TRUE),
-          ('repair', 'Air conditioner repair', 'Ремонт кондиционеров', 'Օդորակիչների վերանորոգում', NULL, NULL, NULL, NULL, NULL, TRUE),
-          ('service', 'Air conditioner cleaning', 'Чистка кондиционеров', 'Օդորակիչների մաքրում', NULL, NULL, NULL, NULL, NULL, TRUE)
+          ('install', 'Air conditioner installation', 'Установка кондиционеров', 'Օդորակիչների տեղադրում', 'تركيب المكيفات', TRUE),
+          ('repair', 'Air conditioner repair', 'Ремонт кондиционеров', 'Օդորակիչների վերանորոգում', 'إصلاح المكيفات', TRUE),
+          ('service', 'Air conditioner cleaning', 'Чистка кондиционеров', 'Օդորակիչների մաքրում', 'تنظيف المكيفات', TRUE)
       `
       );
     }
@@ -58,7 +58,7 @@ async function main() {
       VALUES
         ('home', 'hero', '{"title_ru":"ЦЕНТР КЛИМАТА","subtitle_ru":"Обслуживание кондиционеров и сплит-систем","cta_ru":"Оставьте заявку онлайн"}'::jsonb),
         ('home', 'contacts', '{"phone":"+(374) 94 00-00-00","email":"climatcenter@gmail.com"}'::jsonb),
-        ('global', 'contacts', '{"phone":"+(374) 94 00-00-00","email":"climatcenter@gmail.com","hours_ru":"Круглосуточно, без выходных","hours_en":"Daily, 24/7","hours_hy":"Ամեն օր, 24/7","address_ru":"г. Ереван, ул. Прошяна, 1, кв. 1","address_en":"c. Yerevan, Proshyan street 1, apt. 1","address_hy":"ք. Երևան, Պռոշյան փողոց 1, բն. 1"}'::jsonb),
+        ('global', 'contacts', '{"phone":"+(374) 94 00-00-00","email":"climatcenter@gmail.com","hours_ru":"Круглосуточно, без выходных","hours_en":"Daily, 24/7","hours_hy":"Ամեն օր, 24/7","hours_ar":"يوميًا، على مدار الساعة","address_ru":"г. Ереван, ул. Прошяна, 1, кв. 1","address_en":"c. Yerevan, Proshyan street 1, apt. 1","address_hy":"ք. Երևան, Պռոշյան փողոց 1, բն. 1","address_ar":"يريفان، شارع بروشيان 1، شقة 1"}'::jsonb),
         ('global', 'social', '{"whatsapp_url":"https://wa.me/37494000000","telegram_url":"https://t.me/your_handle","facebook_url":"https://facebook.com/your_page","instagram_url":"https://instagram.com/your_profile"}'::jsonb),
         ('about', 'page', '{
           "title_ru":"О компании",

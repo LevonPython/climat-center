@@ -1,6 +1,6 @@
 ---
 name: review-checklist
-description: Review current changes against climat-center's own contracts (API response shape, route auth, three locales, schema sync, migration order, secrets). Use before a commit or PR, or when asked to check changes against project conventions. Complements /code-review, which looks for general bugs.
+description: Review current changes against climat-center's own contracts (API response shape, route auth, every locale, schema sync, migration order, secrets). Use before a commit or PR, or when asked to check changes against project conventions. Complements /code-review, which looks for general bugs.
 argument-hint: "[base branch or paths, default uncommitted changes]"
 context: fork
 background: false
@@ -53,7 +53,7 @@ Working tree:
 - A new table is in `truncateAll`.
 
 **Multilingual**
-- New DB fields have `_ru`, `_en` and `_hy` variants.
+- New DB fields have a variant per language (`_ru`, `_en`, `_hy`, `_ar`), listed with `localizedColumns()`.
 - No hardcoded user-facing text in `client` or `admin`.
 - New UI text is non-technical, and `hy` holds real Armenian.
 

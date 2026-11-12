@@ -74,6 +74,7 @@ describe('NavigationPage', () => {
       label_hy: 'Կոնտակտներ',
       label_ru: null,
       label_en: null,
+      label_ar: null,
       location: 'header',
       sort_order: 1
     });

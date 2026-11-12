@@ -30,6 +30,7 @@ describe('content helpers', () => {
       heading_hy: null,
       heading_ru: null,
       heading_en: null,
+      heading_ar: null,
       website: null,
       collection: null,
       items: []
@@ -38,7 +39,7 @@ describe('content helpers', () => {
 
   test('normalizing fills missing keys inside list items too', () => {
     const out = normalizeContent(fields, { items: [{ title_hy: 'Ա' }] });
-    expect(out.items).toEqual([{ title_hy: 'Ա', title_ru: null, title_en: null, link: null }]);
+    expect(out.items).toEqual([{ title_hy: 'Ա', title_ru: null, title_en: null, title_ar: null, link: null }]);
   });
 
   test('a saved block missing keys does not look edited', () => {

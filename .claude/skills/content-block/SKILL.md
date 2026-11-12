@@ -42,11 +42,12 @@ Definitions live only on the server, and the admin builds its forms from them th
 - **Remove or rename a field**: edit the definition and move the stored data in a migration (see the `db-migration` skill). Otherwise the editor keeps the stale key and blocks every save.
   ```sql
   UPDATE content_blocks
-  SET content_json = (content_json - 'old_ru' - 'old_en' - 'old_hy')
+  SET content_json = (content_json - 'old_ru' - 'old_en' - 'old_hy' - 'old_ar')
     || jsonb_strip_nulls(jsonb_build_object(
          'new_ru', content_json->'old_ru',
          'new_en', content_json->'old_en',
-         'new_hy', content_json->'old_hy'))
+         'new_hy', content_json->'old_hy',
+         'new_ar', content_json->'old_ar'))
   WHERE page_name = 'home' AND section_name = 'promo';
   ```
   Tell the user that older entries in the block's version history keep the old keys and can no longer be restored.

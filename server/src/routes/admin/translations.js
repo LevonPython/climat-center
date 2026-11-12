@@ -1,8 +1,8 @@
 const express = require('express');
-const { body, param } = require('express-validator');
+const { param } = require('express-validator');
 
 const { httpError } = require('../../config/httpError');
-const { asyncRoute, validateRequest } = require('../../middleware/validate');
+const { asyncRoute, multilingual, validateRequest } = require('../../middleware/validate');
 const { translationRepository } = require('../../repositories/translationRepository');
 
 const KEY_PATTERN = /^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*$/;
@@ -19,9 +19,7 @@ adminTranslationsRouter.get(
 adminTranslationsRouter.put(
   '/:key',
   param('key').matches(KEY_PATTERN),
-  body('value_ru').optional({ nullable: true }).isString(),
-  body('value_en').optional({ nullable: true }).isString(),
-  body('value_hy').optional({ nullable: true }).isString(),
+  ...multilingual('value'),
   validateRequest,
   asyncRoute(async (req, res) => {
     const translation = await translationRepository.upsert({ ...req.body, key: req.params.key });

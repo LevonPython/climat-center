@@ -6,7 +6,7 @@ import { LabeledField } from '../components/LabeledField';
 import { LangTabs } from '../components/LangTabs';
 import { SectionsEditor, type Section } from '../components/SectionsEditor';
 import { ui } from '../components/ui';
-import { LANGS, type Lang } from '../contentSchemas/types';
+import { LANGS, localizedKeys, textDirection, type Lang } from '../contentSchemas/types';
 import { stableStringify } from '../contentSchemas/utils';
 import { HOME_SLUG, PAGE_TYPES, SLUG_PATTERN, descendantIds, localized, usePages, type Page, type PageStatus, type PageType } from '../lib/pages';
 import { errorText, request, send } from '../lib/request';
@@ -16,10 +16,7 @@ type PageWithSections = Page & { sections: Section[] };
 
 const WRITABLE_FIELDS = [
   'slug', 'type', 'parent_id', 'status', 'sort_order',
-  'title_hy', 'title_ru', 'title_en',
-  'meta_title_hy', 'meta_title_ru', 'meta_title_en',
-  'meta_description_hy', 'meta_description_ru', 'meta_description_en',
-  'needs_review_hy', 'needs_review_ru', 'needs_review_en'
+  ...(['title', 'meta_title', 'meta_description', 'needs_review'] as const).flatMap((base) => localizedKeys(base))
 ] as const;
 
 type PageDraft = Pick<Page, (typeof WRITABLE_FIELDS)[number]>;
@@ -133,13 +130,13 @@ function PageForm({ page }: { page: Page }) {
       <LangTabs value={lang} onChange={setLang} />
       <label className="grid gap-1">
         <span className={ui.label}>{t('pages.titleField')}</span>
-        <input lang={lang} className={ui.input} value={textOf('title')} onChange={(e) => setText('title', e.target.value)} />
+        <input lang={lang} dir={textDirection(lang)} className={ui.input} value={textOf('title')} onChange={(e) => setText('title', e.target.value)} />
       </label>
       <LabeledField label={t('pages.metaTitle')} help={t('pages.metaTitleHelp')}>
-        <input lang={lang} className={ui.input} value={textOf('meta_title')} onChange={(e) => setText('meta_title', e.target.value)} />
+        <input lang={lang} dir={textDirection(lang)} className={ui.input} value={textOf('meta_title')} onChange={(e) => setText('meta_title', e.target.value)} />
       </LabeledField>
       <LabeledField label={t('pages.metaDescription')} help={t('pages.metaDescriptionHelp')}>
-        <textarea lang={lang} className={`${ui.input} min-h-24`} value={textOf('meta_description')} onChange={(e) => setText('meta_description', e.target.value)} />
+        <textarea lang={lang} dir={textDirection(lang)} className={`${ui.input} min-h-24`} value={textOf('meta_description')} onChange={(e) => setText('meta_description', e.target.value)} />
       </LabeledField>
 
       <fieldset className="grid gap-1">

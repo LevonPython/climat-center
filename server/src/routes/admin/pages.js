@@ -5,6 +5,7 @@ const { requireRole } = require('../../middleware/auth');
 const { asyncRoute, multilingual, validateRequest } = require('../../middleware/validate');
 const { pageRepository } = require('../../repositories/pageRepository');
 const pageService = require('../../services/pageService');
+const { localizedColumns } = require('../../services/localization');
 const sectionService = require('../../services/sectionService');
 
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*(\/[a-z0-9]+(-[a-z0-9]+)*)*$/;
@@ -16,7 +17,7 @@ const pageFieldValidators = (slugChain) => [
   body('status').optional().isIn(['published', 'hidden']),
   body('sort_order').optional().isInt({ min: 0 }).toInt(),
   ...['title', 'meta_title', 'meta_description'].flatMap(multilingual),
-  ...['ru', 'en', 'hy'].map((lang) => body(`needs_review_${lang}`).optional().isBoolean().toBoolean())
+  ...localizedColumns('needs_review').map((key) => body(key).optional().isBoolean().toBoolean())
 ];
 
 const adminPagesRouter = express.Router();

@@ -1,9 +1,10 @@
+const { localizedColumns } = require('../services/localization');
 const { createCrudRepository, pool } = require('./crudRepository');
 
 const mediaRepository = {
   ...createCrudRepository({
     table: 'media_assets',
-    columns: ['url', 'filename', 'mime_type', 'size_bytes', 'kind', 'alt_ru', 'alt_en', 'alt_hy', 'uploaded_by'],
+    columns: ['url', 'filename', 'mime_type', 'size_bytes', 'kind', ...localizedColumns('alt'), 'uploaded_by'],
     orderBy: 'created_at DESC'
   }),
 

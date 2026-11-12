@@ -5,7 +5,7 @@ import { LabeledField } from '../components/LabeledField';
 import { LangTabs } from '../components/LangTabs';
 import { ReorderButtons } from '../components/ReorderButtons';
 import { ui } from '../components/ui';
-import { LANGS, type Lang } from '../contentSchemas/types';
+import { LANGS, emptyLocalized, pickLocalized, textDirection, type Lang, type Localized } from '../contentSchemas/types';
 import { moveItem } from '../lib/order';
 import { HOME_SLUG, localized, usePages, type Page } from '../lib/pages';
 import { errorText, request, send } from '../lib/request';
@@ -20,15 +20,12 @@ type NavItem = {
   location: Location;
   page_id: string | null;
   url: string | null;
-  label_hy: string | null;
-  label_ru: string | null;
-  label_en: string | null;
   sort_order: number;
   is_visible: boolean;
-};
+} & Localized<'label', string | null>;
 
-type ItemDraft = Pick<NavItem, 'page_id' | 'url' | 'label_hy' | 'label_ru' | 'label_en'>;
-const EMPTY_DRAFT: ItemDraft = { page_id: null, url: null, label_hy: null, label_ru: null, label_en: null };
+type ItemDraft = Pick<NavItem, 'page_id' | 'url'> & Localized<'label', string | null>;
+const EMPTY_DRAFT: ItemDraft = { page_id: null, url: null, ...emptyLocalized('label', null) };
 
 type ItemFormProps = {
   initial: ItemDraft;
@@ -71,6 +68,7 @@ function ItemForm({ initial, pages, saving, onSave, onCancel }: ItemFormProps) {
         <span className={ui.label}>{t('navigation.label')}</span>
         <input
           lang={lang}
+          dir={textDirection(lang)}
           className={ui.input}
           value={draft[labelKey] || ''}
           onChange={(e) => setDraft({ ...draft, [labelKey]: e.target.value.trim() ? e.target.value : null })}
@@ -254,7 +252,7 @@ export function NavigationPage() {
               {editingId === item.id ? (
                 <ItemForm
                   key={item.id}
-                  initial={{ page_id: item.page_id, url: item.url, label_hy: item.label_hy, label_ru: item.label_ru, label_en: item.label_en }}
+                  initial={{ page_id: item.page_id, url: item.url, ...pickLocalized('label', item) }}
                   pages={pages}
                   saving={saveM.isPending}
                   onSave={(draft) => saveM.mutate(draft)}

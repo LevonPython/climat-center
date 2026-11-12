@@ -1,4 +1,7 @@
+const { localizedColumns } = require('../services/localization');
 const { pool } = require('./crudRepository');
+
+const VALUE_COLUMNS = localizedColumns('value');
 
 const translationRepository = {
   async list(db = pool) {
@@ -6,16 +9,18 @@ const translationRepository = {
     return result.rows;
   },
 
-  async upsert({ key, value_ru, value_en, value_hy }, db = pool) {
+  async upsert({ key, ...values }, db = pool) {
+    const placeholders = VALUE_COLUMNS.map((_, index) => `$${index + 2}`);
+    const updates = VALUE_COLUMNS.map((column) => `${column} = EXCLUDED.${column}`);
     const result = await db.query(
       `
-      INSERT INTO ui_translations (key, value_ru, value_en, value_hy)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO ui_translations (key, ${VALUE_COLUMNS.join(', ')})
+      VALUES ($1, ${placeholders.join(', ')})
       ON CONFLICT (key) DO UPDATE
-      SET value_ru = EXCLUDED.value_ru, value_en = EXCLUDED.value_en, value_hy = EXCLUDED.value_hy
+      SET ${updates.join(', ')}
       RETURNING *
     `,
-      [key, value_ru ?? null, value_en ?? null, value_hy ?? null]
+      [key, ...VALUE_COLUMNS.map((column) => values[column] ?? null)]
     );
     return result.rows[0];
   },

@@ -1,11 +1,9 @@
+const { localizedColumns } = require('../services/localization');
 const { createCrudRepository, pool } = require('./crudRepository');
 
 const PAGE_COLUMNS = [
   'slug', 'type', 'parent_id', 'status', 'sort_order',
-  'title_ru', 'title_en', 'title_hy',
-  'meta_title_ru', 'meta_title_en', 'meta_title_hy',
-  'meta_description_ru', 'meta_description_en', 'meta_description_hy',
-  'needs_review_ru', 'needs_review_en', 'needs_review_hy'
+  ...['title', 'meta_title', 'meta_description', 'needs_review'].flatMap(localizedColumns)
 ];
 
 const pageRepository = {

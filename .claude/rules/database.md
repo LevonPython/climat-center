@@ -29,7 +29,7 @@ Vercel deploys do **not** migrate (`deploy/vercel.md`). Merging code that reads 
 - Timestamps: `TIMESTAMPTZ NOT NULL DEFAULT now()`. Mutable tables get `updated_at` and the `set_updated_at()` trigger from `001_init.sql`.
 - Enums: `TEXT` with a `CHECK` constraint, not `CREATE TYPE`.
 - Foreign keys: explicit `ON DELETE`, plus an index on the column. Index columns used in `WHERE` and `ORDER BY`.
-- Multilingual text: three nullable columns, `title_ru`, `title_en`, `title_hy`.
+- Multilingual text: one nullable column per language, `title_ru`, `title_en`, `title_hy`, `title_ar`. Code builds column lists with `localizedColumns()` from `server/src/services/localization.js` rather than naming the languages.
 - Lifecycle: services soft-delete with `is_active`; bookings move through `status`.
 
 ## Seeds and tests

@@ -23,7 +23,7 @@ Definitions live only on the server. The admin builds its forms from `GET /api/a
 Labels are written in English on the server. The admin translates them by their exact text from `admin/public/locales/{hy,ru,en}/schema.json`. A new or changed label must be added to all three, and `admin/__tests__/schemaLabels.test.ts` fails until it is.
 
 ## Fields
-- `multilingual: true` expands `key` to `key_ru`, `key_en`, `key_hy`.
+- `multilingual: true` expands `key` to one key per language: `key_ru`, `key_en`, `key_hy`, `key_ar`.
 - `kind` picks the form control: `string`, `text`, `url`, `link`, `email`, `phone`, `rich_text`, `image`, `select` or `list`. `url` is an outside web address, and `link` also allows a page on this site, `tel:` and `mailto:`.
 - Values are `string | null`, a `list` is an array of objects, and a `select` must be one of `options`. Schemas use `additionalProperties: false`, so unknown keys are rejected.
 - Each `fieldKeys` entry in a site block's `groups` must name a real field, and every field must be in a group. A server test checks this.

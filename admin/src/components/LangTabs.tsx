@@ -1,8 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { LANGS, type Lang } from '../contentSchemas/types';
+import { LANGS, LANGUAGE_NAMES, type Lang } from '../contentSchemas/types';
 import { ui } from './ui';
-
-const LANGUAGE_NAMES: Record<Lang, string> = { hy: 'Հայերեն', ru: 'Русский', en: 'English' };
 
 export function LangTabs({ value, onChange }: { value: Lang; onChange: (lang: Lang) => void }) {
   const { t } = useTranslation();

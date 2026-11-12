@@ -6,9 +6,9 @@ import { bodyOf, callsTo, renderScreen, routeApi } from '../test/helpers';
 jest.mock('../src/api', () => ({ apiFetch: jest.fn(), assetUrl: (url: string) => url }));
 jest.mock('../src/lib/publicTexts', () => ({
   PUBLIC_TEXTS: [
-    { key: 'nav.home', defaults: { hy: 'Գլխավոր', ru: 'Главная', en: 'Home' } },
-    { key: 'nav.quiz', defaults: { hy: 'Հարցում', ru: 'Опрос', en: 'Quiz' } },
-    { key: 'footer.note', defaults: { hy: 'Ծանոթ', ru: 'Заметка', en: 'Note' } }
+    { key: 'nav.home', defaults: { hy: 'Գլխավոր', ru: 'Главная', en: 'Home', ar: 'الرئيسية' } },
+    { key: 'nav.quiz', defaults: { hy: 'Հարցում', ru: 'Опрос', en: 'Quiz', ar: 'استبيان' } },
+    { key: 'footer.note', defaults: { hy: 'Ծանոթ', ru: 'Заметка', en: 'Note', ar: 'ملاحظة' } }
   ]
 }));
 
@@ -37,7 +37,7 @@ describe('TranslationsPage', () => {
     expect(box('nav.home', 'Русский')).toHaveAttribute('placeholder', 'Главная');
   });
 
-  test('saves all three languages, with an empty field meaning the default', async () => {
+  test('saves every language, with an empty field meaning the default', async () => {
     routeApi(apiFetchMock, {
       'GET /api/admin/translations': { ok: true, translations: [] },
       'PUT /api/admin/translations/nav.quiz': { ok: true, translation: {} }
@@ -45,11 +45,14 @@ describe('TranslationsPage', () => {
     renderScreen(<TranslationsPage />);
     await screen.findByText('nav (2)');
 
+    expect(box('nav.quiz', 'العربية')).toHaveAttribute('dir', 'rtl');
+    expect(box('nav.quiz', 'English')).toHaveAttribute('dir', 'ltr');
     fireEvent.change(box('nav.quiz', 'English'), { target: { value: 'Survey' } });
+    fireEvent.change(box('nav.quiz', 'العربية'), { target: { value: 'استطلاع' } });
     fireEvent.click(screen.getByRole('button', { name: 'Сохранить: nav.quiz' }));
 
     await waitFor(() => expect(callsTo(apiFetchMock, 'PUT', '/api/admin/translations/nav.quiz')).toHaveLength(1));
-    expect(bodyOf(callsTo(apiFetchMock, 'PUT', '/api/admin/translations/nav.quiz')[0])).toEqual({ value_hy: null, value_ru: null, value_en: 'Survey' });
+    expect(bodyOf(callsTo(apiFetchMock, 'PUT', '/api/admin/translations/nav.quiz')[0])).toEqual({ value_hy: null, value_ru: null, value_en: 'Survey', value_ar: 'استطلاع' });
   });
 
   test('going back to the default asks first and removes the change', async () => {

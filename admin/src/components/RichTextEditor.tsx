@@ -5,7 +5,7 @@ import { StarterKit } from '@tiptap/starter-kit';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { assetUrl } from '../api';
-import type { Lang } from '../contentSchemas/types';
+import { textDirection, type Lang } from '../contentSchemas/types';
 import { localized } from '../lib/pages';
 import { MediaPicker } from './MediaPicker';
 
@@ -154,7 +154,7 @@ export function RichTextEditor({ label, value, lang, invalid, onChange }: RichTe
     content: value || '',
     shouldRerenderOnTransaction: true,
     editorProps: {
-      attributes: { class: CONTENT_CLASS, role: 'textbox', 'aria-multiline': 'true', 'aria-label': label, lang }
+      attributes: { class: CONTENT_CLASS, role: 'textbox', 'aria-multiline': 'true', 'aria-label': label, lang, dir: textDirection(lang) }
     },
     onCreate: ({ editor: current }) => {
       loaded.current = { value: loaded.current.value, html: currentHtml(current) };

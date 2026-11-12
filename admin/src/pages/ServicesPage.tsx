@@ -6,7 +6,7 @@ import { LabeledField } from '../components/LabeledField';
 import { LangTabs } from '../components/LangTabs';
 import { ReorderButtons } from '../components/ReorderButtons';
 import { ui } from '../components/ui';
-import type { Lang } from '../contentSchemas/types';
+import { localizedKeys, textDirection, type Lang, type Localized } from '../contentSchemas/types';
 import { moveItem } from '../lib/order';
 import { localized, usePages } from '../lib/pages';
 import { stableStringify } from '../contentSchemas/utils';
@@ -18,24 +18,15 @@ type Service = {
   type: string;
   category: 'service' | 'fault';
   page_id: string | null;
-  title_en: string | null;
-  title_ru: string | null;
-  title_hy: string | null;
-  description_en: string | null;
-  description_ru: string | null;
-  description_hy: string | null;
-  menu_title_en: string | null;
-  menu_title_ru: string | null;
-  menu_title_hy: string | null;
-  pill_title_en: string | null;
-  pill_title_ru: string | null;
-  pill_title_hy: string | null;
   show_in_menu: boolean;
   show_in_pills: boolean;
   price: number | null;
   image_url: string | null;
   is_active: boolean;
-};
+} & Localized<'title', string | null> &
+  Localized<'description', string | null> &
+  Localized<'menu_title', string | null> &
+  Localized<'pill_title', string | null>;
 
 type ServiceDraft = Partial<Omit<Service, 'id'>> & { type: string };
 
@@ -48,10 +39,7 @@ const TYPE_LABELS: Record<string, string> = {
 };
 const EDITABLE_FIELDS = [
   'type', 'category', 'page_id',
-  'title_ru', 'title_en', 'title_hy',
-  'description_ru', 'description_en', 'description_hy',
-  'menu_title_ru', 'menu_title_en', 'menu_title_hy',
-  'pill_title_ru', 'pill_title_en', 'pill_title_hy',
+  ...(['title', 'description', 'menu_title', 'pill_title'] as const).flatMap((base) => localizedKeys(base)),
   'show_in_menu', 'show_in_pills', 'price', 'image_url', 'is_active'
 ] as const;
 
@@ -108,8 +96,7 @@ export function ServicesPage() {
   const rows = useMemo(() => servicesQ.data || [], [servicesQ.data]);
 
   function validateDraft(d: ServiceDraft) {
-    const titleVals = [d.title_ru, d.title_en, d.title_hy];
-    const hasTitle = titleVals.some((v) => typeof v === 'string' && v.trim().length > 0);
+    const hasTitle = localizedKeys('title').some((key) => (d[key] || '').trim().length > 0);
     if (!hasTitle) {
       return { title: t('services.validationTitleRequired') };
     }
@@ -192,11 +179,11 @@ export function ServicesPage() {
 
         <div className="mt-4 grid gap-4">
           <LabeledField label={t('services.titleField')} error={fieldErrors?.title}>
-            <input lang={lang} value={textOf('title')} onChange={(e) => setText('title', e.target.value)} className={fieldErrors?.title ? ui.inputInvalid : ui.input} />
+            <input lang={lang} dir={textDirection(lang)} value={textOf('title')} onChange={(e) => setText('title', e.target.value)} className={fieldErrors?.title ? ui.inputInvalid : ui.input} />
           </LabeledField>
           <label className="grid gap-1">
             <span className={ui.label}>{t('services.descriptionField')}</span>
-            <textarea lang={lang} value={textOf('description')} onChange={(e) => setText('description', e.target.value)} className={`${ui.input} min-h-24`} />
+            <textarea lang={lang} dir={textDirection(lang)} value={textOf('description')} onChange={(e) => setText('description', e.target.value)} className={`${ui.input} min-h-24`} />
           </label>
           <ImageField label={t('services.image')} value={draft.image_url || null} onChange={(url) => setDraft((d) => ({ ...d, image_url: url }))} />
         </div>
@@ -206,11 +193,11 @@ export function ServicesPage() {
           <div className="mt-2 grid items-start gap-4 md:grid-cols-2">
             <label className="grid gap-1">
               <span className={ui.label}>{t('services.menuTitle')}</span>
-              <input lang={lang} value={textOf('menu_title')} onChange={(e) => setText('menu_title', e.target.value)} className={ui.input} />
+              <input lang={lang} dir={textDirection(lang)} value={textOf('menu_title')} onChange={(e) => setText('menu_title', e.target.value)} className={ui.input} />
             </label>
             <label className="grid gap-1">
               <span className={ui.label}>{t('services.pillTitle')}</span>
-              <input lang={lang} value={textOf('pill_title')} onChange={(e) => setText('pill_title', e.target.value)} className={ui.input} />
+              <input lang={lang} dir={textDirection(lang)} value={textOf('pill_title')} onChange={(e) => setText('pill_title', e.target.value)} className={ui.input} />
             </label>
             <label className="grid gap-1">
               <span className={ui.label}>{t('services.linkedPage')}</span>

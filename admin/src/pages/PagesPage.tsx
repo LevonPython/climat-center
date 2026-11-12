@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LabeledField } from '../components/LabeledField';
 import { LangTabs } from '../components/LangTabs';
 import { ui } from '../components/ui';
-import { LANGS, type Lang } from '../contentSchemas/types';
+import { LANGS, emptyLocalized, textDirection, type Lang, type Localized } from '../contentSchemas/types';
 import { HOME_SLUG, PAGE_TYPES, SLUG_PATTERN, buildPageTree, localized, usePages, type Page, type PageRow, type PageStatus, type PageType } from '../lib/pages';
 import { errorText, send } from '../lib/request';
 import { useConfirmLeave, useUnsavedGuard } from '../lib/unsaved';
@@ -16,12 +16,9 @@ type NewPage = {
   slug: string;
   type: PageType;
   parent_id: string;
-  title_hy: string;
-  title_ru: string;
-  title_en: string;
-};
+} & Localized<'title', string>;
 
-const EMPTY_PAGE: NewPage = { slug: '', type: 'article', parent_id: '', title_hy: '', title_ru: '', title_en: '' };
+const EMPTY_PAGE: NewPage = { slug: '', type: 'article', parent_id: '', ...emptyLocalized('title', '') };
 
 function NewPageForm({ pages, onCancel }: { pages: Page[]; onCancel: () => void }) {
   const { t, i18n } = useTranslation();
@@ -96,7 +93,7 @@ function NewPageForm({ pages, onCancel }: { pages: Page[]; onCancel: () => void 
       <LangTabs value={lang} onChange={setLang} />
       <label className="grid gap-1">
         <span className={ui.label}>{t('pages.titleField')}</span>
-        <input lang={lang} className={ui.input} value={draft[titleKey]} onChange={(e) => setDraft({ ...draft, [titleKey]: e.target.value })} />
+        <input lang={lang} dir={textDirection(lang)} className={ui.input} value={draft[titleKey]} onChange={(e) => setDraft({ ...draft, [titleKey]: e.target.value })} />
       </label>
       {problem ? <div role="alert" className={ui.error}>{problem}</div> : null}
       {createM.isError ? <div role="alert" className={ui.error}>{errorText(t, createM.error, 'pages.createError', SLUG_ERRORS)}</div> : null}

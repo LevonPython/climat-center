@@ -2,29 +2,18 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ui } from '../components/ui';
-import { LANGS, type Lang } from '../contentSchemas/types';
+import { LANGS, LANGUAGE_NAMES, emptyLocalized, textDirection, type Lang, type Localized } from '../contentSchemas/types';
 import { PUBLIC_TEXTS, type PublicText } from '../lib/publicTexts';
 import { errorText, request, send } from '../lib/request';
 import { useUnsavedGuard } from '../lib/unsaved';
 
-type Override = {
-  key: string;
-  value_hy: string | null;
-  value_ru: string | null;
-  value_en: string | null;
-};
-
-const LANGUAGE_NAMES: Record<Lang, string> = { hy: 'Հայերեն', ru: 'Русский', en: 'English' };
-
-type Draft = Pick<Override, 'value_hy' | 'value_ru' | 'value_en'>;
+type Draft = Localized<'value', string | null>;
+type Override = { key: string } & Draft;
 
 const valueKey = (lang: Lang) => `value_${lang}` as const;
 
-const toDraft = (override?: Override): Draft => ({
-  value_hy: override?.value_hy ?? null,
-  value_ru: override?.value_ru ?? null,
-  value_en: override?.value_en ?? null
-});
+const toDraft = (override?: Override): Draft =>
+  override ? (Object.fromEntries(LANGS.map((lang) => [valueKey(lang), override[valueKey(lang)] ?? null])) as Draft) : emptyLocalized('value', null);
 
 const sameTexts = (draft: Draft, override?: Override) => LANGS.every((lang) => draft[valueKey(lang)] === (override?.[valueKey(lang)] ?? null));
 
@@ -56,12 +45,13 @@ function TextRow({ text, override, draft, onDraft, onSaved }: TextRowProps) {
         <span className="break-all font-mono text-xs text-slate-600">{text.key}</span>
         {override ? <span className={ui.badgeWarning}>{t('translations.changed')}</span> : null}
       </div>
-      <div className="grid gap-2 md:grid-cols-3">
+      <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
         {LANGS.map((lang) => (
           <label key={lang} className="grid gap-1">
             <span className={ui.label}>{LANGUAGE_NAMES[lang]}</span>
             <textarea
               lang={lang}
+              dir={textDirection(lang)}
               rows={2}
               className={ui.input}
               placeholder={text.defaults[lang]}

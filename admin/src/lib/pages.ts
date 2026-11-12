@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { LANGS, type Lang } from '../contentSchemas/types';
+import { LANGS, type Lang, type Localized } from '../contentSchemas/types';
 import { request } from './request';
 
 export const PAGE_TYPES = ['home', 'service', 'fault', 'listing', 'article', 'city', 'gallery', 'static'] as const;
@@ -13,19 +13,10 @@ export type Page = {
   parent_id: string | null;
   status: PageStatus;
   sort_order: number;
-  title_ru: string | null;
-  title_en: string | null;
-  title_hy: string | null;
-  meta_title_ru: string | null;
-  meta_title_en: string | null;
-  meta_title_hy: string | null;
-  meta_description_ru: string | null;
-  meta_description_en: string | null;
-  meta_description_hy: string | null;
-  needs_review_ru: boolean;
-  needs_review_en: boolean;
-  needs_review_hy: boolean;
-};
+} & Localized<'title', string | null> &
+  Localized<'meta_title', string | null> &
+  Localized<'meta_description', string | null> &
+  Localized<'needs_review', boolean>;
 
 export type PageRow = Page & { depth: number };
 

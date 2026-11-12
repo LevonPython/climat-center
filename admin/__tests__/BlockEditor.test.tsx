@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { BlockEditor } from '../src/components/BlockEditor';
-import type { FieldDef } from '../src/contentSchemas/types';
+import { LANGS, LANGUAGE_NAMES, type FieldDef } from '../src/contentSchemas/types';
 import { apiFetch } from '../src/api';
 import { renderScreen, routeApi } from '../test/helpers';
 
@@ -53,6 +53,21 @@ describe('BlockEditor', () => {
     expect(await screen.findByRole('status')).toHaveTextContent('Сохранено');
   });
 
+  test('each language tab edits its own field, and Arabic is typed right to left', async () => {
+    const onSave = jest.fn().mockResolvedValue(undefined);
+    renderScreen(<BlockEditor fields={fields} content={{}} onSave={onSave} />);
+
+    for (const lang of LANGS) {
+      fireEvent.click(screen.getByRole('button', { name: LANGUAGE_NAMES[lang] }));
+      expect(screen.getByLabelText('Заголовок')).toHaveAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+      fireEvent.change(screen.getByLabelText('Заголовок'), { target: { value: `heading ${lang}` } });
+    }
+    fireEvent.click(save());
+
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    expect(onSave.mock.calls[0][0]).toMatchObject(Object.fromEntries(LANGS.map((lang) => [`heading_${lang}`, `heading ${lang}`])));
+  });
+
   test('nothing to save until something changes, and clearing a field stores null', async () => {
     const onSave = jest.fn().mockResolvedValue(undefined);
     renderScreen(<BlockEditor fields={fields} content={{ heading_hy: 'Հայ' }} onSave={onSave} />);
@@ -97,8 +112,8 @@ describe('BlockEditor', () => {
 
     await waitFor(() => expect(onSave).toHaveBeenCalled());
     expect(onSave.mock.calls[0][0].items).toEqual([
-      { title_hy: 'Բ', title_ru: null, title_en: null },
-      { title_hy: null, title_ru: null, title_en: null }
+      { title_hy: 'Բ', title_ru: null, title_en: null, title_ar: null },
+      { title_hy: null, title_ru: null, title_en: null, title_ar: null }
     ]);
   });
 

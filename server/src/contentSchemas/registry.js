@@ -1,4 +1,4 @@
-const ALL_LANGS = ['ru', 'en', 'hy'];
+const { LANGS: ALL_LANGS } = require('../services/localization');
 
 // These fields are rendered as href or iframe src on the public site, so script URLs must never get in.
 const SAFE_LINK_PATTERN = '^$|^(/(?!/)|https?://|mailto:|tel:)';
