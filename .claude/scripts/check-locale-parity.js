@@ -3,13 +3,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const LOCALES = ['hy', 'en', 'ru'];
 const PLURAL_SUFFIX = /_(zero|one|two|few|many|other)$/;
 const T_CALL = /\bt\(\s*['"`]([^'"`$]+)['"`]/g;
 const SOURCE_FILE = /\.tsx?$/;
+// The client catalogue has Arabic; the admin's own interface does not.
 const APPS = [
-  { name: 'client', catalogue: 'client/public/locales', sources: ['client/pages', 'client/components', 'client/lib'] },
-  { name: 'admin', catalogue: 'admin/public/locales', sources: ['admin/src'] }
+  { name: 'client', locales: ['hy', 'en', 'ru', 'ar'], catalogue: 'client/public/locales', sources: ['client/pages', 'client/components', 'client/lib'] },
+  { name: 'admin', locales: ['hy', 'en', 'ru'], catalogue: 'admin/public/locales', sources: ['admin/src'] }
 ];
 
 function readRoot() {
@@ -58,14 +58,14 @@ function isUsed(key, used) {
 function checkApp(root, app) {
   const problems = [];
   const keysByLocale = Object.fromEntries(
-    LOCALES.map((locale) => {
+    app.locales.map((locale) => {
       const file = path.join(root, app.catalogue, locale, 'common.json');
       return [locale, new Set(flatten(JSON.parse(fs.readFileSync(file, 'utf8'))))];
     })
   );
-  const allKeys = new Set(LOCALES.flatMap((locale) => [...keysByLocale[locale]]));
+  const allKeys = new Set(app.locales.flatMap((locale) => [...keysByLocale[locale]]));
 
-  for (const locale of LOCALES) {
+  for (const locale of app.locales) {
     const missing = [...allKeys].filter((key) => !keysByLocale[locale].has(key));
     if (missing.length) problems.push(`${app.name}/${locale} is missing: ${missing.join(', ')}`);
   }
@@ -85,7 +85,7 @@ function main() {
   const problems = results.flatMap((result) => result.problems);
 
   for (const { app, total, unused } of results) {
-    console.log(`${app.name}: ${total} keys in ${LOCALES.length} locales`);
+    console.log(`${app.name}: ${total} keys in ${app.locales.length} locales`);
     if (unused.length) {
       const sample = unused.slice(0, 10).join(', ');
       console.log(`  warning: ${unused.length} keys not found as literal t() calls (may be dynamic): ${sample}`);

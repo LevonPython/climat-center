@@ -5,7 +5,7 @@ const { query, withClient } = require('../config/db');
 const { verifyToken, requireAnyRole } = require('../middleware/auth');
 const { triggerRevalidate } = require('../config/revalidateClient');
 const { validateContentJson } = require('../contentSchemas/validate');
-const { resolveLangContent } = require('../services/localization');
+const { LANGS, resolveLangContent } = require('../services/localization');
 
 const contentRouter = express.Router();
 
@@ -56,7 +56,7 @@ contentRouter.get(
 
 contentRouter.get(
   '/:lang',
-  param('lang').isIn(['en', 'ru', 'hy']),
+  param('lang').isIn(LANGS),
   async (req, res, next) => {
     try {
       const errors = validationResult(req);

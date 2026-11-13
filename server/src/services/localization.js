@@ -1,5 +1,9 @@
-const LANGS = ['ru', 'en', 'hy'];
-const SUFFIX_PATTERN = /_(ru|en|hy)$/;
+const LANGS = ['ru', 'en', 'hy', 'ar'];
+const SUFFIX_PATTERN = new RegExp(`_(${LANGS.join('|')})$`);
+
+function localizedColumns(base) {
+  return LANGS.map((lang) => `${base}_${lang}`);
+}
 
 // Maps title_hy to title at any depth. There is no fallback between languages.
 function resolveLangContent(value, lang) {
@@ -17,4 +21,4 @@ function resolveLangContent(value, lang) {
   return out;
 }
 
-module.exports = { LANGS, resolveLangContent };
+module.exports = { LANGS, localizedColumns, resolveLangContent };

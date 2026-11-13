@@ -1,7 +1,8 @@
+import ar from '../../../client/public/locales/ar/common.json';
 import en from '../../../client/public/locales/en/common.json';
 import hy from '../../../client/public/locales/hy/common.json';
 import ru from '../../../client/public/locales/ru/common.json';
-import type { Lang } from '../contentSchemas/types';
+import { LANGS, type Lang } from '../contentSchemas/types';
 
 export type PublicText = { key: string; defaults: Record<Lang, string> };
 
@@ -11,12 +12,15 @@ function flatten(catalogue: object, prefix = ''): [string, string][] {
   );
 }
 
-const HY = new Map(flatten(hy));
-const RU = new Map(flatten(ru));
-const EN = new Map(flatten(en));
+const CATALOGUES: Record<Lang, Map<string, string>> = {
+  hy: new Map(flatten(hy)),
+  ru: new Map(flatten(ru)),
+  en: new Map(flatten(en)),
+  ar: new Map(flatten(ar))
+};
 
 // The public site's own catalogue is the list of its labels, so this screen can't drift from it.
-export const PUBLIC_TEXTS: PublicText[] = [...new Set([...HY.keys(), ...RU.keys(), ...EN.keys()])].sort().map((key) => ({
+export const PUBLIC_TEXTS: PublicText[] = [...new Set(LANGS.flatMap((lang) => [...CATALOGUES[lang].keys()]))].sort().map((key) => ({
   key,
-  defaults: { hy: HY.get(key) || '', ru: RU.get(key) || '', en: EN.get(key) || '' }
+  defaults: Object.fromEntries(LANGS.map((lang) => [lang, CATALOGUES[lang].get(key) || ''])) as Record<Lang, string>
 }));

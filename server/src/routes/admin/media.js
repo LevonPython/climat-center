@@ -6,6 +6,7 @@ const { requireRole } = require('../../middleware/auth');
 const { acceptMediaFile } = require('../../middleware/upload');
 const { asyncRoute, multilingual, validateRequest } = require('../../middleware/validate');
 const { mediaRepository } = require('../../repositories/mediaRepository');
+const { localizedColumns } = require('../../services/localization');
 const mediaService = require('../../services/mediaService');
 
 function requireFile(req) {
@@ -43,8 +44,8 @@ adminMediaRouter.put(
   ...multilingual('alt'),
   validateRequest,
   asyncRoute(async (req, res) => {
-    const { alt_ru, alt_en, alt_hy } = req.body;
-    res.json({ ok: true, asset: await mediaService.updateAsset(req.params.id, { alt_ru, alt_en, alt_hy }) });
+    const alts = Object.fromEntries(localizedColumns('alt').map((key) => [key, req.body[key]]));
+    res.json({ ok: true, asset: await mediaService.updateAsset(req.params.id, alts) });
   })
 );
 

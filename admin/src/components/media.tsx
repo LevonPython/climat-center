@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useState, type ChangeEvent } from 'react';
 import { assetUrl } from '../api';
+import type { Localized } from '../contentSchemas/types';
 import { request } from '../lib/request';
 import { ui } from './ui';
 
@@ -13,11 +14,8 @@ export type MediaAsset = {
   mime_type: string;
   size_bytes: number;
   kind: MediaKind;
-  alt_ru: string | null;
-  alt_en: string | null;
-  alt_hy: string | null;
   created_at: string;
-};
+} & Localized<'alt', string | null>;
 
 const PAGE_SIZE = 48;
 export const ACCEPTED_IMAGES = 'image/jpeg,image/png,image/webp,image/gif,image/avif';

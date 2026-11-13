@@ -1,9 +1,10 @@
+const { localizedColumns } = require('../services/localization');
 const { createCrudRepository, pool } = require('./crudRepository');
 
 const navRepository = {
   ...createCrudRepository({
     table: 'nav_items',
-    columns: ['location', 'page_id', 'url', 'label_ru', 'label_en', 'label_hy', 'sort_order', 'is_visible'],
+    columns: ['location', 'page_id', 'url', ...localizedColumns('label'), 'sort_order', 'is_visible'],
     orderBy: 'location, sort_order, created_at'
   }),
 

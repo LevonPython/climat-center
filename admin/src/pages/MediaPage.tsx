@@ -6,7 +6,7 @@ import { LabeledField } from '../components/LabeledField';
 import { LangTabs } from '../components/LangTabs';
 import { ACCEPTED_DOCUMENTS, ACCEPTED_FILES, ACCEPTED_IMAGES, MediaThumb, UploadButton, uploadMedia, useMediaList, type MediaAsset, type MediaKind } from '../components/media';
 import { ui } from '../components/ui';
-import type { Lang } from '../contentSchemas/types';
+import { localizedKeys, pickLocalized, textDirection, type Lang } from '../contentSchemas/types';
 import { errorText, request, send } from '../lib/request';
 import { useConfirmLeave, useUnsavedGuard } from '../lib/unsaved';
 
@@ -16,13 +16,13 @@ function AssetDetails({ asset, onDeleted }: { asset: MediaAsset; onDeleted: () =
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [lang, setLang] = useState<Lang>('hy');
-  const [alt, setAlt] = useState({ alt_hy: asset.alt_hy, alt_ru: asset.alt_ru, alt_en: asset.alt_en });
+  const [alt, setAlt] = useState(pickLocalized('alt', asset));
   const [justSaved, setJustSaved] = useState(false);
   const [replaceError, setReplaceError] = useState<string | null>(null);
   const altKey = `alt_${lang}` as const;
   const kilobytes = asset.size_bytes / BYTES_PER_KB;
   const refresh = () => qc.invalidateQueries({ queryKey: ['media'] });
-  const isDirty = alt.alt_hy !== asset.alt_hy || alt.alt_ru !== asset.alt_ru || alt.alt_en !== asset.alt_en;
+  const isDirty = localizedKeys('alt').some((key) => alt[key] !== asset[key]);
   useUnsavedGuard(isDirty);
 
   const saveM = useMutation({
@@ -72,6 +72,7 @@ function AssetDetails({ asset, onDeleted }: { asset: MediaAsset; onDeleted: () =
           <LabeledField label={t('media.alt')} help={t('media.altHelp')}>
             <input
               lang={lang}
+              dir={textDirection(lang)}
               className={ui.input}
               value={alt[altKey] || ''}
               onChange={(e) => {

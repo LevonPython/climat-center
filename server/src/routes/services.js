@@ -5,13 +5,17 @@ const { query } = require('../config/db');
 const { triggerRevalidate } = require('../config/revalidateClient');
 const { verifyToken, requireAnyRole } = require('../middleware/auth');
 const { multilingual } = require('../middleware/validate');
+const { localizedColumns } = require('../services/localization');
 
 const servicesRouter = express.Router();
 
+const TITLE_FIELDS = localizedColumns('title');
+const DESCRIPTION_FIELDS = localizedColumns('description');
 const STRUCTURE_FIELDS = [
-  'page_id', 'category', 'menu_title_ru', 'menu_title_en', 'menu_title_hy', 'pill_title_ru', 'pill_title_en', 'pill_title_hy',
+  'page_id', 'category', ...['menu_title', 'pill_title'].flatMap(localizedColumns),
   'show_in_menu', 'show_in_pills', 'sort_order'
 ];
+const STRUCTURE_DEFAULTS = { category: 'service', show_in_menu: true, show_in_pills: false, sort_order: 0 };
 
 const structureValidators = () => [
   body('page_id').optional({ nullable: true }).isUUID(),
@@ -66,18 +70,13 @@ servicesRouter.post(
   verifyToken,
   requireAnyRole(['admin', 'editor']),
   body('type').isString().trim().notEmpty().toLowerCase().isIn(['install', 'repair', 'service']),
-  body('title_en').optional({ nullable: true }).isString().trim(),
-  body('title_ru').optional({ nullable: true }).isString().trim(),
-  body('title_hy').optional({ nullable: true }).isString().trim(),
+  ...TITLE_FIELDS.map((field) => body(field).optional({ nullable: true }).isString().trim()),
   body().custom((_, { req }) => {
-    const titles = [req.body.title_ru, req.body.title_en, req.body.title_hy];
-    const hasAnyTitle = titles.some((v) => typeof v === 'string' && v.trim().length > 0);
+    const hasAnyTitle = TITLE_FIELDS.some((field) => typeof req.body[field] === 'string' && req.body[field].trim().length > 0);
     if (!hasAnyTitle) throw new Error('At least one title is required');
     return true;
   }),
-  body('description_en').optional({ nullable: true }).isString(),
-  body('description_ru').optional({ nullable: true }).isString(),
-  body('description_hy').optional({ nullable: true }).isString(),
+  ...multilingual('description'),
   body('price').optional({ nullable: true }).isInt({ min: 0 }).toInt(),
   body('image_url').optional({ nullable: true }).isString(),
   body('is_active').optional().isBoolean().toBoolean(),
@@ -89,48 +88,18 @@ servicesRouter.post(
         return res.status(400).json({ ok: false, error: { message: 'Invalid payload', details: errors.array() } });
       }
 
-      const {
-        type,
-        title_en: titleEnRaw,
-        title_ru: titleRuRaw,
-        title_hy: titleHyRaw,
-        description_en,
-        description_ru,
-        description_hy,
-        price,
-        image_url,
-        is_active
-      } = req.body;
-
-      const title_en = typeof titleEnRaw === 'string' ? titleEnRaw.trim() || null : titleEnRaw;
-      const title_ru = typeof titleRuRaw === 'string' ? titleRuRaw.trim() || null : titleRuRaw;
-      const title_hy = typeof titleHyRaw === 'string' ? titleHyRaw.trim() || null : titleHyRaw;
-
+      const valueOf = (field) => req.body[field] ?? STRUCTURE_DEFAULTS[field] ?? null;
+      const row = {
+        type: req.body.type,
+        ...Object.fromEntries(TITLE_FIELDS.map((field) => [field, req.body[field] || null])),
+        ...Object.fromEntries([...DESCRIPTION_FIELDS, 'price', 'image_url', ...STRUCTURE_FIELDS].map((field) => [field, valueOf(field)])),
+        is_active: req.body.is_active ?? true
+      };
+      // Column names come from the lists above, never from the request.
+      const columns = Object.keys(row);
       const result = await query(
-        `
-        INSERT INTO services
-          (type, title_en, title_ru, title_hy, description_en, description_ru, description_hy, price, image_url, is_active,
-           page_id, category, menu_title_ru, menu_title_en, menu_title_hy, pill_title_ru, pill_title_en, pill_title_hy,
-           show_in_menu, show_in_pills, sort_order)
-        VALUES
-          ($1,$2,$3,$4,$5,$6,$7,$8,$9, COALESCE($10, TRUE),
-           $11, COALESCE($12, 'service'), $13, $14, $15, $16, $17, $18,
-           COALESCE($19, TRUE), COALESCE($20, FALSE), COALESCE($21, 0))
-        RETURNING *
-      `,
-        [
-          type,
-          title_en,
-          title_ru,
-          title_hy,
-          description_en,
-          description_ru,
-          description_hy,
-          price,
-          image_url,
-          is_active,
-          ...STRUCTURE_FIELDS.map((field) => req.body[field])
-        ]
+        `INSERT INTO services (${columns.join(', ')}) VALUES (${columns.map((_, index) => `$${index + 1}`).join(', ')}) RETURNING *`,
+        Object.values(row)
       );
 
       // Fire-and-forget: services page is statically regenerated on the Next.js side.
@@ -148,12 +117,7 @@ servicesRouter.put(
   requireAnyRole(['admin', 'editor']),
   param('id').isUUID(),
   body('type').optional().isString().trim().notEmpty().toLowerCase().isIn(['install', 'repair', 'service']),
-  body('title_en').optional({ nullable: true }).isString(),
-  body('title_ru').optional({ nullable: true }).isString(),
-  body('title_hy').optional({ nullable: true }).isString(),
-  body('description_en').optional({ nullable: true }).isString(),
-  body('description_ru').optional({ nullable: true }).isString(),
-  body('description_hy').optional({ nullable: true }).isString(),
+  ...['title', 'description'].flatMap(multilingual),
   body('price').optional({ nullable: true }).isInt({ min: 0 }).toInt(),
   body('image_url').optional({ nullable: true }).isString(),
   body('is_active').optional().isBoolean().toBoolean(),
@@ -166,7 +130,7 @@ servicesRouter.put(
       }
 
       const { id } = req.params;
-      const fields = ['type', 'title_en', 'title_ru', 'title_hy', 'description_en', 'description_ru', 'description_hy', 'price', 'image_url', 'is_active', ...STRUCTURE_FIELDS];
+      const fields = ['type', ...TITLE_FIELDS, ...DESCRIPTION_FIELDS, 'price', 'image_url', 'is_active', ...STRUCTURE_FIELDS];
       const sets = [];
       const params = [];
 

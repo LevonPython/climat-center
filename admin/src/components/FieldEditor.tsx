@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useSchemaLabel } from '../contentSchemas/useSchemas';
-import type { Content, FieldDef, Lang } from '../contentSchemas/types';
+import { textDirection, type Content, type FieldDef, type Lang } from '../contentSchemas/types';
 import { isObjectRecord, makeEmptyDraft, storageKey } from '../contentSchemas/utils';
 import { moveItem } from '../lib/order';
 import { ImageField } from './ImageField';
@@ -123,6 +123,7 @@ export function FieldEditor(props: FieldEditorProps) {
       ) : field.kind === 'text' ? (
         <textarea
           lang={field.multilingual ? lang : undefined}
+          dir={field.multilingual ? textDirection(lang) : undefined}
           className={`${isInvalid ? ui.inputInvalid : ui.input} min-h-24`}
           value={asText(value)}
           aria-invalid={isInvalid}
@@ -131,6 +132,7 @@ export function FieldEditor(props: FieldEditorProps) {
       ) : (
         <input
           lang={field.multilingual ? lang : undefined}
+          dir={field.multilingual ? textDirection(lang) : undefined}
           type={field.kind === 'email' ? 'email' : field.kind === 'phone' ? 'tel' : field.kind === 'url' ? 'url' : 'text'}
           className={isInvalid ? ui.inputInvalid : ui.input}
           value={asText(value)}

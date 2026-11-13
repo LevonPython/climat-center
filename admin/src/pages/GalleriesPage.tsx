@@ -7,7 +7,7 @@ import { LangTabs } from '../components/LangTabs';
 import { MediaPicker } from '../components/MediaPicker';
 import { ReorderButtons } from '../components/ReorderButtons';
 import { ui } from '../components/ui';
-import type { Lang } from '../contentSchemas/types';
+import { localizedKeys, pickLocalized, textDirection, type Lang, type Localized } from '../contentSchemas/types';
 import { moveItem } from '../lib/order';
 import { localized } from '../lib/pages';
 import { errorText, request, send } from '../lib/request';
@@ -22,12 +22,9 @@ type GalleryItem = {
   collection: Collection;
   media_id: string;
   url: string;
-  title_hy: string | null;
-  title_ru: string | null;
-  title_en: string | null;
   link_url: string | null;
   is_visible: boolean;
-};
+} & Localized<'title', string | null>;
 
 type ItemRowProps = {
   item: GalleryItem;
@@ -41,10 +38,10 @@ type ItemRowProps = {
 
 function ItemRow({ item, index, total, lang, moving, onMove, onChanged }: ItemRowProps) {
   const { t, i18n } = useTranslation();
-  const [draft, setDraft] = useState({ title_hy: item.title_hy, title_ru: item.title_ru, title_en: item.title_en, link_url: item.link_url });
+  const [draft, setDraft] = useState({ ...pickLocalized('title', item), link_url: item.link_url });
   const [justSaved, setJustSaved] = useState(false);
   const titleKey = `title_${lang}` as const;
-  const isDirty = (['title_hy', 'title_ru', 'title_en', 'link_url'] as const).some((key) => draft[key] !== item[key]);
+  const isDirty = [...localizedKeys('title'), 'link_url' as const].some((key) => draft[key] !== item[key]);
   const linkValid = !draft.link_url || SAFE_LINK.test(draft.link_url);
   const name = localized(item, 'title', i18n.language) || t('galleries.itemNumber', { number: index + 1 });
   useUnsavedGuard(isDirty);
@@ -75,6 +72,7 @@ function ItemRow({ item, index, total, lang, moving, onMove, onChanged }: ItemRo
             <span className={ui.label}>{t('galleries.titleField')}</span>
             <input
               lang={lang}
+              dir={textDirection(lang)}
               className={ui.input}
               value={draft[titleKey] || ''}
               onChange={(e) => {

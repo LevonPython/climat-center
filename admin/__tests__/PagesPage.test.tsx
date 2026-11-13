@@ -127,7 +127,8 @@ describe('PagesPage', () => {
       parent_id: 'parent',
       title_hy: null,
       title_ru: 'Ремонт',
-      title_en: null
+      title_en: null,
+      title_ar: null
     });
   });
 
