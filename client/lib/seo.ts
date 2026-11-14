@@ -1,5 +1,5 @@
-const DEFAULT_LOCALE = 'hy';
-export const LOCALES = ['hy', 'ru', 'en'] as const;
+export const DEFAULT_LOCALE = 'hy';
+export const LOCALES = ['hy', 'ru', 'en', 'ar'] as const;
 
 export function siteOrigin(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL;

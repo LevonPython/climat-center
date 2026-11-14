@@ -31,10 +31,10 @@ a {
     @apply mb-2.5 mt-4 text-[120%] font-medium uppercase;
   }
   .rich-text ul {
-    @apply mb-4 pl-[17px];
+    @apply mb-4 ps-[17px];
   }
   .rich-text ul > li {
-    @apply mb-3 min-h-[17px] list-none bg-[url('/theme/li.png')] bg-[0_1px] bg-no-repeat pl-[34px];
+    @apply mb-3 min-h-[17px] list-none bg-[url('/theme/li.png')] bg-[0_1px] bg-no-repeat ps-[34px] rtl:bg-[right_0_top_1px];
   }
   .rich-text ul.two-columns {
     @apply gap-5 md:columns-2;
@@ -44,18 +44,18 @@ a {
   }
   .rich-text ol {
     counter-reset: rich-list;
-    @apply mb-5 pl-[17px];
+    @apply mb-5 ps-[17px];
   }
   .rich-text ol > li {
-    @apply relative mb-2.5 min-h-[34px] list-none pl-11 pt-2.5;
+    @apply relative mb-2.5 min-h-[34px] list-none ps-11 pt-2.5;
   }
   .rich-text ol > li::before {
     counter-increment: rich-list;
     content: counter(rich-list);
-    @apply absolute left-0 top-1 h-[34px] w-[34px] bg-panel text-center font-semibold leading-[34px] text-brand;
+    @apply absolute start-0 top-1 h-[34px] w-[34px] bg-panel text-center font-semibold leading-[34px] text-brand;
   }
   .rich-text blockquote {
-    @apply mb-4 border-l-4 border-brand bg-mist px-4 py-3;
+    @apply mb-4 border-s-4 border-brand bg-mist px-4 py-3;
   }
   .rich-text img {
     @apply my-2 h-auto max-w-full;

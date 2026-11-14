@@ -5,15 +5,13 @@ import { useRouter } from 'next/router';
 import { Layout } from '../components/Layout';
 import { apiFetch } from '../lib/api';
 import { isValidArmenianPhone, sanitizePhoneInput } from '../lib/phone';
+import { LOCALES } from '../lib/seo';
 import { loadCommonPropsSafely } from '../lib/site';
 
 type Service = {
   id: string;
   type: string;
-  title_en?: string | null;
-  title_ru?: string | null;
-  title_hy?: string | null;
-};
+} & Partial<Record<`title_${(typeof LOCALES)[number]}`, string | null>>;
 
 type BookingPayload = {
   user_name: string;
@@ -25,13 +23,10 @@ type BookingPayload = {
   problem_description?: string | null;
 };
 
+// Prefers the visitor's language, then any language that has a name.
 function pickServiceTitle(svc: Service, lang: string) {
-  const title =
-    (lang === 'ru' ? svc.title_ru : lang === 'hy' ? svc.title_hy : svc.title_en) ||
-    svc.title_en ||
-    svc.title_ru ||
-    svc.title_hy ||
-    svc.type;
+  const order = [lang, 'en', ...LOCALES];
+  const title = order.map((code) => svc[`title_${code}` as keyof Service]).find(Boolean) || svc.type;
   return title || '—';
 }
 
@@ -148,6 +143,7 @@ export default function BookingPage() {
               <span className="text-sm font-semibold text-slate-900">{t('form.phone')}</span>
               <input
                 type="tel"
+                dir="ltr"
                 value={form.phone}
                 onChange={(e) => setForm((f) => ({ ...f, phone: sanitizePhoneInput(e.target.value) }))}
                 onBlur={() => setPhoneTouched(true)}

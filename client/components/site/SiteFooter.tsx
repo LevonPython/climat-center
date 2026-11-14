@@ -26,15 +26,19 @@ export function SiteFooter() {
           ))}
           {footer.disclaimer ? <p className="whitespace-pre-line">{footer.disclaimer}</p> : null}
         </div>
-        <div className="sm:text-right">
+        <div className="sm:text-end">
           {contacts.phone ? (
             <div>
               <a href={telHref(contacts.phone)} className="text-white no-underline">
-                {contacts.phone}
+                <span dir="ltr">{contacts.phone}</span>
               </a>
             </div>
           ) : null}
-          {contacts.email ? <div>{contacts.email}</div> : null}
+          {contacts.email ? (
+            <div>
+              <span dir="ltr">{contacts.email}</span>
+            </div>
+          ) : null}
           {links.map((link) => (
             <div key={link.label}>
               <a href={link.href as string} className="text-white underline">

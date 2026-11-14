@@ -86,11 +86,13 @@ describe('search engine files', () => {
     expect(localizedUrl('/', 'en')).toBe('https://site.example/en');
   });
 
-  test('the sitemap lists each page in all three languages, linked to each other', () => {
+  test('the sitemap lists each page in every language, linked to each other', () => {
     const xml = buildSitemap(['/kontakty']);
-    expect(xml.match(/<url>/g)).toHaveLength(3);
+    expect(xml.match(/<url>/g)).toHaveLength(4);
     expect(xml).toContain('<loc>https://site.example/ru/kontakty</loc>');
-    expect(xml.match(/hreflang="hy"/g)).toHaveLength(3);
+    expect(xml).toContain('<loc>https://site.example/ar/kontakty</loc>');
+    expect(xml.match(/hreflang="hy"/g)).toHaveLength(4);
+    expect(xml.match(/hreflang="ar"/g)).toHaveLength(4);
   });
 
   test('robots points at the sitemap and keeps crawlers out of the API', () => {

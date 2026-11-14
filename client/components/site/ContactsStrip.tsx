@@ -4,7 +4,7 @@ import { Emphasized } from './Emphasized';
 import { useSite } from './SiteContext';
 
 const ITEM = 'flex grow items-center justify-center border border-[#e8e8e8] px-2.5 py-5 text-center';
-const ICON = "mr-2 inline-block shrink-0 bg-[url('/theme/con-icons.png')] bg-no-repeat";
+const ICON = "me-2 inline-block shrink-0 bg-[url('/theme/con-icons.png')] bg-no-repeat";
 
 export function ContactsStrip({ heading }: { heading?: string | null }) {
   const { t } = useTranslation('common');
@@ -33,7 +33,7 @@ export function ContactsStrip({ heading }: { heading?: string | null }) {
           <div className={ITEM}>
             <span aria-hidden="true" className={`${ICON} h-[18px] w-[26px] bg-[50%_-51px]`} />
             <a href={`mailto:${contacts.email}`} className="text-ink no-underline">
-              {contacts.email}
+              <span dir="ltr">{contacts.email}</span>
             </a>
           </div>
         ) : null}
@@ -41,7 +41,7 @@ export function ContactsStrip({ heading }: { heading?: string | null }) {
           <div className={ITEM}>
             <div>
               <a href={telHref(contacts.phone)} className="text-xl font-medium text-body no-underline">
-                {contacts.phone}
+                <span dir="ltr">{contacts.phone}</span>
               </a>
               {social.whatsapp_url ? <a href={social.whatsapp_url} aria-label="WhatsApp" className="mx-auto mt-1 block h-10 w-10 bg-[url('/theme/connect.png')] bg-[50%_0] bg-no-repeat" /> : null}
             </div>

@@ -132,7 +132,7 @@ export default function QuizPage() {
                     type="button"
                     onClick={() => setProblem(p)}
                     className={[
-                      'rounded-xl border px-3 py-3 text-left text-sm font-semibold',
+                      'rounded-xl border px-3 py-3 text-start text-sm font-semibold',
                       problem === p ? 'border-slate-900 bg-brand text-white' : 'border-slate-200 hover:bg-slate-50'
                     ].join(' ')}
                   >
@@ -163,7 +163,7 @@ export default function QuizPage() {
                     type="button"
                     onClick={() => setAcType(p)}
                     className={[
-                      'rounded-xl border px-3 py-3 text-left text-sm font-semibold',
+                      'rounded-xl border px-3 py-3 text-start text-sm font-semibold',
                       acType === p ? 'border-slate-900 bg-brand text-white' : 'border-slate-200 hover:bg-slate-50'
                     ].join(' ')}
                   >
@@ -208,6 +208,7 @@ export default function QuizPage() {
                   <span className="text-sm font-semibold text-slate-900">{t('form.phone')}</span>
                   <input
                     type="tel"
+                    dir="ltr"
                     value={phone}
                     onChange={(e) => setPhone(sanitizePhoneInput(e.target.value))}
                     onBlur={() => setPhoneTouched(true)}

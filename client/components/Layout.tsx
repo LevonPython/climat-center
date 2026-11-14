@@ -67,7 +67,7 @@ export function Layout({ title, metaTitle, description, front = false, hero = fa
         <a
           href={telHref(phone)}
           aria-label={t('layout.call')}
-          className="fixed bottom-5 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-[#3b5ba5] text-white shadow-lg hover:opacity-90"
+          className="fixed bottom-5 end-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-[#3b5ba5] text-white shadow-lg hover:opacity-90"
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6 fill-current">
             <path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z" />

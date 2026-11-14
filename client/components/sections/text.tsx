@@ -16,7 +16,7 @@ export function ImageText({ content }: { content: Record<string, any> }) {
   const labels: Record<string, any>[] = content.labels || [];
   const picture = (
     <div className="min-w-0 flex-1 basis-[320px]">
-      {labels[0] ? <div className="pb-5 text-right text-[15px] font-medium uppercase">{labels[0].text}</div> : null}
+      {labels[0] ? <div className="pb-5 text-end text-[15px] font-medium uppercase">{labels[0].text}</div> : null}
       {content.image_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={assetUrl(content.image_url)} alt="" loading="lazy" className="mx-auto max-w-full" />

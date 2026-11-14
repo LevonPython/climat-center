@@ -26,6 +26,15 @@ for (const path of WIDEST_ARMENIAN_PAGES) {
   });
 }
 
+// A right-to-left page can overflow to the left, which only shows when the page is laid out right to left.
+for (const path of WIDEST_ARMENIAN_PAGES) {
+  test(`${path} fits a 360 px screen in Arabic`, async ({ page }) => {
+    await page.goto(path === '/' ? '/ar' : `/ar${path}`);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+}
+
 test('the mobile bar opens the menu, services and contacts', async ({ page }) => {
   await page.goto('/en');
   const bar = page.getByRole('banner');

@@ -18,7 +18,7 @@ The look copies climatecentr.ru, defined in `client/tailwind.config.js`:
 - Container: `max-w-site` (1240px), with a 240px sidebar.
 - Breakpoints: `desk:` from 931px and `max-desk:` below it, where the mobile bar replaces the header. `wide:` from 1200px, where the hero buttons sit around the picture.
 - `max-sm:` and `max-md:` exist only because they are declared in the config, widest first. Adding a custom max-width screen turns off the automatic ones, and later ones win in the stylesheet. `client/__tests__/tailwindScreens.test.ts` checks both.
-- Fonts: Roboto, with Noto Sans Armenian for Armenian letters. Both come from `next/font` in `client/pages/_app.tsx`.
+- Fonts: Roboto, with Noto Sans Armenian and Noto Sans Arabic for those letters. All come from `next/font` in `client/pages/_app.tsx`.
 - Sprites and icons taken from the old site are in `client/public/theme/`.
 
 White on `brand` does not reach 4.5:1 contrast. It is kept because the brief was to copy the design as it is, and it goes in the improvements list, so don't copy it onto new body text.
@@ -31,8 +31,15 @@ White on `brand` does not reach 4.5:1 contrast. It is kept because the brief was
 - Secondary button: `rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold`
 - Disabled: `disabled:opacity-60`
 
+## Right to left
+Arabic pages get `dir="rtl"` from `textDirection()` in `client/lib/direction.ts`, so the public site mirrors itself.
+- Use logical classes: `ms-`/`me-`, `ps-`/`pe-`, `start-`/`end-`, `text-start`/`text-end`, `border-s`/`border-e`, `rounded-s`/`rounded-e`. They render as before in hy, ru and en. Don't use `ml-`, `pl-`, `left-`, `text-left` or their right-side twins for anything that sits on one side. Centering (`left-1/2` with a negative margin) and full width (`left-0 right-0`) look the same both ways and can stay.
+- Background positions have no logical form, so add an `rtl:` variant, as the icon sprites do.
+- Scrolling and arrow keys flip in script: check `isRightToLeft()` from the same file, as `Carousel.tsx` and `Lightbox.tsx` do.
+- Phone numbers, emails and phone inputs stay left to right with `dir="ltr"`.
+
 ## Responsive
-Check 360px width in Armenian, which usually has the longest strings; nothing may overflow. `e2e/tests/mobile.spec.ts` checks this on every page type.
+Check 360px width in Armenian, which usually has the longest strings, and in Arabic; nothing may overflow. `e2e/tests/mobile.spec.ts` checks both on every page type.
 
 ## Accessibility
 - Interactive elements get a visible `focus-visible:` ring, and touch targets are at least 44px.

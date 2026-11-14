@@ -11,7 +11,7 @@ const CTA = 'inline-block min-h-11 rounded-full bg-brand px-5 py-3 text-xs font-
 
 function Burger() {
   return (
-    <span aria-hidden="true" className="mr-2 inline-block w-7 align-middle">
+    <span aria-hidden="true" className="me-2 inline-block w-7 align-middle">
       <span className="my-[5px] block h-0.5 bg-brand" />
       <span className="my-[5px] block h-0.5 bg-brand" />
       <span className="my-[5px] block h-0.5 bg-brand" />
@@ -36,10 +36,14 @@ export function SiteHeader() {
       {header.free_visit_text ? <div className="text-xs font-light">{header.free_visit_text}</div> : null}
       {contacts.phone && phoneHref ? (
         <a href={phoneHref} className="block text-2xl font-light text-brand no-underline">
-          {contacts.phone}
+          <span dir="ltr">{contacts.phone}</span>
         </a>
       ) : null}
-      {contacts.email ? <div className="text-lg">{contacts.email}</div> : null}
+      {contacts.email ? (
+        <div className="text-lg">
+          <span dir="ltr">{contacts.email}</span>
+        </div>
+      ) : null}
     </>
   );
 
@@ -61,14 +65,14 @@ export function SiteHeader() {
 
         <div className="hidden items-start gap-5 desk:flex">
           <div className="hidden max-w-[230px] font-light leading-none wide:block">
-            {header.hours_text ? <div className="bg-[url('/theme/head_icons.png')] bg-[0_-40px] bg-no-repeat py-1 pl-[51px] text-[15px]">{header.hours_text}</div> : null}
-            {header.arrival_text ? <div className="ml-5 mt-2 text-lg">{header.arrival_text}</div> : null}
+            {header.hours_text ? <div className="bg-[url('/theme/head_icons.png')] bg-[0_-40px] bg-no-repeat py-1 ps-[51px] text-[15px] rtl:bg-[right_0_top_-40px]">{header.hours_text}</div> : null}
+            {header.arrival_text ? <div className="ms-5 mt-2 text-lg">{header.arrival_text}</div> : null}
           </div>
-          <div className="relative pl-[47px]">
-            <span aria-hidden="true" className="absolute left-0 top-0 h-10 w-[39px] bg-[url('/theme/head_icons.png')] bg-no-repeat" />
+          <div className="relative ps-[47px]">
+            <span aria-hidden="true" className="absolute start-0 top-0 h-10 w-[39px] bg-[url('/theme/head_icons.png')] bg-no-repeat" />
             {contactBlock}
           </div>
-          <div className="text-right">
+          <div className="text-end">
             <nav aria-label={t('layout.mainMenu')} className="mb-2 flex flex-wrap justify-end gap-x-4 text-xs uppercase">
               {(nav.header || []).filter((item) => item.label).map((item) => (
                 <Link key={item.id} href={item.href} className="leading-6 text-ink no-underline hover:text-brand">

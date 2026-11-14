@@ -19,6 +19,39 @@ test('home opens in Armenian and keeps the page when the language changes', asyn
   await expect(page.locator('html')).toHaveAttribute('lang', 'ru');
 });
 
+test('Arabic pages read right to left, with phone numbers left to right', async ({ page }) => {
+  await page.goto('/en');
+  await page.getByRole('button', { name: 'AR', exact: true }).click();
+  await expect(page).toHaveURL(/\/ar\/?$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await expect(page.locator('h1').first()).toContainText(/[\u0600-\u06FF]/);
+  await expect(page.getByRole('banner').locator('a[href^="tel:"] span[dir="ltr"]').first()).toHaveText(/^\+/);
+
+  await page.getByRole('button', { name: 'EN', exact: true }).click();
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+});
+
+test('in Arabic, the brand carousel moves forward to the left', async ({ page }) => {
+  await page.goto('/ar');
+  const track = page.getByRole('group', { name: 'العلامات التجارية التي نخدمها' });
+  await expect(track).toBeVisible();
+  const start = await track.evaluate((node) => node.scrollLeft);
+  await track.locator('..').getByRole('button', { name: 'التالي' }).click();
+  await expect.poll(() => track.evaluate((node) => node.scrollLeft)).toBeLessThan(start);
+});
+
+test('in Arabic, the left arrow key shows the next picture', async ({ page }) => {
+  await page.goto('/ar/nashi-raboty');
+  await page.getByRole('main').getByRole('button', { name: /عرض الصورة/ }).first().click();
+  const picture = page.getByRole('dialog').locator('img');
+  const first = await picture.getAttribute('src');
+  await page.keyboard.press('ArrowLeft');
+  await expect(picture).not.toHaveAttribute('src', first || '');
+  await page.keyboard.press('ArrowRight');
+  await expect(picture).toHaveAttribute('src', first || '');
+});
+
 test('longer Armenian words are not cut off on the home page', async ({ page }) => {
   await page.goto('/');
   const clipped = await page.getByRole('main').evaluate((main) =>

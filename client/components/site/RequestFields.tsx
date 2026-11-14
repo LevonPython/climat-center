@@ -49,6 +49,7 @@ export function RequestFields(props: RequestFieldsProps) {
         <input
           id={`${props.idPrefix}-phone`}
           type="tel"
+          dir="ltr"
           required
           value={props.phone}
           placeholder={t('form.phonePlaceholder')}
@@ -66,7 +67,7 @@ export function RequestFields(props: RequestFieldsProps) {
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
-        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+        className="absolute start-[-9999px] h-0 w-0 opacity-0"
         value={props.website}
         onChange={(event) => props.onWebsite(event.target.value)}
       />
