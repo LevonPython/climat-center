@@ -36,6 +36,7 @@ function buildContent(root) {
       type: 'service',
       parent: 'uslugi/uslugi-i-servis',
       title: 'Ремонт',
+      meta_description: 'Ремонт в Ереване',
       sections: [
         { block_type: 'rich_text', content: { heading: 'Как мы работаем', body: '<p>Текст <img src="media:/one.png" alt="x"></p><script>alert(1)</script>' } },
         { block_type: 'steps', content: { heading: null, items: [{ title: 'Шаг', description: null, image_url: 'media:/one.png' }] } },
@@ -62,7 +63,7 @@ function buildContent(root) {
   });
 
   const hy = (text) => `HY ${text}`;
-  const strings = ['Главная', 'Услуги', 'Ремонт', 'Установка', 'Как мы работаем', 'Шаг', 'Ремонт кондиционеров', 'Сертификат', 'Скрытая', 'Круглосуточно', 'Центр', 'Примечание', 'Заголовок home'];
+  const strings = ['Главная', 'Услуги', 'Ремонт', 'Установка', 'Как мы работаем', 'Шаг', 'Ремонт кондиционеров', 'Сертификат', 'Скрытая', 'Круглосуточно', 'Центр', 'Примечание', 'Заголовок home', 'Ремонт в Ереване'];
   const translations = Object.fromEntries(strings.map((text) => [hash(text), hy(text)]));
   translations[hash('<p>Текст <img src="media:/one.png" alt="x"></p><script>alert(1)</script>')] = '<p>HY Տեքստ <img src="media:/one.png" alt="x"></p>';
   writeJson(path.join(root, 'translations', 'hy.json'), translations);
@@ -217,6 +218,10 @@ if (!dbUrl) {
     });
 
     describe('running it again', () => {
+      const serviceOf = async (slug) => (await query('SELECT s.* FROM services s JOIN pages p ON p.id = s.page_id WHERE p.slug = $1', [slug])).rows[0];
+      const makeStale = (id) =>
+        query("UPDATE services SET title_ru = 'Старое', title_hy = 'HY Старое', description_ru = 'Акции и скидки', description_hy = 'HY Акции', menu_title_hy = 'Из админки' WHERE id = $1", [id]);
+
       test('keeps what editors changed and adds no duplicates', async () => {
         const { pages } = (await api.admin.get('/api/admin/pages')).body;
         const repair = pages.find((page) => page.slug === 'usluga/remont');
@@ -282,12 +287,29 @@ if (!dbUrl) {
         await expect(runImport({ contentDir: root, overwrite: true, only: ['no-such-page'] })).rejects.toThrow('no-such-page');
       });
 
-      test('overwrite replaces pages and their sections', async () => {
+      test('--only also replaces the title and description a named page gave its service, and nothing else', async () => {
+        const repair = await serviceOf('usluga/remont');
+        const install = await serviceOf('usluga/ustanovka-kondicionerov');
+        await makeStale(repair.id);
+        await makeStale(install.id);
+
+        const report = await runImport({ contentDir: root, overwrite: true, only: ['usluga/remont'] });
+
+        expect(report.servicesReplaced).toBe(1);
+        const after = await serviceOf('usluga/remont');
+        expect([after.title_ru, after.title_hy, after.description_ru, after.description_hy, after.description_en]).toEqual(['Ремонт', 'HY Ремонт', 'Ремонт в Ереване', 'HY Ремонт в Ереване', null]);
+        expect([after.id, after.menu_title_hy, after.sort_order, after.show_in_pills]).toEqual([repair.id, 'Из админки', repair.sort_order, repair.show_in_pills]);
+        expect([(await serviceOf('usluga/ustanovka-kondicionerov')).description_ru]).toEqual(['Акции и скидки']);
+      });
+
+      test('overwrite replaces pages and their sections, and the text they gave their services', async () => {
         const report = await runImport({ contentDir: root, overwrite: true });
         expect(report.pagesReplaced).toBe(5);
         const { page } = (await api.anon.get('/api/pages/hy/usluga/remont')).body;
         expect(page.title).toBe('HY Ремонт');
         expect(page.sections).toHaveLength(2);
+        const install = await serviceOf('usluga/ustanovka-kondicionerov');
+        expect([install.title_ru, install.description_ru, install.menu_title_hy]).toEqual(['Установка', null, 'Из админки']);
       });
     });
 

@@ -2,8 +2,8 @@
 // Local:      npm run content:import -w server
 // Production: DATABASE_URL='...' BLOB_READ_WRITE_TOKEN='...' npm run content:import -w server -- --remote
 // Safe to rerun: pages, services and settings that exist are left alone, so edits made in the admin survive.
-// Menu items and gallery pictures deleted in the admin come back. --overwrite replaces pages.
-// --overwrite --only=slug,slug replaces just those pages and touches nothing else.
+// Menu items and gallery pictures deleted in the admin come back. --overwrite replaces pages, and the title and
+// description each page gave its service. --overwrite --only=slug,slug does that for just those pages.
 // --fill-language=ar adds one language to a database that already has content; see fillLanguage.
 const crypto = require('crypto');
 const fs = require('fs');
@@ -233,7 +233,7 @@ function localizedColumns(base, text, translate) {
   };
 }
 
-async function importServices(site, pagesBySlug, pages, translate, report) {
+async function importServices(site, pagesBySlug, pages, translate, report, { overwrite = false, only = null } = {}) {
   const pills = new Map(site.pills.map((pill) => [pill.href.replace(/^\//, ''), pill.label]));
   const pageSource = new Map(pages.map((page) => [page.slug, page]));
   const listed = [...site.services.map((item) => ({ ...item, category: 'service' })), ...site.faults.map((item) => ({ ...item, category: 'fault' }))];
@@ -242,16 +242,26 @@ async function importServices(site, pagesBySlug, pages, translate, report) {
   for (const [index, item] of listed.entries()) {
     const slug = item.href.replace(/^\//, '');
     const page = pagesBySlug.get(slug);
-    if (!page || seen.has(slug)) continue;
+    if (!page || seen.has(slug) || (only && !only.has(slug))) continue;
     seen.add(slug);
 
+    const source = pageSource.get(slug);
+    // A service repeats its page's title and description, so a replaced page must not leave the old text there.
+    const pageText = {
+      ...localizedColumns('title', source.title, translate),
+      ...localizedColumns('description', source.meta_description, translate)
+    };
     const linked = await query('SELECT id FROM services WHERE page_id = $1', [page.id]);
+    if (linked.rows[0] && overwrite) {
+      await query(...updateStatement('services', linked.rows[0].id, pageText));
+      report.servicesReplaced += 1;
+      continue;
+    }
     if (linked.rows[0]) {
       report.servicesKept += 1;
       continue;
     }
 
-    const source = pageSource.get(slug);
     const columns = {
       page_id: page.id,
       category: item.category,
@@ -260,8 +270,7 @@ async function importServices(site, pagesBySlug, pages, translate, report) {
       show_in_menu: true,
       show_in_pills: pills.has(slug),
       is_active: true,
-      ...localizedColumns('title', source.title, translate),
-      ...localizedColumns('description', source.meta_description, translate),
+      ...pageText,
       ...localizedColumns('menu_title', item.label, translate),
       ...localizedColumns('pill_title', pills.get(slug), translate)
     };
@@ -371,6 +380,7 @@ async function runImport({ contentDir = DEFAULT_CONTENT_DIR, overwrite = false, 
     pagesKept: 0,
     pagesReplaced: 0,
     servicesLinked: 0,
+    servicesReplaced: 0,
     servicesKept: 0,
     filesStored: 0,
     missingTranslations: new Set(),
@@ -385,8 +395,8 @@ async function runImport({ contentDir = DEFAULT_CONTENT_DIR, overwrite = false, 
   const resolveMedia = createMediaStore(path.join(contentDir, 'raw', 'files'), report);
 
   const pagesBySlug = await importPages(pages, translate, resolveMedia, overwrite, report, selected);
+  await importServices(site, pagesBySlug, pages, translate, report, { overwrite, only: selected });
   if (selected) return report;
-  await importServices(site, pagesBySlug, pages, translate, report);
   await importGallery('brands', site.brands, translate, resolveMedia, true);
   // Certificates are Russian documents, so they stay hidden until someone publishes the ones that apply.
   await importGallery('certificates', site.certificates, translate, resolveMedia, false);
@@ -547,7 +557,7 @@ async function main() {
 
   const report = await runImport({ overwrite, only });
   console.log(`Pages: ${report.pagesCreated} created, ${report.pagesReplaced} replaced, ${report.pagesKept} kept.`);
-  console.log(`Services: ${report.servicesLinked} linked, ${report.servicesKept} kept. Files stored: ${report.filesStored}.`);
+  console.log(`Services: ${report.servicesLinked} linked, ${report.servicesReplaced} replaced, ${report.servicesKept} kept. Files stored: ${report.filesStored}.`);
   console.log(`Missing translations: ${report.missingTranslations.size}. Missing files: ${report.missingFiles.size}. Refused files: ${report.refusedFiles.size}.`);
   for (const file of [...report.missingFiles].slice(0, 20)) console.log(`  missing file: ${file}`);
   for (const file of report.refusedFiles) console.log(`  refused file: ${file}`);
