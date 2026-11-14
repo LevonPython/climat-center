@@ -87,9 +87,9 @@ Pages, pictures and galleries come from `server/content/`, plus the original fil
 DATABASE_URL='<neon-connection-string>' BLOB_READ_WRITE_TOKEN='<blob-token>' npm run content:import -w server -- --remote
 ```
 
-It's safe to run again: pages, services and settings that already exist stay as they are, so edits made in the admin survive. Menu items and gallery pictures deleted in the admin come back, and `--overwrite` replaces pages.
+It's safe to run again: pages, services and settings that already exist stay as they are, so edits made in the admin survive. Menu items and gallery pictures deleted in the admin come back. `--overwrite` replaces pages, along with the title and description of the service linked to each page, which repeat the page's own.
 
-To apply a change to a few pages only, add `--overwrite --only=slug,slug`. It replaces those pages and leaves every other page, menu, gallery and setting alone. It does remove any admin edits on the pages it replaces.
+To apply a change to a few pages only, add `--overwrite --only=slug,slug`. It replaces those pages and the title and description of their services, and leaves every other page, menu, gallery and setting alone. It does remove any admin edits on the pages and service text it replaces.
 
 To add a language to a database that already has content, use `--fill-language=ar` on its own. It needs the raw files but no Blob token, because it uploads nothing:
 
