@@ -53,7 +53,7 @@ export function RequestPopup({ onClose }: { onClose: () => void }) {
       }}
     >
       <div ref={panel} role="dialog" aria-modal="true" aria-labelledby="request-title" className="relative w-full max-w-xs bg-white p-5 text-center shadow-[2px_2px_10px_rgba(0,0,0,.7)]">
-        <button type="button" aria-label={t('sections.close')} className="absolute right-1 top-1 grid h-11 w-11 place-items-center text-2xl text-body hover:text-brand" onClick={onClose}>
+        <button type="button" aria-label={t('sections.close')} className="absolute end-1 top-1 grid h-11 w-11 place-items-center text-2xl text-body hover:text-brand" onClick={onClose}>
           ×
         </button>
         <h2 id="request-title" className="mb-2 text-[17px] font-medium uppercase">
@@ -64,7 +64,7 @@ export function RequestPopup({ onClose }: { onClose: () => void }) {
             {t('request.sent')}
           </p>
         ) : (
-          <form onSubmit={submit} noValidate className="relative grid gap-3 text-left">
+          <form onSubmit={submit} noValidate className="relative grid gap-3 text-start">
             <p className="text-center text-sm">{t('request.note')}</p>
             <RequestFields
               idPrefix="popup"

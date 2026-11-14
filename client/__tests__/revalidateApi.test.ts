@@ -66,7 +66,24 @@ describe('/api/revalidate', () => {
     const res = createRes();
     await handler(req, res);
     expect(res.statusCode).toBe(200);
-    expect(res.revalidate.mock.calls.map((c: any[]) => c[0])).toEqual(['/usluga/remont', '/en/usluga/remont', '/ru/usluga/remont']);
+    expect(res.revalidate.mock.calls.map((c: any[]) => c[0])).toEqual(['/usluga/remont', '/ru/usluga/remont', '/en/usluga/remont', '/ar/usluga/remont']);
+  });
+
+  test('refreshes every language at the same time, so a fourth language does not slow saves down', async () => {
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const req: any = { method: 'POST', query: { secret: 'test-secret' }, body: { paths: ['/usluga/remont'] } };
+    const res = createRes();
+    res.revalidate.mockImplementation(() => gate);
+
+    const done = handler(req, res);
+    await Promise.resolve();
+    expect(res.revalidate).toHaveBeenCalledTimes(4);
+    release();
+    await done;
+    expect(res.payload?.revalidated).toHaveLength(4);
   });
 
   test('rejects unsafe or oversized path lists', async () => {
@@ -92,7 +109,8 @@ describe('/api/revalidate', () => {
       expect.arrayContaining([
         '/',
         '/en',
-        '/ru'
+        '/ru',
+        '/ar'
       ])
     );
     // About and contacts are now normal pages, refreshed by their own path when edited.

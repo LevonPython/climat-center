@@ -40,7 +40,7 @@ export function PriceList({ content }: { content: Record<string, any> }) {
         <div className={`px-[30px] pt-5 max-sm:px-3 ${folds ? '' : 'pb-5'}`}>
           {content.group_title ? (
             <div className={PRICE_ROW}>
-              <div className="min-w-0 flex-[3_1_220px] py-2 pr-4 text-lg font-medium uppercase">{content.group_title}</div>
+              <div className="min-w-0 flex-[3_1_220px] py-2 pe-4 text-lg font-medium uppercase">{content.group_title}</div>
               {content.group_price ? <div className="flex-[1_1_100px] py-2 text-center text-lg font-medium">{content.group_price}</div> : null}
             </div>
           ) : null}
@@ -48,7 +48,7 @@ export function PriceList({ content }: { content: Record<string, any> }) {
             // Folded rows stay in the page, so search engines still read them.
             <div key={index} hidden={folds && !expanded && index >= PREVIEW_ROWS}>
               <div className={`${PRICE_ROW} text-[15px]`}>
-                <div className="min-w-0 flex-[3_1_220px] py-2 pr-4">{item.title}</div>
+                <div className="min-w-0 flex-[3_1_220px] py-2 pe-4">{item.title}</div>
                 <div className="flex-[1_1_100px] py-2 text-center text-lg font-medium text-brand">{priceLabel(item.price)}</div>
               </div>
             </div>
@@ -58,11 +58,11 @@ export function PriceList({ content }: { content: Record<string, any> }) {
           <button
             type="button"
             aria-expanded={expanded}
-            className="block min-h-11 w-full bg-brand px-[30px] py-3 text-left text-white focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white max-sm:px-3"
+            className="block min-h-11 w-full bg-brand px-[30px] py-3 text-start text-white focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-white max-sm:px-3"
             onClick={() => setExpanded(!expanded)}
           >
             <span className="border-b border-dashed border-white">{t(expanded ? 'sections.collapsePrices' : 'sections.showAllPrices')}</span>
-            <span aria-hidden="true" className="ml-2">
+            <span aria-hidden="true" className="ms-2">
               {expanded ? '▴' : '▾'}
             </span>
           </button>

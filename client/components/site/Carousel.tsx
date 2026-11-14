@@ -1,5 +1,6 @@
 import { useTranslation } from 'next-i18next';
 import { useRef, type ReactNode } from 'react';
+import { isRightToLeft } from '../../lib/direction';
 
 const ARROW = 'grid h-11 w-11 shrink-0 place-items-center rounded-full text-2xl text-brand hover:bg-panel focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand';
 
@@ -14,7 +15,10 @@ export function Carousel({ children, label, arrowsBelow = false }: CarouselProps
   const track = useRef<HTMLDivElement>(null);
   const move = (direction: number) => {
     const node = track.current;
-    node?.scrollBy?.({ left: direction * Math.max(node.clientWidth * 0.8, 200), behavior: 'smooth' });
+    if (!node) return;
+    // In a right-to-left page the track starts on the right, so moving forward scrolls left.
+    const forward = isRightToLeft(node) ? -1 : 1;
+    node.scrollBy?.({ left: forward * direction * Math.max(node.clientWidth * 0.8, 200), behavior: 'smooth' });
   };
   const previous = (
     <button type="button" aria-label={t('sections.previous')} className={ARROW} onClick={() => move(-1)}>

@@ -1,13 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { DEFAULT_LOCALE, LOCALES } from '../../lib/seo';
 
 type RevalidateEvent = 'content' | 'services';
 type Body = { event?: RevalidateEvent; paths?: unknown };
 
-const LOCALE_PREFIXES = ['', '/en', '/ru'] as const;
+const LOCALE_PREFIXES = LOCALES.map((locale) => (locale === DEFAULT_LOCALE ? '' : `/${locale}`));
 const PATH_PATTERN = /^\/[a-z0-9/-]*$/;
 const MAX_PATHS = 20;
 
-function localizePath(basePath: string, localePrefix: (typeof LOCALE_PREFIXES)[number]) {
+function localizePath(basePath: string, localePrefix: string) {
   if (!localePrefix) return basePath;
   if (basePath === '/') return localePrefix;
   return `${localePrefix}${basePath}`;
@@ -68,15 +69,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const revalidated: string[] = [];
   const failed: Record<string, string> = {};
 
-  for (const path of paths) {
-    try {
-      // Next.js ISR revalidation for Pages Router
-      await (res as NextApiResponse & { revalidate: (p: string) => Promise<void> }).revalidate(path);
-      revalidated.push(path);
-    } catch {
-      failed[path] = 'revalidate_failed';
-    }
-  }
+  // All at once: the server gives up after 3 seconds, and each language adds another rebuild.
+  const results = await Promise.allSettled(
+    paths.map((path) => (res as NextApiResponse & { revalidate: (p: string) => Promise<void> }).revalidate(path))
+  );
+  results.forEach((result, index) => {
+    if (result.status === 'fulfilled') revalidated.push(paths[index]);
+    else failed[paths[index]] = 'revalidate_failed';
+  });
 
   return res.status(200).json({
     ok: true,

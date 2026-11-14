@@ -18,14 +18,14 @@ export function IntroBanner({ content }: { content: Record<string, any> }) {
             const imageFirst = index % 2 === 1;
             const picture = promo.image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={assetUrl(promo.image_url)} alt="" className={`relative z-[2] h-[253px] w-[253px] object-contain ${imageFirst ? 'sm:-mr-[30px]' : 'sm:-ml-[30px]'}`} />
+              <img src={assetUrl(promo.image_url)} alt="" className={`relative z-[2] h-[253px] w-[253px] object-contain ${imageFirst ? 'sm:-me-[30px]' : 'sm:-ms-[30px]'}`} />
             ) : null;
             return (
               <div key={index} className={`mb-5 flex items-center ${imageFirst ? 'max-sm:flex-col' : 'max-sm:flex-col-reverse'}`}>
                 {imageFirst ? picture : null}
                 <div className="w-[180px] shrink-0">
-                  <div className={`mb-2.5 text-xl font-light ${imageFirst ? 'sm:pl-[35px]' : 'sm:pr-[35px] sm:text-right'}`}>{promo.label}</div>
-                  <div className={`bg-leaf-strong py-2.5 text-xl font-semibold text-white ${imageFirst ? 'pl-4 pr-3 sm:pl-[45px]' : 'pl-3 pr-4 sm:pr-[45px] sm:text-right'}`}>{priceLabel(promo.price)}</div>
+                  <div className={`mb-2.5 text-xl font-light ${imageFirst ? 'sm:ps-[35px]' : 'sm:pe-[35px] sm:text-end'}`}>{promo.label}</div>
+                  <div className={`bg-leaf-strong py-2.5 text-xl font-semibold text-white ${imageFirst ? 'ps-4 pe-3 sm:ps-[45px]' : 'ps-3 pe-4 sm:pe-[45px] sm:text-end'}`}>{priceLabel(promo.price)}</div>
                 </div>
                 {imageFirst ? null : picture}
               </div>
@@ -95,10 +95,10 @@ function IconCallout({ content, items }: CalloutProps) {
       ) : null}
       <ul className="mb-5 grid gap-x-[34px] gap-y-5 md:grid-cols-3">
         {items.map((item, index) => (
-          <li key={index} className="relative min-h-[45px] pl-[63px]">
+          <li key={index} className="relative min-h-[45px] ps-[63px]">
             {item.icon_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={assetUrl(item.icon_url)} alt="" loading="lazy" className="absolute left-0 top-0 h-[45px] w-[45px]" />
+              <img src={assetUrl(item.icon_url)} alt="" loading="lazy" className="absolute start-0 top-0 h-[45px] w-[45px]" />
             ) : null}
             {item.text}
           </li>
@@ -112,7 +112,7 @@ function IconCallout({ content, items }: CalloutProps) {
 function PictureCallout({ content, items }: CalloutProps) {
   return (
     <SectionBox className="flex bg-mist text-[15px] max-md:flex-col">
-      <div className="w-[396px] shrink-0 py-[30px] pl-[55px] pr-2.5 max-md:w-full max-md:px-5">
+      <div className="w-[396px] shrink-0 py-[30px] pe-2.5 ps-[55px] max-md:w-full max-md:px-5">
         {content.heading ? (
           <div className="mb-5 text-[28px] uppercase leading-tight">
             <Emphasized text={content.heading} />
@@ -173,7 +173,7 @@ export function Callout({ content }: { content: Record<string, any> }) {
       {items.length ? (
         <ul className="grid gap-x-5 gap-y-3 md:grid-cols-2">
           {items.map((item, index) => (
-            <li key={index} className="bg-[url('/theme/li.png')] bg-[0_1px] bg-no-repeat pl-[34px]">
+            <li key={index} className="bg-[url('/theme/li.png')] bg-[0_1px] bg-no-repeat ps-[34px] rtl:bg-[right_0_top_1px]">
               {item.text}
             </li>
           ))}

@@ -17,14 +17,14 @@ export function TopBar() {
         <div className="relative flex flex-wrap items-center gap-x-4">
           {cities.length ? (
             <button type="button" aria-expanded={citiesOpen} className="min-h-8 uppercase" onClick={() => setCitiesOpen((open) => !open)}>
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="mr-1 inline h-3.5 w-3.5 fill-current align-[-2px]">
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="me-1 inline h-3.5 w-3.5 fill-current align-[-2px]">
                 <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.500a2.500 2.500 0 0 1 0 5z" />
               </svg>
               <span className="border-b border-dashed border-white">{cities[0].label}</span>
             </button>
           ) : null}
           {citiesOpen ? (
-            <ul aria-label={t('layout.cities')} className="absolute left-0 top-full z-30 min-w-40 bg-white py-1 normal-case text-ink shadow-lg">
+            <ul aria-label={t('layout.cities')} className="absolute start-0 top-full z-30 min-w-40 bg-white py-1 normal-case text-ink shadow-lg">
               {cities.map((city) => (
                 <li key={city.id}>
                   <Link href={city.href} className="block px-4 py-2 text-ink no-underline hover:bg-panel" onClick={() => setCitiesOpen(false)}>

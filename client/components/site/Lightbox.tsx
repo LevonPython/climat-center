@@ -1,6 +1,7 @@
 import { useTranslation } from 'next-i18next';
 import { useEffect, useRef } from 'react';
 import { assetUrl } from '../../lib/assets';
+import { isRightToLeft } from '../../lib/direction';
 
 export type LightboxImage = { url: string; alt?: string | null };
 
@@ -29,8 +30,11 @@ export function Lightbox({ images, index, onChange, onClose }: LightboxProps) {
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if (event.key === 'Escape') onClose();
-      if (event.key === 'ArrowLeft') onChange((index - 1 + images.length) % images.length);
-      if (event.key === 'ArrowRight') onChange((index + 1) % images.length);
+      // The arrow pointing toward the start of the page goes back, so the keys swap in Arabic.
+      const back = isRightToLeft() ? 'ArrowRight' : 'ArrowLeft';
+      const forward = isRightToLeft() ? 'ArrowLeft' : 'ArrowRight';
+      if (event.key === back) onChange((index - 1 + images.length) % images.length);
+      if (event.key === forward) onChange((index + 1) % images.length);
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -50,15 +54,15 @@ export function Lightbox({ images, index, onChange, onClose }: LightboxProps) {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={assetUrl(image.url)} alt={image.alt || ''} className="max-h-[85vh] max-w-full object-contain" />
-      <button ref={closeButton} type="button" aria-label={t('sections.close')} className={`${CONTROL} absolute right-4 top-4`} onClick={onClose}>
+      <button ref={closeButton} type="button" aria-label={t('sections.close')} className={`${CONTROL} absolute end-4 top-4`} onClick={onClose}>
         ×
       </button>
       {images.length > 1 ? (
         <>
-          <button type="button" aria-label={t('sections.previous')} className={`${CONTROL} absolute left-4 top-1/2 -translate-y-1/2`} onClick={previous}>
+          <button type="button" aria-label={t('sections.previous')} className={`${CONTROL} absolute start-4 top-1/2 -translate-y-1/2`} onClick={previous}>
             ‹
           </button>
-          <button type="button" aria-label={t('sections.next')} className={`${CONTROL} absolute right-4 top-1/2 -translate-y-1/2`} onClick={next}>
+          <button type="button" aria-label={t('sections.next')} className={`${CONTROL} absolute end-4 top-1/2 -translate-y-1/2`} onClick={next}>
             ›
           </button>
         </>

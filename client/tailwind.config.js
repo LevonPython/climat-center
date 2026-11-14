@@ -13,7 +13,7 @@ module.exports = {
         leaf: { DEFAULT: '#91c58d', strong: '#9dd298', text: '#4f8a4a' }
       },
       fontFamily: {
-        sans: ['var(--font-roboto)', 'var(--font-armenian)', 'Arial', 'sans-serif']
+        sans: ['var(--font-roboto)', 'var(--font-armenian)', 'var(--font-arabic)', 'Arial', 'sans-serif']
       },
       maxWidth: {
         site: '1240px'

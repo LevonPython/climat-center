@@ -6,32 +6,34 @@ const SLUG = 'o-kompanii-centr-klimata';
 test.skip(!IS_LOCAL || !ADMIN_PASSWORD, 'Set E2E_ADMIN_PASSWORD and run against a local stack.');
 // These tests change content every page shares, so they stay in one file and run one at a time.
 
-test('a title changed in the admin shows on the public page', async ({ page, request }) => {
-  const token = await apiToken(request);
-  const list = await request.get(`${API_URL}/api/admin/pages`, { headers: { Authorization: `Bearer ${token}` } });
-  const { pages } = (await list.json()) as { pages: { id: string; slug: string; title_ru: string }[] };
-  const target = pages.find((item) => item.slug === SLUG);
-  if (!target) throw new Error(`Page ${SLUG} is not imported`);
+for (const [tab, lang] of [['Русский', 'ru'], ['العربية', 'ar']] as const) {
+  test(`a title changed in the ${tab} tab of the admin shows on the ${lang} page`, async ({ page, request }) => {
+    const token = await apiToken(request);
+    const list = await request.get(`${API_URL}/api/admin/pages`, { headers: { Authorization: `Bearer ${token}` } });
+    const { pages } = (await list.json()) as { pages: ({ id: string; slug: string } & Record<string, string>)[] };
+    const target = pages.find((item) => item.slug === SLUG);
+    if (!target) throw new Error(`Page ${SLUG} is not imported`);
 
-  const editTitle = async (title: string) => {
-    await page.goto(`${ADMIN_URL}/pages/${target.id}`);
-    await page.getByRole('button', { name: 'Русский', exact: true }).first().click();
-    await page.getByLabel('Title', { exact: true }).fill(title);
-    const saved = page.waitForResponse((res) => res.request().method() !== 'GET' && res.url().includes('/api/admin/pages'));
-    await page.getByRole('button', { name: 'Save', exact: true }).first().click();
-    expect((await saved).ok()).toBe(true);
-  };
+    const editTitle = async (title: string) => {
+      await page.goto(`${ADMIN_URL}/pages/${target.id}`);
+      await page.getByRole('button', { name: tab, exact: true }).first().click();
+      await page.getByLabel('Title', { exact: true }).fill(title);
+      const saved = page.waitForResponse((res) => res.request().method() !== 'GET' && res.url().includes('/api/admin/pages'));
+      await page.getByRole('button', { name: 'Save', exact: true }).first().click();
+      expect((await saved).ok()).toBe(true);
+    };
 
-  await signIn(page);
-  const changed = `E2E ${Date.now()}`;
-  try {
-    await editTitle(changed);
-    await page.goto(`/ru/${SLUG}`);
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText(changed);
-  } finally {
-    await editTitle(target.title_ru);
-  }
-});
+    await signIn(page);
+    const changed = `E2E ${Date.now()}`;
+    try {
+      await editTitle(changed);
+      await page.goto(`/${lang}/${SLUG}`);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(changed);
+    } finally {
+      await editTitle(target[`title_${lang}`]);
+    }
+  });
+}
 
 test('interface text changed in the admin shows on the public page', async ({ page, request }) => {
   const headers = { Authorization: `Bearer ${await apiToken(request)}` };
