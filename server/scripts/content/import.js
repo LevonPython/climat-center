@@ -4,6 +4,7 @@
 // Safe to rerun: pages, services and settings that exist are left alone, so edits made in the admin survive.
 // Menu items and gallery pictures deleted in the admin come back. --overwrite replaces pages.
 // --overwrite --only=slug,slug replaces just those pages and touches nothing else.
+// --fill-language=ar adds one language to a database that already has content; see fillLanguage.
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -13,16 +14,20 @@ if (require.main === module) require('dotenv').config({ path: path.join(__dirnam
 
 const { query } = require('../../src/config/db');
 const { getBlockType } = require('../../src/contentSchemas/blockTypes');
+const { validateContentJson } = require('../../src/contentSchemas/validate');
 const { mediaRepository } = require('../../src/repositories/mediaRepository');
 const { pageRepository } = require('../../src/repositories/pageRepository');
+const { sectionRepository } = require('../../src/repositories/sectionRepository');
+const { sanitizeRichText } = require('../../src/services/contentSanitizer');
 const { storeFile } = require('../../src/services/fileStorage');
 const galleryService = require('../../src/services/galleryService');
 const navService = require('../../src/services/navService');
 const pageService = require('../../src/services/pageService');
+const { LANGS } = require('../../src/services/localization');
 const sectionService = require('../../src/services/sectionService');
 
 const DEFAULT_CONTENT_DIR = path.join(__dirname, '..', '..', 'content');
-const TRANSLATED_LANGS = ['hy', 'en'];
+const TRANSLATED_LANGS = LANGS.filter((lang) => lang !== 'ru');
 const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -43,10 +48,10 @@ const EXISTING_SERVICES = {
 const SERVICE_TYPES = { 'usluga/ustanovka-kondicionerov': 'install', 'usluga/remont-kondicionerov': 'repair' };
 // Pages this project has and the Russian site doesn't, so they aren't in the crawl.
 const OWN_MENU_ITEMS = [
-  { url: '/booking', label_ru: 'Онлайн-запись', label_en: 'Online booking', label_hy: 'Առցանց գրանցում' },
-  { url: '/quiz', label_ru: 'Быстрый подбор', label_en: 'Quick quiz', label_hy: 'Արագ հարցում' }
+  { url: '/booking', label_ru: 'Онлайн-запись', label_en: 'Online booking', label_hy: 'Առցանց գրանցում', label_ar: 'الحجز عبر الإنترنت' },
+  { url: '/quiz', label_ru: 'Быстрый подбор', label_en: 'Quick quiz', label_hy: 'Արագ հարցում', label_ar: 'استبيان سريع' }
 ];
-const CITY_ITEM = { url: '/', label_ru: 'Ереван', label_en: 'Yerevan', label_hy: 'Երևան' };
+const CITY_ITEM = { url: '/', label_ru: 'Ереван', label_en: 'Yerevan', label_hy: 'Երևան', label_ar: 'يريفان' };
 
 function textHash(text) {
   return crypto.createHash('sha1').update(text).digest('hex').slice(0, 16);
@@ -79,7 +84,8 @@ function createTranslator(translations, report) {
 }
 
 // Stored files keep their name and size, which is how a rerun recognises them.
-function createMediaStore(rawFilesDir, report) {
+// With store: false it only finds files already stored, and never uploads.
+function createMediaStore(rawFilesDir, report, { store = true } = {}) {
   const known = new Map();
 
   return async function resolve(assetPath) {
@@ -101,9 +107,9 @@ function createMediaStore(rawFilesDir, report) {
     }
 
     const existing = await query('SELECT id, url FROM media_assets WHERE filename = $1 AND size_bytes = $2', [filename, buffer.length]);
-    if (existing.rows[0]) {
-      known.set(assetPath, existing.rows[0]);
-      return existing.rows[0];
+    if (existing.rows[0] || !store) {
+      known.set(assetPath, existing.rows[0] || null);
+      return existing.rows[0] || null;
     }
 
     const url = await storeFile({ originalname: filename, buffer, mimetype });
@@ -166,8 +172,7 @@ function pageValues(page, translate, index) {
     ...localized('title', page.title),
     ...localized('meta_title', page.meta_title),
     ...localized('meta_description', page.meta_description),
-    needs_review_hy: page.translate,
-    needs_review_en: page.translate,
+    ...Object.fromEntries(TRANSLATED_LANGS.map((lang) => [`needs_review_${lang}`, page.translate])),
     needs_review_ru: false
   };
 }
@@ -289,8 +294,7 @@ async function importGallery(collection, items, translate, resolveMedia, isVisib
       is_visible: isVisible,
       title_ru: item.title || null,
       // Brand names read the same in every language.
-      title_hy: collection === 'brands' ? item.title || null : translate('hy', item.title),
-      title_en: collection === 'brands' ? item.title || null : translate('en', item.title)
+      ...Object.fromEntries(TRANSLATED_LANGS.map((lang) => [`title_${lang}`, collection === 'brands' ? item.title || null : translate(lang, item.title)]))
     });
   }
 }
@@ -310,6 +314,7 @@ async function importMenus(site, pagesBySlug, translate) {
       return { target: page ? { page_id: page.id } : { url: item.href }, labels: localizedColumns('label', item.label, translate) };
     });
   const own = OWN_MENU_ITEMS.map(({ url, ...labels }) => ({ target: { url }, labels }));
+  const { url: cityUrl, ...cityLabels } = CITY_ITEM;
   const footerLinks = site.footer_links || [];
 
   const menus = {
@@ -317,7 +322,7 @@ async function importMenus(site, pagesBySlug, translate) {
     header: fromSite(site.header),
     footer: fromSite(footerLinks),
     mobile: [...fromSite(site.topbar), ...fromSite(site.header), ...own],
-    cities: [{ target: { url: CITY_ITEM.url }, labels: { label_ru: CITY_ITEM.label_ru, label_en: CITY_ITEM.label_en, label_hy: CITY_ITEM.label_hy } }]
+    cities: [{ target: { url: cityUrl }, labels: cityLabels }]
   };
 
   for (const [location, items] of Object.entries(menus)) {
@@ -391,6 +396,129 @@ async function runImport({ contentDir = DEFAULT_CONTENT_DIR, overwrite = false, 
   return report;
 }
 
+// Maps each Russian text, as the import stored it, to its translation stored the same way.
+// Sanitized forms are added first, so a plain text whose two forms are equal keeps its unsanitized translation.
+async function buildTranslationMap(contentDir, lang, resolveMedia) {
+  const { translations } = loadContent(contentDir);
+  const strings = readJson(path.join(contentDir, 'strings.ru.json'), {});
+  const pairs = [
+    ...Object.entries(strings).map(([key, russian]) => [russian, translations[lang][key]]),
+    ...[...OWN_MENU_ITEMS, CITY_ITEM].map((item) => [item.label_ru, item[`label_${lang}`]])
+  ];
+  const map = new Map();
+  for (const [russian, translated] of pairs) {
+    if (!russian || !translated) continue;
+    const storedRussian = await resolveMediaInText(russian, resolveMedia);
+    const storedTranslation = await resolveMediaInText(translated, resolveMedia);
+    if (!storedRussian || !storedTranslation) continue;
+    map.set(sanitizeRichText(storedRussian), sanitizeRichText(storedTranslation));
+    map.set(storedRussian, storedTranslation);
+  }
+  return map;
+}
+
+// Adds one language to a database that already has content. It fills only empty fields, and only where the
+// Russian is still the text the import wrote, so nothing an editor changed is touched. Safe to rerun.
+async function fillLanguage(lang, { contentDir = DEFAULT_CONTENT_DIR } = {}) {
+  if (!TRANSLATED_LANGS.includes(lang)) throw new Error(`No such language to fill: ${lang}`);
+  const report = { fieldsFilled: 0, pagesMarked: 0, unfilled: [], missingFiles: new Set(), refusedFiles: new Set() };
+  const resolveMedia = createMediaStore(path.join(contentDir, 'raw', 'files'), report, { store: false });
+  const map = await buildTranslationMap(contentDir, lang, resolveMedia);
+  const others = TRANSLATED_LANGS.filter((other) => other !== lang);
+
+  // A field only Russian has is Russia-only content, left untranslated on purpose, so it isn't reported.
+  function translateField(values, base, where) {
+    const russian = values[`${base}_ru`];
+    if (typeof russian !== 'string' || !russian || values[`${base}_${lang}`]) return null;
+    const translated = map.get(russian);
+    if (translated) return translated;
+    if (others.some((other) => values[`${base}_${other}`])) report.unfilled.push(`${where}: ${base}`);
+    return null;
+  }
+
+  function fillColumns(row, bases, where) {
+    const filled = {};
+    for (const base of bases) {
+      const translated = translateField(row, base, where);
+      if (translated) filled[`${base}_${lang}`] = translated;
+    }
+    report.fieldsFilled += Object.keys(filled).length;
+    return filled;
+  }
+
+  function fillContent(value, where) {
+    if (Array.isArray(value)) return value.map((item) => fillContent(item, where));
+    if (!value || typeof value !== 'object') return value;
+    const out = Object.fromEntries(Object.entries(value).map(([key, child]) => [key, fillContent(child, where)]));
+    for (const key of Object.keys(value).filter((name) => name.endsWith('_ru'))) {
+      const base = key.slice(0, -'_ru'.length);
+      const translated = translateField(value, base, where);
+      if (!translated) continue;
+      out[`${base}_${lang}`] = translated;
+      report.fieldsFilled += 1;
+    }
+    return out;
+  }
+
+  const pages = await query('SELECT * FROM pages ORDER BY sort_order, slug');
+  for (const page of pages.rows) {
+    const filled = fillColumns(page, ['title', 'meta_title', 'meta_description'], `/${page.slug}`);
+    if (!Object.keys(filled).length) continue;
+    await pageRepository.update(page.id, { ...filled, [`needs_review_${lang}`]: true });
+    report.pagesMarked += 1;
+  }
+
+  const sections = await query(
+    'SELECT b.id, b.content_json, p.slug FROM content_blocks b JOIN pages p ON p.id = b.page_id ORDER BY p.sort_order, p.slug, b.sort_order'
+  );
+  for (const section of sections.rows) {
+    const content = fillContent(section.content_json, `/${section.slug} section`);
+    if (JSON.stringify(content) !== JSON.stringify(section.content_json)) {
+      await sectionService.updateSection(section.id, { content_json: content }, null);
+    }
+  }
+
+  const blocks = await query("SELECT id, page_name, section_name, content_json FROM content_blocks WHERE page_name = 'global'");
+  for (const block of blocks.rows) {
+    const content = fillContent(block.content_json, `site settings: ${block.section_name}`);
+    if (JSON.stringify(content) === JSON.stringify(block.content_json)) continue;
+    const check = validateContentJson(block.page_name, block.section_name, content);
+    if (!check.ok) throw new Error(`Site settings ${block.section_name} would not validate: ${check.message}`);
+    await query('UPDATE content_blocks SET content_json = $1 WHERE id = $2', [content, block.id]);
+    await sectionRepository.insertVersion(block.id, null, content);
+  }
+
+  const services = await query('SELECT s.*, p.slug FROM services s LEFT JOIN pages p ON p.id = s.page_id');
+  for (const service of services.rows) {
+    const filled = fillColumns(service, ['title', 'description', 'menu_title', 'pill_title'], `service ${service.slug ? `/${service.slug}` : service.id}`);
+    if (Object.keys(filled).length) await query(...updateStatement('services', service.id, filled));
+  }
+
+  const navItems = await query('SELECT n.*, p.slug FROM nav_items n LEFT JOIN pages p ON p.id = n.page_id');
+  for (const item of navItems.rows) {
+    const filled = fillColumns(item, ['label'], `menu ${item.location}: ${item.slug ? `/${item.slug}` : item.url}`);
+    if (Object.keys(filled).length) await query(...updateStatement('nav_items', item.id, filled));
+  }
+
+  const galleryItems = await query('SELECT * FROM gallery_items');
+  for (const item of galleryItems.rows) {
+    // Brand names read the same in every language.
+    const isBrand = item.collection === 'brands';
+    const filled = isBrand ? (item.title_ru && !item[`title_${lang}`] ? { [`title_${lang}`]: item.title_ru } : {}) : fillColumns(item, ['title'], `gallery ${item.collection}`);
+    if (isBrand) report.fieldsFilled += Object.keys(filled).length;
+    if (Object.keys(filled).length) await query(...updateStatement('gallery_items', item.id, filled));
+  }
+
+  return report;
+}
+
+// Column names come from the language list and fixed field names, never from the data.
+function updateStatement(table, id, values) {
+  const names = Object.keys(values);
+  const sets = names.map((name, position) => `${name} = $${position + 1}`).join(', ');
+  return [`UPDATE ${table} SET ${sets} WHERE id = $${names.length + 1}`, [...Object.values(values), id]];
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const { hostname, pathname } = new URL(process.env.DATABASE_URL || 'postgres://missing/');
@@ -399,14 +527,23 @@ async function main() {
 
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required');
   if (!isLocal && !args.includes('--remote')) throw new Error('Refusing a remote database without --remote.');
+  const overwrite = args.includes('--overwrite');
+  const only = args.find((arg) => arg.startsWith('--only='))?.slice('--only='.length).split(',');
+  const fill = args.find((arg) => arg.startsWith('--fill-language='))?.slice('--fill-language='.length);
+  if (only && !overwrite) throw new Error('--only needs --overwrite.');
+  if (fill && (overwrite || only)) throw new Error('--fill-language works on its own.');
   // Without Blob storage, files on a remote import would land on this computer and show as broken links.
-  if (!isLocal && !process.env.BLOB_READ_WRITE_TOKEN) throw new Error('A remote import needs BLOB_READ_WRITE_TOKEN.');
+  if (!isLocal && !fill && !process.env.BLOB_READ_WRITE_TOKEN) throw new Error('A remote import needs BLOB_READ_WRITE_TOKEN.');
   if (isLocal) delete process.env.BLOB_READ_WRITE_TOKEN;
   delete process.env.PUBLIC_SITE_URL;
 
-  const overwrite = args.includes('--overwrite');
-  const only = args.find((arg) => arg.startsWith('--only='))?.slice('--only='.length).split(',');
-  if (only && !overwrite) throw new Error('--only needs --overwrite.');
+  if (fill) {
+    const report = await fillLanguage(fill);
+    console.log(`Filled ${report.fieldsFilled} fields in ${fill}. Pages marked for review: ${report.pagesMarked}.`);
+    console.log(`Not filled, because the text differs from what the import wrote. Translate these in the admin: ${report.unfilled.length}.`);
+    for (const line of report.unfilled) console.log(`  ${line}`);
+    return;
+  }
 
   const report = await runImport({ overwrite, only });
   console.log(`Pages: ${report.pagesCreated} created, ${report.pagesReplaced} replaced, ${report.pagesKept} kept.`);
@@ -425,4 +562,4 @@ if (require.main === module) {
     .finally(() => require('../../src/config/db').closePool());
 }
 
-module.exports = { runImport, textHash };
+module.exports = { fillLanguage, runImport, textHash };

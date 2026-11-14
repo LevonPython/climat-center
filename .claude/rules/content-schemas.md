@@ -35,7 +35,7 @@ Stored `content_json` is only validated when it is saved or restored.
 - Seeds use `ON CONFLICT ... DO NOTHING`, so a new default in `seed.js` never reaches an existing row.
 
 ## Imported content
-`server/scripts/content/` is the one-off pipeline from climatecentr.ru: crawl, extract to tracked JSON in `server/content/`, translate, import. It reuses the same validation, sanitizer and version history as the admin. Changing a section type's fields can break `contentData.test.js`, because the tracked JSON must still validate. Any change to extracted text changes its key in `translations/{hy,en}.json`.
+`server/scripts/content/` is the one-off pipeline from climatecentr.ru: crawl, extract to tracked JSON in `server/content/`, translate, import. It reuses the same validation, sanitizer and version history as the admin. Changing a section type's fields can break `contentData.test.js`, because the tracked JSON must still validate. Any change to extracted text changes its key in `translations/{hy,en,ar}.json`.
 
 ## Reads
 `GET /api/content/:lang` maps `title_hy` to `title`, with no fallback between languages. A missing value is absent from the response, so pages must fall back to `t()`.
