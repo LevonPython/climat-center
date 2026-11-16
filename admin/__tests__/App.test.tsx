@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import App from '../src/App';
 import { apiFetch } from '../src/api';
 import { clearToken, setToken } from '../src/auth';
@@ -43,5 +43,14 @@ describe('App role access', () => {
 
     expect(await screen.findByRole('heading', { name: 'Пользователи' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Пользователи' })).toBeInTheDocument();
+  });
+
+  test('an editor can open the change password screen from the menu', async () => {
+    setToken(tokenFor('editor'));
+    renderApp('/');
+
+    fireEvent.click(await screen.findByRole('link', { name: 'Сменить пароль' }));
+
+    expect(await screen.findByRole('heading', { name: 'Смена пароля' })).toBeInTheDocument();
   });
 });

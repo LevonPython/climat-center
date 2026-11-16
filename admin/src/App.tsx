@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { clearToken, getRole, getToken } from './auth';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { LeaveGuard, UnsavedProvider, useConfirmLeave } from './lib/unsaved';
+import { AccountPage } from './pages/AccountPage';
 import { BookingsPage } from './pages/BookingsPage';
 import { ContentPage } from './pages/ContentPage';
 import { GalleriesPage } from './pages/GalleriesPage';
@@ -69,7 +70,16 @@ function Shell(props: { children: JSX.Element; titleKey: string }) {
             </Link>
           ))}
         </nav>
-        <div className="px-3 pb-4">
+        <div className="px-3 pb-4 grid gap-2">
+          <Link
+            to="/account"
+            className={[
+              'block w-full rounded-xl border px-3 py-2 text-center text-sm font-semibold',
+              isActive('/account', location.pathname) ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 hover:bg-slate-50'
+            ].join(' ')}
+          >
+            {t('shell.changePassword')}
+          </Link>
           <button
             type="button"
             className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold hover:bg-slate-50"
@@ -108,7 +118,8 @@ const PRIVATE_ROUTES: PrivateRoute[] = [
   { path: '/media', titleKey: 'media.title', element: <MediaPage /> },
   { path: '/settings', titleKey: 'settings.title', element: <ContentPage /> },
   { path: '/translations', titleKey: 'translations.title', element: <TranslationsPage /> },
-  { path: '/users', titleKey: 'users.title', element: <UsersPage />, adminOnly: true }
+  { path: '/users', titleKey: 'users.title', element: <UsersPage />, adminOnly: true },
+  { path: '/account', titleKey: 'account.title', element: <AccountPage /> }
 ];
 
 export default function App() {
