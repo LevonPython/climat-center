@@ -50,3 +50,7 @@ server/content/raw/
 # Local test output
 e2e/test-results/
 server/uploads-admin-check/
+
+# Files the API stores on disk when no Blob token is set, such as a local content import. Production uses Vercel Blob.
+server/uploads/*
+!server/uploads/.gitkeep
