@@ -13,3 +13,15 @@ export function clearToken() {
   window.localStorage.removeItem(TOKEN_KEY);
 }
 
+export type Role = 'admin' | 'editor';
+
+export function getRole(): Role | null {
+  const payload = getToken()?.split('.')[1];
+  if (!payload) return null;
+  try {
+    const { role } = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return role === 'admin' || role === 'editor' ? role : null;
+  } catch {
+    return null;
+  }
+}
