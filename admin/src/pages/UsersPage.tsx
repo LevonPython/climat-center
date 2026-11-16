@@ -1,7 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiFetch } from '../api';
+import { getUserId } from '../auth';
+import { ui } from '../components/ui';
+import { errorText, send } from '../lib/request';
+import { useUnsavedGuard } from '../lib/unsaved';
 
 type UserRow = {
   id: string;
@@ -9,6 +13,79 @@ type UserRow = {
   role: 'admin' | 'editor';
   created_at: string;
 };
+
+const MIN_PASSWORD_LENGTH = 8;
+
+function SetPassword({ user }: { user: UserRow }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const openButton = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
+  useUnsavedGuard(open && password.length > 0);
+
+  useEffect(() => {
+    if (wasOpen.current && !open) openButton.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
+
+  const saveM = useMutation({
+    mutationFn: () => send('PUT', `/api/auth/users/${user.id}/password`, { password }),
+    onSuccess: () => {
+      setOpen(false);
+      setPassword('');
+    }
+  });
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {open ? (
+        <form
+          className="flex flex-wrap items-center gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (password.length >= MIN_PASSWORD_LENGTH) saveM.mutate();
+          }}
+        >
+          <input
+            type="password"
+            autoComplete="new-password"
+            autoFocus
+            aria-label={t('users.newPassword', { name: user.username })}
+            className="min-h-11 w-48 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+            value={password}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              saveM.reset();
+            }}
+          />
+          <button type="submit" className={ui.primary} disabled={saveM.isPending || password.length < MIN_PASSWORD_LENGTH}>
+            {saveM.isPending ? t('common.saving') : t('common.save')}
+          </button>
+          <button
+            type="button"
+            className={ui.secondary}
+            onClick={() => {
+              setOpen(false);
+              setPassword('');
+              saveM.reset();
+            }}
+          >
+            {t('common.cancel')}
+          </button>
+        </form>
+      ) : (
+        <button ref={openButton} type="button" className={ui.secondary} onClick={() => setOpen(true)}>
+          {t('users.setPassword')}
+        </button>
+      )}
+      <span role="status">
+        {saveM.isSuccess ? <span className={ui.success}>{t('users.passwordSet')}</span> : null}
+        {saveM.isError ? <span className={ui.error}>{errorText(t, saveM.error, 'users.setPasswordError')}</span> : null}
+      </span>
+    </div>
+  );
+}
 
 export function UsersPage() {
   const { t } = useTranslation();
@@ -58,6 +135,7 @@ export function UsersPage() {
   if (usersQ.isError) return <div className="text-sm text-red-600">{String(usersQ.error)}</div>;
 
   const users = usersQ.data || [];
+  const currentUserId = getUserId();
 
   return (
     <div className="grid gap-4">
@@ -124,14 +202,17 @@ export function UsersPage() {
                 <td className="px-4 py-3">{u.role}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{new Date(u.created_at).toLocaleString('ru-RU')}</td>
                 <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => deleteM.mutate(u.id)}
-                    disabled={deleteM.isPending}
-                    className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
-                  >
-                    {t('users.delete')}
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {u.id !== currentUserId ? <SetPassword user={u} /> : null}
+                    <button
+                      type="button"
+                      onClick={() => deleteM.mutate(u.id)}
+                      disabled={deleteM.isPending}
+                      className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
+                    >
+                      {t('users.delete')}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

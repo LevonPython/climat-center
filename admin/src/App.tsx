@@ -1,8 +1,9 @@
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { clearToken, getToken } from './auth';
+import { clearToken, getRole, getToken } from './auth';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { LeaveGuard, UnsavedProvider, useConfirmLeave } from './lib/unsaved';
+import { AccountPage } from './pages/AccountPage';
 import { BookingsPage } from './pages/BookingsPage';
 import { ContentPage } from './pages/ContentPage';
 import { GalleriesPage } from './pages/GalleriesPage';
@@ -15,14 +16,17 @@ import { ServicesPage } from './pages/ServicesPage';
 import { TranslationsPage } from './pages/TranslationsPage';
 import { UsersPage } from './pages/UsersPage';
 
-function Private({ children }: { children: JSX.Element }) {
+function Private({ children, adminOnly = false }: { children: JSX.Element; adminOnly?: boolean }) {
   const location = useLocation();
   const token = getToken();
   if (!token) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  if (adminOnly && getRole() !== 'admin') return <Navigate to="/" replace />;
   return children;
 }
 
-const NAV_ITEMS = [
+type NavItem = { to: string; labelKey: string; adminOnly?: boolean };
+
+const NAV_ITEMS: NavItem[] = [
   { to: '/', labelKey: 'nav.bookings' },
   { to: '/pages', labelKey: 'nav.pages' },
   { to: '/services', labelKey: 'nav.services' },
@@ -31,7 +35,7 @@ const NAV_ITEMS = [
   { to: '/media', labelKey: 'nav.media' },
   { to: '/settings', labelKey: 'nav.settings' },
   { to: '/translations', labelKey: 'nav.translations' },
-  { to: '/users', labelKey: 'nav.users' }
+  { to: '/users', labelKey: 'nav.users', adminOnly: true }
 ];
 
 function isActive(to: string, pathname: string): boolean {
@@ -43,6 +47,7 @@ function Shell(props: { children: JSX.Element; titleKey: string }) {
   const nav = useNavigate();
   const location = useLocation();
   const confirmLeave = useConfirmLeave();
+  const isAdmin = getRole() === 'admin';
 
   return (
     <div className="min-h-screen grid lg:grid-cols-[260px_1fr]">
@@ -52,7 +57,7 @@ function Shell(props: { children: JSX.Element; titleKey: string }) {
           <LanguageSwitcher />
         </div>
         <nav className="px-3 pb-4 flex flex-wrap gap-1 lg:grid">
-          {NAV_ITEMS.map((item) => (
+          {NAV_ITEMS.filter((item) => isAdmin || !item.adminOnly).map((item) => (
             <Link
               key={item.to}
               to={item.to}
@@ -65,7 +70,16 @@ function Shell(props: { children: JSX.Element; titleKey: string }) {
             </Link>
           ))}
         </nav>
-        <div className="px-3 pb-4">
+        <div className="px-3 pb-4 grid gap-2">
+          <Link
+            to="/account"
+            className={[
+              'block w-full rounded-xl border px-3 py-2 text-center text-sm font-semibold',
+              isActive('/account', location.pathname) ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 hover:bg-slate-50'
+            ].join(' ')}
+          >
+            {t('shell.changePassword')}
+          </Link>
           <button
             type="button"
             className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold hover:bg-slate-50"
@@ -92,7 +106,9 @@ function Shell(props: { children: JSX.Element; titleKey: string }) {
   );
 }
 
-const PRIVATE_ROUTES = [
+type PrivateRoute = { path: string; titleKey: string; element: JSX.Element; adminOnly?: boolean };
+
+const PRIVATE_ROUTES: PrivateRoute[] = [
   { path: '/', titleKey: 'bookings.title', element: <BookingsPage /> },
   { path: '/pages', titleKey: 'pages.title', element: <PagesPage /> },
   { path: '/pages/:id', titleKey: 'pages.editTitle', element: <PageEditorPage /> },
@@ -102,7 +118,8 @@ const PRIVATE_ROUTES = [
   { path: '/media', titleKey: 'media.title', element: <MediaPage /> },
   { path: '/settings', titleKey: 'settings.title', element: <ContentPage /> },
   { path: '/translations', titleKey: 'translations.title', element: <TranslationsPage /> },
-  { path: '/users', titleKey: 'users.title', element: <UsersPage /> }
+  { path: '/users', titleKey: 'users.title', element: <UsersPage />, adminOnly: true },
+  { path: '/account', titleKey: 'account.title', element: <AccountPage /> }
 ];
 
 export default function App() {
@@ -116,7 +133,7 @@ export default function App() {
             key={route.path}
             path={route.path}
             element={
-              <Private>
+              <Private adminOnly={route.adminOnly}>
                 <Shell titleKey={route.titleKey}>{route.element}</Shell>
               </Private>
             }

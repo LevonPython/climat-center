@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { query } = require('../config/db');
+const { passwordStamp } = require('../services/authService');
 
 async function verifyToken(req, res, next) {
   const header = req.headers.authorization || '';
@@ -20,13 +21,18 @@ async function verifyToken(req, res, next) {
       return res.status(401).json({ ok: false, error: { message: 'Invalid token' } });
     }
 
-    const result = await query('SELECT id, username, role FROM users WHERE id = $1', [userId]);
+    const result = await query('SELECT id, username, role, password_hash FROM users WHERE id = $1', [userId]);
     if (result.rowCount === 0) {
       // Token might be structurally valid but refers to a deleted/reseeded user.
       return res.status(401).json({ ok: false, error: { message: 'Invalid token' } });
     }
 
-    req.user = result.rows[0];
+    const { password_hash: passwordHash, ...user } = result.rows[0];
+    if (payload.pwd !== passwordStamp(passwordHash)) {
+      return res.status(401).json({ ok: false, error: { message: 'Invalid token' } });
+    }
+
+    req.user = user;
     return next();
   } catch (e) {
     return res.status(401).json({ ok: false, error: { message: 'Invalid token' } });

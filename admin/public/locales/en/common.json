@@ -12,7 +12,8 @@
   },
   "shell": {
     "title": "Admin",
-    "logout": "Log out"
+    "logout": "Log out",
+    "changePassword": "Change password"
   },
   "login": {
     "title": "Sign in",
@@ -153,7 +154,21 @@
     "creating": "Creating...",
     "delete": "Delete",
     "empty": "No users",
-    "passwordHint": "Password must be at least 8 characters."
+    "passwordHint": "Password must be at least 8 characters.",
+    "setPassword": "Set password",
+    "newPassword": "New password for {{name}}",
+    "passwordSet": "Password set.",
+    "setPasswordError": "Could not set the password. Try again."
+  },
+  "account": {
+    "title": "Change password",
+    "current": "Current password",
+    "new": "New password",
+    "repeat": "Repeat the new password",
+    "mismatch": "The new passwords do not match.",
+    "saved": "Password changed.",
+    "wrongPassword": "The current password is incorrect.",
+    "saveError": "Could not change the password. Try again."
   },
   "settings": {
     "title": "Site settings"
