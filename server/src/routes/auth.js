@@ -1,12 +1,39 @@
 const express = require('express');
 const { body, param, validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
 const { query } = require('../config/db');
-const { verifyToken, requireRole } = require('../middleware/auth');
+const { verifyToken, requireAnyRole, requireRole } = require('../middleware/auth');
+const { asyncRoute, validateRequest } = require('../middleware/validate');
+const { changeOwnPassword, setUserPassword, signToken } = require('../services/authService');
 
 const authRouter = express.Router();
+
+authRouter.put(
+  '/password',
+  verifyToken,
+  requireAnyRole(['admin', 'editor']),
+  body('current_password').isString().notEmpty(),
+  body('new_password').isString().isLength({ min: 8 }),
+  validateRequest,
+  asyncRoute(async (req, res) => {
+    const token = await changeOwnPassword(req.user.id, req.body.current_password, req.body.new_password);
+    res.json({ ok: true, token });
+  })
+);
+
+authRouter.put(
+  '/users/:id/password',
+  verifyToken,
+  requireRole('admin'),
+  param('id').isUUID(),
+  body('password').isString().isLength({ min: 8 }),
+  validateRequest,
+  asyncRoute(async (req, res) => {
+    await setUserPassword(req.user.id, req.params.id, req.body.password);
+    res.json({ ok: true });
+  })
+);
 
 authRouter.get('/users', verifyToken, requireRole('admin'), async (req, res, next) => {
   try {
@@ -63,14 +90,7 @@ authRouter.post(
       const match = await bcrypt.compare(password, user.password_hash);
       if (!match) return res.status(401).json({ ok: false, error: { message: 'Invalid credentials' } });
 
-      const secret = process.env.JWT_SECRET;
-      if (!secret) throw new Error('JWT_SECRET is required');
-      const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
-
-      const token = jwt.sign({ username: user.username, role: user.role }, secret, {
-        subject: user.id,
-        expiresIn
-      });
+      const token = signToken(user);
 
       return res.json({ ok: true, token, user: { id: user.id, username: user.username, role: user.role } });
     } catch (err) {
